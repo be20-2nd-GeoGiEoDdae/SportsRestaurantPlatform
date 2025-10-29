@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class TeamEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "team_code")
     private Long teamCode;
 

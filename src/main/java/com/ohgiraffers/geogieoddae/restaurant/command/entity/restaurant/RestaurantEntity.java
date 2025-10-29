@@ -20,7 +20,7 @@ import java.util.List;
 @Builder
 public class RestaurantEntity extends BaseTimeEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "restaurant_code")
     private Long restaurantCode;
 

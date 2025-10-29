@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ViewingPayEntity extends BaseTimeEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "viewing_pay_code")
     private Long viewingPayCode;
 

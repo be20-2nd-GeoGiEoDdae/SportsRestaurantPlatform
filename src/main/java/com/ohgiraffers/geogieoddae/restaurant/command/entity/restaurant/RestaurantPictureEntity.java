@@ -12,7 +12,7 @@ import lombok.*;
 @Builder
 public class RestaurantPictureEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "restaurant_picture_code")
     private Long restaurantPictureCode;
 
