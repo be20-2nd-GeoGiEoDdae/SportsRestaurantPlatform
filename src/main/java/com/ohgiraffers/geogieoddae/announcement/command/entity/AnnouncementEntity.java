@@ -15,7 +15,7 @@ import lombok.*;
 @Builder
 public class AnnouncementEntity extends BaseTimeEntity {
 
-    @Id
+    @Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "announcement_code")
     private Long announcementCode;
 

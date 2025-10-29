@@ -20,7 +20,7 @@ import java.util.List;
 @Builder
 public class ViewingEntity extends BaseTimeEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "viewing_code")
     private Long viewingCode;
 

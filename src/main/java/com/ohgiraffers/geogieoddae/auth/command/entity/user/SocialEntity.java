@@ -12,7 +12,7 @@ import lombok.*;
 @Builder
 public class SocialEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "social_code")
     private Long socialCode;
 

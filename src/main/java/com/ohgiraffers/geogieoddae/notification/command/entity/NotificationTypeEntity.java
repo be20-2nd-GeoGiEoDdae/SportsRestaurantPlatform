@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class NotificationTypeEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_type_code")
     private Long notificationTypeCode;
 

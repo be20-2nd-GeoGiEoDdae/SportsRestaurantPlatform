@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 public class EntrepreneurEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "entrepreneur_code")
     private Long entrepreneurCode;
 
