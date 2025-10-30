@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ohgiraffers.geogieoddae.admin.command.dto.AdminLoginRequest;
 import com.ohgiraffers.geogieoddae.admin.command.service.AdminService;
+import com.ohgiraffers.geogieoddae.global.common.controller.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,9 +25,9 @@ public class AdminController {
         boolean success = adminService.login(request.getAdminId(), request.getAdminPassword());  // 의존성 주입
         if (success) {
             // 토큰 발급 등 추가 구현 필요
-            return ResponseEntity.ok("로그인 성공");
+            return ResponseEntity.ok(ApiResponse.success(null));
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.failure("AUTH_FAIL", "로그인 실패"));
         }        
     }
 
