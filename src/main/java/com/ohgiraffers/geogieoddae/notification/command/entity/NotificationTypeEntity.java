@@ -24,6 +24,9 @@ public class NotificationTypeEntity {
     @Column(name = "notification_type_status", columnDefinition = "ENUM('Y','N') DEFAULT 'Y'")
     private NotificationStatus notificationTypeStatus;
 
+    @Column(name = "notification_content", nullable = false)
+    private String notificationContent;
+
     @OneToMany(mappedBy = "notificationType")
     private List<NotificationEntity> notifications;
 }

@@ -22,9 +22,6 @@ public class NotificationEntity extends BaseTimeEntity {
     @Column(name = "notification_checked", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean notificationChecked;
 
-  @Column(name = "notification_content", nullable = false)
-  private String notificationContent;
-
     @ManyToOne
     @JoinColumn(name = "Key2", nullable = false)
     private UserEntity member;
