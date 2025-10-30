@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 public class EntrepreneurSubscribePaymentEntity extends BaseTimeEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "entrepreneur_code")
     private Long entrepreneurCode;
 

@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class SportEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sport_code")
     private Long sportCode;
 

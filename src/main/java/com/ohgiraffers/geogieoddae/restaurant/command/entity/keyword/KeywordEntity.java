@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 public class KeywordEntity extends BaseTimeEntity {
 
-    @Id
+    @Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "keyword_code")
     private Long keywordCode;
 

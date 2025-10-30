@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class NotificationEntity extends BaseTimeEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_code")
     private Long notificationCode;
 

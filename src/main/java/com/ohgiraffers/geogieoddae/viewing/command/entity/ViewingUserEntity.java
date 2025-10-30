@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 public class ViewingUserEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "viewing_user_code")
     private Long viewingUserCode;
 
