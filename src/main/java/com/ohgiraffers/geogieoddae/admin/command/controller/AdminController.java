@@ -1,18 +1,17 @@
 package com.ohgiraffers.geogieoddae.admin.command.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.ohgiraffers.geogieoddae.admin.command.dto.AdminLoginRequest;
 import com.ohgiraffers.geogieoddae.admin.command.dto.AdminRefreshTokenRequest;
 import com.ohgiraffers.geogieoddae.admin.command.dto.AdminTokenResponse;
 import com.ohgiraffers.geogieoddae.admin.command.security.AdminDetails;
 import com.ohgiraffers.geogieoddae.admin.command.service.AdminService;
-import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
+import com.ohgiraffers.geogieoddae.global.common.controller.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,8 +28,7 @@ public class AdminController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(Authentication authentication) {
-        AdminDetails adminDetails = (AdminDetails) authentication.getPrincipal();
+    public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal AdminDetails adminDetails) {
         adminService.logout(adminDetails.getUsername());
         return ResponseEntity.ok(ApiResponse.success(null));
     }
