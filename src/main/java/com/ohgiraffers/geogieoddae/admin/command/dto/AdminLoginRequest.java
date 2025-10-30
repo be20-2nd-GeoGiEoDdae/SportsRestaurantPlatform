@@ -1,14 +1,12 @@
 package com.ohgiraffers.geogieoddae.admin.command.dto;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Setter
-@Builder
+@RequiredArgsConstructor
 public class AdminLoginRequest {
-    private String adminId;
-    private String adminPassword;
+    private final String adminId;
+    private final String adminPassword;
     // getter, setter
 }

@@ -6,5 +6,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class AdminRefreshTokenRequest {
-    private final String refreshToken;
+    private final String adminRefreshToken;
 }

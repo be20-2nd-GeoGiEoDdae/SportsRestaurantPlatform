@@ -1,14 +1,15 @@
 package com.ohgiraffers.geogieoddae.admin.command.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.ohgiraffers.geogieoddae.admin.command.dto.AdminLoginRequest;
+import com.ohgiraffers.geogieoddae.admin.command.dto.AdminRefreshTokenRequest;
+import com.ohgiraffers.geogieoddae.admin.command.dto.AdminTokenResponse;
+import com.ohgiraffers.geogieoddae.admin.command.security.AdminDetails;
 import com.ohgiraffers.geogieoddae.admin.command.service.AdminService;
 import com.ohgiraffers.geogieoddae.global.common.controller.ApiResponse;
 
@@ -21,19 +22,20 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AdminLoginRequest request) {
-        boolean success = adminService.login(request.getAdminId(), request.getAdminPassword());  // 의존성 주입
-        if (success) {
-            // 토큰 발급 등 추가 구현 필요
-            return ResponseEntity.ok(ApiResponse.success(null));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.failure("AUTH_FAIL", "로그인 실패"));
-        }        
+    public ResponseEntity<ApiResponse<AdminTokenResponse>> login(@RequestBody AdminLoginRequest request) {
+        AdminTokenResponse response = adminService.login(request);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
-        adminService.logout(); // 의존성 주입 - 토큰 무효화 등 추가 구현 필요
-        return ResponseEntity.ok("로그아웃 성공");
+    public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal AdminDetails adminDetails) {
+        adminService.logout(adminDetails.getUsername());
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AdminTokenResponse>> refresh(@RequestBody AdminRefreshTokenRequest request) {
+        AdminTokenResponse response = adminService.refreshToken(request.getAdminRefreshToken());
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
