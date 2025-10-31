@@ -1,22 +1,16 @@
 package com.ohgiraffers.geogieoddae.restaurant.command.service.impl;
 
-import com.ohgiraffers.geogieoddae.auth.command.entity.entrepreneur.EntrepreneurEntity;
-import com.ohgiraffers.geogieoddae.restaurant.command.dto.KeywordDto;
-import com.ohgiraffers.geogieoddae.restaurant.command.dto.PictureDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.KeywordEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.RestaurantKeywordEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
-import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantPictureEntity;
-import com.ohgiraffers.geogieoddae.restaurant.command.repository.KeywordRepository;
-import com.ohgiraffers.geogieoddae.restaurant.command.repository.RestaurantKeywordRepository;
-import com.ohgiraffers.geogieoddae.restaurant.command.repository.RestaurantRepository;
+import com.ohgiraffers.geogieoddae.restaurant.command.repository.keyword.KeywordRepository;
+import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantKeywordRepository;
+import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.service.RestaurantService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
