@@ -2,15 +2,10 @@ package com.ohgiraffers.geogieoddae.restaurant.command.controller;
 
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
-import com.ohgiraffers.geogieoddae.restaurant.command.repository.RestaurantRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
