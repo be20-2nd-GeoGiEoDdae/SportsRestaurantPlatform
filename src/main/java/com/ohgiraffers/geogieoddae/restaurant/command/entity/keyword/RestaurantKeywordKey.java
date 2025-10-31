@@ -13,9 +13,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class RestaurantKeywordKey implements Serializable {
-    @Column(name = "restaurant_code")
     private Long restaurantCode;
-
-    @Column(name = "keyword_code")
     private Long keywordCode;
 }

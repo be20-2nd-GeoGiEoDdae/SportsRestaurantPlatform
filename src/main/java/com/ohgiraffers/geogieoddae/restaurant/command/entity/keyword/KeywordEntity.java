@@ -1,10 +1,8 @@
 package com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword;
 
 import com.ohgiraffers.geogieoddae.global.common.entity.BaseTimeEntity;
-import com.ohgiraffers.geogieoddae.restaurant.entity.RestaurantKeywordEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -20,8 +18,9 @@ public class KeywordEntity extends BaseTimeEntity {
     @Column(name = "keyword_code")
     private Long keywordCode;
 
-    @Column(name = "keyword_category")
-    private String keywordCategory;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "keyword_category", nullable = false)
+    private KeywordCategory keywordCategory;
 
     @Column(name = "keyword")
     private String keyword;
