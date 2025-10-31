@@ -2,7 +2,7 @@ package com.ohgiraffers.geogieoddae.restaurant.command.service.impl;
 
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.KeywordDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.KeywordEntity;
-import com.ohgiraffers.geogieoddae.restaurant.command.repository.KeywordRepository;
+import com.ohgiraffers.geogieoddae.restaurant.command.repository.keyword.KeywordRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.service.KeywordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
