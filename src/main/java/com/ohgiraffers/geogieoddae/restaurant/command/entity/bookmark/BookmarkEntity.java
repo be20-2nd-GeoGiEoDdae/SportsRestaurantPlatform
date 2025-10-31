@@ -28,4 +28,13 @@ public class BookmarkEntity {
     @MapsId("restaurantCode")
     @JoinColumn(name = "restaurant_code")
     private RestaurantEntity restaurant;
+
+    public BookmarkEntity(UserEntity member, RestaurantEntity restaurant) {
+        this.member = member;
+        this.restaurant = restaurant;
+        this.id = new BookmarkKey(
+                member.getUserCode(),
+                restaurant.getRestaurantCode()
+        );
+    }
 }
