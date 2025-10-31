@@ -24,7 +24,7 @@ public class AdminEntity {
     @Column(name = "admin_password", nullable = false)
     private String adminPassword;
 
-    // ✅ 관계 설정
-    @OneToMany(mappedBy = "admin")
-    private List<AnnouncementEntity> announcements;
+//    // ✅ 관계 설정
+//    @OneToMany(mappedBy = "admin")
+//    private List<AnnouncementEntity> announcements;
 }
