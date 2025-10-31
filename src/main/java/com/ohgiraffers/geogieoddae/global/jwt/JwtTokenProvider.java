@@ -4,16 +4,28 @@ package com.ohgiraffers.geogieoddae.global.jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import java.security.Key;
 import java.time.LocalDateTime;
 import java.util.Date;
+
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
 
-    private final String secretKey = "mySecretKey"; 
+    // 32바이트 이상의 안전한 시크릿 키로 변경
+    private final String secretString = "MySuperSecretKeyForGeogieoddaeProjectIsVeryLongAndSecure12345";
+    private Key secretKey;
     private final long accessTokenValidity = 1000 * 60 * 60; // 1시간
     private final long refreshTokenValidity = 1000 * 60 * 60 * 24 * 7; // 7일
+
+    @PostConstruct
+    protected void init() {
+        // 문자열 키를 이용해 안전한 Key 객체 생성
+        secretKey = Keys.hmacShaKeyFor(secretString.getBytes());
+    }
 
     // 기존 Date 반환 메서드
     public Date getRefreshTokenExpiry() {

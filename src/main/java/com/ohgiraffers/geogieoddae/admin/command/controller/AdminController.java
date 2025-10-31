@@ -11,7 +11,7 @@ import com.ohgiraffers.geogieoddae.admin.command.dto.AdminRefreshTokenRequest;
 import com.ohgiraffers.geogieoddae.admin.command.dto.AdminTokenResponse;
 import com.ohgiraffers.geogieoddae.admin.command.security.AdminDetails;
 import com.ohgiraffers.geogieoddae.admin.command.service.AdminService;
-import com.ohgiraffers.geogieoddae.global.common.controller.ApiResponse;
+import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
