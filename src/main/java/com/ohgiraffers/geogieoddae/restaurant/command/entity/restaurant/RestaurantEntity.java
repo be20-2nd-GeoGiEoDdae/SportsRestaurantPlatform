@@ -57,20 +57,20 @@ public class RestaurantEntity extends BaseTimeEntity {
 //    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<RestaurantPictureEntity> pictures;
 
-//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL,orphanRemoval = true)
-//    private List<RestaurantKeywordEntity> keywords;
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<RestaurantKeywordEntity> keywords;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<RestaurantBlacklistEntity> blacklists;
 
-//    public static void updatedRestaurant(RestaurantDto dto, RestaurantEntity restaurant) {
-//        restaurant.setRestaurantName(dto.getRestaurantName());
-//        restaurant.setRestaurantLocation(dto.getRestaurantLocation());
-//        restaurant.setRestaurantCategory(dto.getRestaurantCategory());
-//        restaurant.setRestaurantPeopleNumber(dto.getRestaurantPeopleNumber());
-//        restaurant.setRestaurantContents(dto.getRestaurantContents());
-//        restaurant.setRestaurantScore(dto.getRestaurantScore());
-//    }
+    public static void updatedRestaurant(RestaurantDto dto, RestaurantEntity restaurant) {
+        restaurant.setRestaurantName(dto.getRestaurantName());
+        restaurant.setRestaurantLocation(dto.getRestaurantLocation());
+        restaurant.setRestaurantCategory(dto.getRestaurantCategory());
+        restaurant.setRestaurantPeopleNumber(dto.getRestaurantPeopleNumber());
+        restaurant.setRestaurantContents(dto.getRestaurantContents());
+        restaurant.setRestaurantScore(dto.getRestaurantScore());
+    }
 
     }
 
