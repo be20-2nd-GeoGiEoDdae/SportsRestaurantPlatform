@@ -1,4 +1,4 @@
-package com.ohgiraffers.geogieoddae.restaurant.command.repository;
+package com.ohgiraffers.geogieoddae.restaurant.command.repository.keyword;
 
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.KeywordEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

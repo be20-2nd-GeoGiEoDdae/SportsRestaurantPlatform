@@ -1,4 +1,4 @@
-package com.ohgiraffers.geogieoddae.restaurant.command.repository;
+package com.ohgiraffers.geogieoddae.restaurant.command.repository.bookmark;
 
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.bookmark.BookmarkEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
