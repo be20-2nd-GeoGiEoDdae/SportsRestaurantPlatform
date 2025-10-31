@@ -5,25 +5,31 @@ import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.KeywordEnti
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.RestaurantKeywordEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.keyword.KeywordRepository;
-import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantKeywordRepository;
+import com.ohgiraffers.geogieoddae.restaurant.command.repository.keyword.RestaurantKeywordRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantRepository;
+import com.ohgiraffers.geogieoddae.restaurant.command.repository.review.ReviewRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.service.RestaurantService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity.updatedRestaurant;
 
 @Service
 @RequiredArgsConstructor
-public class RestaurantImpl implements RestaurantService {
+public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final KeywordRepository keywordRepository;
     private final RestaurantKeywordRepository restaurantKeywordRepository;
+    private final ReviewRepository reviewRepository;
 
+    @Transactional
+    @Override
     public void registerRestaurant(RestaurantDto request) {
-
-
         RestaurantEntity restaurant = RestaurantEntity.builder()
                 .restaurantName(request.getRestaurantName())
                 .restaurantLocation(request.getRestaurantLocation())
@@ -43,27 +49,38 @@ public class RestaurantImpl implements RestaurantService {
 
         restaurantKeywordRepository.saveAll(mappings);
     }
+
     @Override
     public void deleteRestaurant(Long restaurantId) {
         restaurantRepository.deleteById(restaurantId);
     }
 
-//    @Transactional
-//    @Override
-//    public void updateRestaurant(Long restaurantId, RestaurantDto restaurantDto) {
-//        RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
-//                .orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다. id=" + restaurantId));
-//
-//        restaurant.updateInfo(restaurantDto);
-//
-//        if (restaurantDto.getPicture() != null) {
-//            restaurant.updatePictures(restaurantDto.getPicture());
-//        }
-//
-//        if (restaurantDto.getKeyword() != null) {
-//            restaurant.updateKeywords(restaurantDto.getKeyword());
-//        }
-//
-//        restaurantRepository.save(restaurant);
-//    }
+    @Transactional
+    @Override
+    public void updateRestaurant(Long restaurantId, RestaurantDto dto) {
+        RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new IllegalArgumentException("식당이 존재하지 않습니다. ID: " + restaurantId));
+
+        updatedRestaurant(dto, restaurant);
+
+        restaurantKeywordRepository.deleteAll(restaurant.getKeywords());
+        restaurant.getKeywords().clear();
+
+        List<KeywordEntity> keywords = keywordRepository.findAllById(dto.getKeywordIds());
+        List<RestaurantKeywordEntity> newMappings = new ArrayList<>();
+
+        for (KeywordEntity keyword : keywords) {
+            boolean exists = restaurant.getKeywords().stream()
+                    .anyMatch(k -> k.getKeyword().getKeywordCode().equals(keyword.getKeywordCode()));
+
+            if (!exists) {
+                RestaurantKeywordEntity mapping = new RestaurantKeywordEntity(restaurant, keyword);
+                newMappings.add(mapping);
+                restaurant.getKeywords().add(mapping);
+            }
+        }
+
+    }
+
+
 }

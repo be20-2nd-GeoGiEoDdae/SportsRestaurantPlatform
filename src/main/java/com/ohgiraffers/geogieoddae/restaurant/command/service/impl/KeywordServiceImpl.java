@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class KeywordImpl implements KeywordService {
+public class KeywordServiceImpl implements KeywordService {
     private final KeywordRepository keywordRepository;
 
     @Override
