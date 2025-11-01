@@ -54,8 +54,8 @@ public class RestaurantEntity extends BaseTimeEntity {
 //    @JoinColumn(name = "entrepreneur_code", nullable = false)
 //    private EntrepreneurEntity entrepreneur;
 
-//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<RestaurantPictureEntity> pictures;
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RestaurantPictureEntity> pictures;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<RestaurantKeywordEntity> keywords;

@@ -14,13 +14,14 @@ public class KeywordController {
 
     private final KeywordService keywordService;
 
-
+    //    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<KeywordDto>> createKeyword(@RequestBody KeywordDto keywordDTO) {
             keywordService.keyWordCreate(keywordDTO);
+
             return ResponseEntity.ok(ApiResponse.success(keywordDTO));
     }
-
+    //    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteKeyword(@PathVariable Long id) {
 
