@@ -10,9 +10,7 @@ import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTi
-}
-me;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,3 +22,4 @@ public class UserDto {
     private String userAddress;
     private UserRole user;
     private LocalDateTime createdAt;
+}
