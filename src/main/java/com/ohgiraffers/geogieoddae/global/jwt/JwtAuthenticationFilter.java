@@ -37,10 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = jwtTokenProvider.resolveToken(request);
 
-        // 토큰 로그
-        System.out.println("token : " + token + "");
-        System.out.println("jwtTokenProvider.validateToken(token) : " + jwtTokenProvider.validateToken(token) + "");
-
         if (token != null && jwtTokenProvider.validateToken(token)) {
             try {
                 // 토큰 파싱
@@ -50,24 +46,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .parseSignedClaims(token)
                         .getPayload();
 
-                // claim 로그
-                System.out.println("claims : " + claims + " ");
-
                 String adminId = claims.getSubject();
                 String role = claims.get("role", String.class);
-
-                // adminId & role 로그
-                System.out.println("adminId : " + adminId + " ");
-                System.out.println("role : " + role + " ");
 
                 // 인증객체 생성 및 SecurityContext에 등록
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         adminId, null, Collections.singletonList(new SimpleGrantedAuthority(role))
                 );
-
-                // 인증객체 로그
-                System.out.println("authentication : " + authentication + " ");
-
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (Exception e) {

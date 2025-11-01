@@ -1,15 +1,16 @@
+/* 총괄 및 지휘 - 보안 규칙을 최종 선언
+ * @Author : 김성현
+ * @Date : 2025-10-31
+ * @Version : 1.0
+ */
+
 package com.ohgiraffers.geogieoddae.global.config;
 
-import com.ohgiraffers.geogieoddae.auth.command.service.CustomOAuth2UserService;
 import com.ohgiraffers.geogieoddae.global.jwt.JwtAuthenticationFilter;
-import com.ohgiraffers.geogieoddae.global.jwt.OAuth2AuthenticationSuccessHandler;
-import com.ohgiraffers.geogieoddae.global.security.CookieOAuth2AuthorizationRequestRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,9 +27,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-    private final CookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,8 +36,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // CSRF 비활성화 (JWT 기반 인증이므로)
                 .csrf(csrf -> csrf.disable())
+                // 세션 비활성화
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 인증 실패 시 401 응답
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> {
                             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -47,33 +48,14 @@ public class SecurityConfig {
                             res.getWriter().write("{\"message\":\"Unauthorized\"}");
                         })
                 )
+                // 접근 권한 정책
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**").permitAll()
-                        .requestMatchers("/api/admin/users-view", "/api/admin/logout").hasAuthority("ROLE_ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(endpoint -> endpoint
-                                .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository)
-                        )
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(oAuth2AuthenticationSuccessHandler)
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//                .exceptionHandling(ex -> ex
-//                        .authenticationEntryPoint((req, res, e) -> {
-//                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                            res.setContentType("application/json;charset=UTF-8");
-//                            res.getWriter().write("{\"message\":\"Unauthorized\"}");
-//                        })
-//                )
-                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/admin/login", "/api/admin/refresh").permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().permitAll()
-                );
-
-
+                )
+                // JWT 필터 등록 (기존 UsernamePasswordAuthenticationFilter 앞에)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

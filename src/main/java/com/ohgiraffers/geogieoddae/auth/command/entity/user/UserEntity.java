@@ -34,28 +34,15 @@ public class UserEntity extends BaseTimeEntity {
         private String userAddress;
 
 
-        @Column(name = "user_refresh_token", nullable = true)
+        @Column(name = "user_refresh_token", nullable = false)
         private String userRefreshToken;
 
-        @Column(name = "user_refresh_token_expires_at", nullable = true)
+        @Column(name = "user_refresh_token_expires_at", nullable = false)
         private LocalDateTime userRefreshTokenExpiresAt;
 
         @Enumerated(EnumType.STRING)
-        @Column(name = "user_role", columnDefinition = "ENUM('USER','ENTREPRENEUR')")  // UserRole 에 맞게 영어로 수정 - 성현
+        @Column(name = "user_role", columnDefinition = "ENUM('USER','ENTREPRENEUR')")
         private UserRole userRole;
-
-        // 예시: UserEntity.java
-        @Column(nullable = true)
-        private String kakaoAccessToken;                    // 카카오 억세스토큰
-
-        @Column(nullable = true)
-        private String kakaoRefreshToken;                   // 카카오 리프레쉬토큰
-
-        @Column(nullable = true)
-        private LocalDateTime kakaoAccessTokenExpiresAt;    // 카카오 억세스토큰 만료
-
-        @Column(nullable = true)
-        private LocalDateTime kakaoRefreshTokenExpiresAt;   // 카카오 리프레쉬토큰 만료
 
         // ✅ 관계 매핑
         @OneToMany(mappedBy = "member")

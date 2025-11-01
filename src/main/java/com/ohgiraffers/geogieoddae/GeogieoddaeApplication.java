@@ -22,7 +22,7 @@ public class GeogieoddaeApplication {
     public static void main(String[] args) {
         SpringApplication.run(GeogieoddaeApplication.class, args);
     }
-    /*
+
     // 더미 회원 데이터 생성 로직 추가
     @Bean
     public CommandLineRunner initData(AdminRepository adminRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -64,7 +64,6 @@ public class GeogieoddaeApplication {
                 System.out.println("====== 더미 회원 데이터 생성완료 =======");
             }
         };
-        
     }
-    */
+
 }
