@@ -2,6 +2,8 @@ package com.ohgiraffers.geogieoddae.restaurant.command.entity.review;
 
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 import com.ohgiraffers.geogieoddae.global.common.entity.BaseTimeEntity;
+import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
+import com.ohgiraffers.geogieoddae.restaurant.command.dto.ReviewDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +19,7 @@ import java.util.List;
 @Builder
 public class ReviewEntity extends BaseTimeEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_code")
     private Long reviewCode;
 
@@ -37,7 +39,15 @@ public class ReviewEntity extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "user_code", nullable = false)
     private UserEntity member;
+//
+//    @OneToMany(mappedBy = "review")
+//    private List<ReviewPictureEntity> pictures;
 
-    @OneToMany(mappedBy = "review")
-    private List<ReviewPictureEntity> pictures;
+//    public static void updatedReview(ReviewDto dto, ReviewEntity review) {
+//        review.setReviewTitle(dto.getReviewTitle());
+//        review.setReviewBody(dto.getReviewBody());
+//        review.setReviewScore(dto.getReviewScore());
+//        review.setMember();
+//        review.setRestaurant();
+//    }
 }

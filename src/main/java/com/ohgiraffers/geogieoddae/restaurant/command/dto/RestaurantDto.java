@@ -25,5 +25,5 @@ public class RestaurantDto {
     private Integer restaurantScore;
 //    private Long entrepreneurId;
     private List<Long> keywordIds;
-//    private List<String> pictures;
+    private List<PictureDto> pictures;
 }

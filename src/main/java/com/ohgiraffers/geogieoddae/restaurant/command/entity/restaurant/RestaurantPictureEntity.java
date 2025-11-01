@@ -19,7 +19,7 @@ public class RestaurantPictureEntity {
     @Column(name = "restaurant_picture_url", nullable = false, length = 512)
     private String restaurantPictureUrl;
 
-//    @ManyToOne
-//    @JoinColumn(name = "restaurant_code", nullable = false)
-//    private RestaurantEntity restaurant;
+    @ManyToOne
+    @JoinColumn(name = "restaurant_code", nullable = false)
+    private RestaurantEntity restaurant;
 }
