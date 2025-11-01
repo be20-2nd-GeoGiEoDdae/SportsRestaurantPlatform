@@ -41,7 +41,7 @@ public class UserEntity extends BaseTimeEntity {
         private LocalDateTime userRefreshTokenExpiresAt;
 
         @Enumerated(EnumType.STRING)
-        @Column(name = "user_role", columnDefinition = "ENUM('이용자','사업자')")
+        @Column(name = "user_role", columnDefinition = "ENUM('USER','ENTREPRENEUR')")
         private UserRole userRole;
 
         // ✅ 관계 매핑

@@ -32,7 +32,7 @@ public class AdminDetailsService implements UserDetailsService {
         return new AdminDetails(
                 admin.getAdminId(),
                 admin.getAdminPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ADMIN"))
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"))
                 // 일단 'ROLE_ADMIN' 권한을 부여함
         );
 
