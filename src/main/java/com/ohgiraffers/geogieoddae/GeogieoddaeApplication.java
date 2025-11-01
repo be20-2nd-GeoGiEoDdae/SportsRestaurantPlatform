@@ -1,11 +1,5 @@
 package com.ohgiraffers.geogieoddae;
 
-import com.ohgiraffers.geogieoddae.admin.command.entity.AdminEntity;
-import com.ohgiraffers.geogieoddae.admin.command.repository.AdminRepository;
-import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
-import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
-import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +11,7 @@ import java.util.stream.IntStream;
 
 @SpringBootApplication
 @EnableJpaAuditing
+@MapperScan("com.ohgiraffers.geogieoddae.restaurant.query.mapping")
 public class GeogieoddaeApplication {
 
     public static void main(String[] args) {
@@ -64,7 +59,7 @@ public class GeogieoddaeApplication {
                 System.out.println("====== 더미 회원 데이터 생성완료 =======");
             }
         };
-        
+
     }
     */
 }

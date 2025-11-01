@@ -9,12 +9,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class RestaurantDto {
@@ -27,5 +25,5 @@ public class RestaurantDto {
     private Integer restaurantScore;
 //    private Long entrepreneurId;
     private List<Long> keywordIds;
-    private List<String> pictures;
+    private List<PictureDto> pictures;
 }
