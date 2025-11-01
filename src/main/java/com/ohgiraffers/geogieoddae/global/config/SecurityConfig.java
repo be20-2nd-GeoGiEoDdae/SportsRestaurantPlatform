@@ -30,7 +30,9 @@ public class SecurityConfig {
 //                            res.getWriter().write("{\"message\":\"Unauthorized\"}");
 //                        })
 //                )
+
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().permitAll()
                 );
 

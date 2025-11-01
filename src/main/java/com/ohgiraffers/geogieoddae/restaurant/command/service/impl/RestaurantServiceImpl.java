@@ -4,8 +4,10 @@ import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.KeywordEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.RestaurantKeywordEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
+import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantPictureEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.keyword.KeywordRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.keyword.RestaurantKeywordRepository;
+import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantPictureRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.review.ReviewRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.service.RestaurantService;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity.updatedRestaurant;
 
@@ -26,6 +29,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final KeywordRepository keywordRepository;
     private final RestaurantKeywordRepository restaurantKeywordRepository;
     private final ReviewRepository reviewRepository;
+    private final RestaurantPictureRepository restaurantPictureRepository;
 
     @Transactional
     @Override
@@ -39,7 +43,6 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .restaurantScore(request.getRestaurantScore())
                 .restaurantIsDeleted(false)
                 .build();
-
         restaurantRepository.save(restaurant);
 
         List<KeywordEntity> keywords = keywordRepository.findAllById(request.getKeywordIds());
@@ -48,8 +51,18 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .toList();
 
         restaurantKeywordRepository.saveAll(mappings);
-    }
+        if (request.getPictures() != null && !request.getPictures().isEmpty()) {
+            List<RestaurantPictureEntity> pictures = request.getPictures().stream()
+                    .map(picDto -> RestaurantPictureEntity.builder()
+                            .restaurant(restaurant)
+                            .restaurantPictureUrl(picDto.getPictureUrl())
+                            .build())
+                    .collect(Collectors.toList());
 
+            restaurantPictureRepository.saveAll(pictures);
+            restaurant.setPictures(pictures);
+        }
+    }
     @Override
     public void deleteRestaurant(Long restaurantId) {
         restaurantRepository.deleteById(restaurantId);
