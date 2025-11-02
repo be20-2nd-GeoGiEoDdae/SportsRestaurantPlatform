@@ -1,0 +1,10 @@
+<!-- templates/success.html - Thymeleaf 사용 -->
+<!DOCTYPE html>
+<html lang="ko">
+<body>
+<h2>결제 성공</h2>
+<p>paymentKey: <span th:text="${paymentKey}"></span></p>
+<p>주문번호: <span th:text="${orderId}"></span></p>
+<p>결제 금액: <span th:text="${amount}"></span></p>
+</body>
+</html>
