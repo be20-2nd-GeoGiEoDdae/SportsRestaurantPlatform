@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>빌링키 발급</title>
+  <!-- 토스페이먼츠 결제창 SDK 추가 -->
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+<body>
+<button id="payment-button">카드 등록하기</button>
+
+<script th:inline="javascript">
+  // SDK 초기화
+  const clientKey     = /*[[${clientKey}]]*/ "";
+  const customerKey   = /*[[${customerKey}]]*/ "";
+  const userName   = /*[[${userName}]]*/ "";
+  const userEmail   = /*[[${userEmail}]]*/ "";
+  const tossPayments = TossPayments(clientKey);
+  const payment = tossPayments.payment({ customerKey });
+
+  // 버튼 클릭 시 결제창 호출
+  document.getElementById("payment-button").addEventListener("click", async function() {
+    await payment.requestBillingAuth({
+      method: "CARD",
+      successUrl: window.location.origin + "/subscribe/billingKey/success",
+      failUrl: window.location.origin + "/subscribe/fail",
+      customerEmail: userName,
+      customerName: userEmail,
+    });
+  });
+</script>
+</body>
+</html>
