@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>ViewingPay 설정</title>
+  <style>label{display:block;margin:8px 0}</style>
+</head>
+<body>
+<h1>ViewingPay 설정</h1>
+
+<form id="f">
+  <label>ViewingPayId
+    <input id="userCode" required>
+  </label>
+  <label>viewingPayCode (Long)
+    <input id="viewingCode" type="number" required>
+  </label>
+  <label>viewingPayPrice (Integer)
+    <input id="viewingPayPrice" type="number" required>
+  </label>
+  <button type="submit">다음(결제)</button>
+</form>
+
+<script>
+  document.getElementById('f').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const user  = document.getElementById('userCode').value.trim();
+    const code  = Number(document.getElementById('viewingCode').value);
+    const price = Number(document.getElementById('viewingPayPrice').value);
+
+    // /config/{id}로 JSON POST
+    const res = await fetch(`/config/${encodeURIComponent(user)}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        userCode: user,
+        viewingCode:  code,
+        viewingPayPrice: price
+      })
+    });
+
+    const init = await res.json();               // { orderId, clientKey, customerKey, amount, orderName }
+    sessionStorage.setItem('checkout', JSON.stringify(init));
+    location.href = '/checkout.html';
+  });
+</script>
+</body>
+</html>
