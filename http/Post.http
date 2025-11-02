@@ -1,0 +1,13 @@
+POST http://localhost:8080/config/1
+Content-Type: application/json
+
+{
+  "viewingCode": 1,
+  "viewingPayPrice": 10000
+}
+###
+
+
+GET http://localhost:8080/viewing/success?paymentKey=tgen_20251102052816VYMp1&orderId=dfad10e9-f38b-4a54-bb56-6ddd78931649&amount=1245
+###
+GET http://localhost:8080/viewing/success?paymentKey=f1769db1-fc82-4059-990b-e5037108a4f3&orderId=tgen_20251102042511NFw86&amount=1557
