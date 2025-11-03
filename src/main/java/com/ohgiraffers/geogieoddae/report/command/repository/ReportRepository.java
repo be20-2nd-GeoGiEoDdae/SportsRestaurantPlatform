@@ -1,4 +1,7 @@
 package com.ohgiraffers.geogieoddae.report.command.repository;
 
-public class ReportRepository {
+import com.ohgiraffers.geogieoddae.report.command.entity.ReportEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
 }
