@@ -14,7 +14,10 @@ import com.ohgiraffers.geogieoddae.restaurant.command.service.RestaurantService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,41 +31,60 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final KeywordRepository keywordRepository;
     private final RestaurantKeywordRepository restaurantKeywordRepository;
-    private final ReviewRepository reviewRepository;
     private final RestaurantPictureRepository restaurantPictureRepository;
-
     @Transactional
     @Override
-    public void registerRestaurant(RestaurantDto request) {
+    public void registerRestaurant(RestaurantDto restaurantDto, List<MultipartFile> pictures) throws IOException {
         RestaurantEntity restaurant = RestaurantEntity.builder()
-                .restaurantName(request.getRestaurantName())
-                .restaurantLocation(request.getRestaurantLocation())
-                .restaurantCategory(request.getRestaurantCategory())
-                .restaurantPeopleNumber(request.getRestaurantPeopleNumber())
-                .restaurantContents(request.getRestaurantContents())
-                .restaurantScore(request.getRestaurantScore())
+                .restaurantName(restaurantDto.getRestaurantName())
+                .restaurantLocation(restaurantDto.getRestaurantLocation())
+                .restaurantCategory(restaurantDto.getRestaurantCategory())
+                .restaurantPeopleNumber(restaurantDto.getRestaurantPeopleNumber())
+                .restaurantContents(restaurantDto.getRestaurantContents())
+                .restaurantScore(restaurantDto.getRestaurantScore())
                 .restaurantIsDeleted(false)
                 .build();
+
         restaurantRepository.save(restaurant);
+        // 사진 업로드 처리
+        if (pictures != null && !pictures.isEmpty()) {
+            List<RestaurantPictureEntity> pictureEntities = new ArrayList<>();
 
-        List<KeywordEntity> keywords = keywordRepository.findAllById(request.getKeywordIds());
-        List<RestaurantKeywordEntity> mappings = keywords.stream()
-                .map(keyword -> new RestaurantKeywordEntity(restaurant, keyword))
-                .toList();
+            for (MultipartFile file : pictures) {
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                String uploadDir = System.getProperty("user.dir") + "/uploads/";
+                File dest = new File(uploadDir + fileName);
+                dest.getParentFile().mkdirs();
+                file.transferTo(dest);
 
-        restaurantKeywordRepository.saveAll(mappings);
-        if (request.getPictures() != null && !request.getPictures().isEmpty()) {
-            List<RestaurantPictureEntity> pictures = request.getPictures().stream()
-                    .map(picDto -> RestaurantPictureEntity.builder()
-                            .restaurant(restaurant)
-                            .restaurantPictureUrl(picDto.getPictureUrl())
-                            .build())
-                    .collect(Collectors.toList());
+                String fileUrl = "/images/" + fileName; // ← 정적 경로 매핑 (아래 설명)
+                pictureEntities.add(RestaurantPictureEntity.builder()
+                        .restaurant(restaurant)
+                        .restaurantPictureUrl(fileUrl)
+                        .build());
+            }
 
-            restaurantPictureRepository.saveAll(pictures);
-            restaurant.setPictures(pictures);
+            restaurantPictureRepository.saveAll(pictureEntities);
+            restaurant.setPictures(pictureEntities);
+
+            // 3️⃣ 키워드 매핑 (NPE 방지)
+            if (restaurantDto.getKeywordIds() != null && !restaurantDto.getKeywordIds().isEmpty()) {
+                List<KeywordEntity> selectedKeywords = keywordRepository.findAllById(restaurantDto.getKeywordIds());
+
+                // ✅ keywords 리스트가 null이면 초기화
+                if (restaurant.getKeywords() == null) {
+                    restaurant.setKeywords(new ArrayList<>());
+                }
+
+                for (KeywordEntity keyword : selectedKeywords) {
+                    restaurant.getKeywords().add(new RestaurantKeywordEntity(restaurant, keyword));
+                }
+            }
+
         }
+
     }
+
     @Override
     public void deleteRestaurant(Long restaurantId) {
         restaurantRepository.deleteById(restaurantId);
@@ -70,29 +92,75 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Transactional
     @Override
-    public void updateRestaurant(Long restaurantId, RestaurantDto dto) {
+    public void updateRestaurant(Long restaurantId, RestaurantDto restaurantDto, List<MultipartFile> pictures) throws IOException {
+
+
         RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new IllegalArgumentException("식당이 존재하지 않습니다. ID: " + restaurantId));
 
-        updatedRestaurant(dto, restaurant);
 
-        restaurantKeywordRepository.deleteAll(restaurant.getKeywords());
-        restaurant.getKeywords().clear();
+        updatedRestaurant(restaurantDto, restaurant);
 
-        List<KeywordEntity> keywords = keywordRepository.findAllById(dto.getKeywordIds());
-        List<RestaurantKeywordEntity> newMappings = new ArrayList<>();
 
-        for (KeywordEntity keyword : keywords) {
-            boolean exists = restaurant.getKeywords().stream()
-                    .anyMatch(k -> k.getKeyword().getKeywordCode().equals(keyword.getKeywordCode()));
+        if (restaurant.getKeywords() != null) {
+            restaurant.getKeywords().clear();
+        } else {
+            restaurant.setKeywords(new ArrayList<>());
+        }
 
-            if (!exists) {
-                RestaurantKeywordEntity mapping = new RestaurantKeywordEntity(restaurant, keyword);
-                newMappings.add(mapping);
-                restaurant.getKeywords().add(mapping);
+        if (restaurantDto.getKeywordIds() != null && !restaurantDto.getKeywordIds().isEmpty()) {
+            List<KeywordEntity> keywords = keywordRepository.findAllById(restaurantDto.getKeywordIds());
+
+            for (KeywordEntity keyword : keywords) {
+                restaurant.getKeywords().add(new RestaurantKeywordEntity(restaurant, keyword));
             }
         }
 
+        // 기존 사진 삭제 (파일 + DB)
+        if (restaurant.getPictures() != null && !restaurant.getPictures().isEmpty()) {
+            for (RestaurantPictureEntity pic : restaurant.getPictures()) {
+                String filePath = System.getProperty("user.dir") + "/uploads/"
+                        + pic.getRestaurantPictureUrl().replace("/images/", "");
+                File file = new File(filePath);
+                if (file.exists()) file.delete();
+            }
+
+            restaurant.getPictures().clear();
+        } else {
+            restaurant.setPictures(new ArrayList<>());
+        }
+
+        // 새 사진 업로드
+        if (pictures != null && !pictures.isEmpty()) {
+            List<RestaurantPictureEntity> newPictureEntities = new ArrayList<>();
+
+            for (MultipartFile file : pictures) {
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                String uploadDir = System.getProperty("user.dir") + "/uploads/";
+                File dest = new File(uploadDir + fileName);
+                dest.getParentFile().mkdirs();
+                file.transferTo(dest);
+
+                String fileUrl = "/images/" + fileName;
+
+                newPictureEntities.add(RestaurantPictureEntity.builder()
+                        .restaurant(restaurant)
+                        .restaurantPictureUrl(fileUrl)
+                        .build());
+            }
+
+
+            restaurant.getPictures().addAll(newPictureEntities);
+
+
+            List<String> pictureUrls = newPictureEntities.stream()
+                    .map(RestaurantPictureEntity::getRestaurantPictureUrl)
+                    .collect(Collectors.toList());
+            restaurantDto.setPictures(pictureUrls);
+        }
+
+
+        restaurantRepository.save(restaurant);
     }
 
 
