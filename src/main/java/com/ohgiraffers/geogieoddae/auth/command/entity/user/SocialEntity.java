@@ -17,7 +17,7 @@ public class SocialEntity {
     private Long socialCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "social_type", nullable = false, columnDefinition = "ENUM('카카오','구글','네이버')")
+    @Column(name = "social_type", nullable = false, columnDefinition = "ENUM('KAKAO', 'GOOGLE', 'NAVER')")
     private SocialType socialType;
 
     @Column(name = "social_id", nullable = false)
