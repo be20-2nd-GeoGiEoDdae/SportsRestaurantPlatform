@@ -1,9 +1,7 @@
 package com.ohgiraffers.geogieoddae.announcement.command.service;
 
-import com.ohgiraffers.geogieoddae.admin.command.entity.AdminEntity;
-import com.ohgiraffers.geogieoddae.admin.command.repository.AdminRepository;
-import com.ohgiraffers.geogieoddae.announcement.command.DTO.AnnouncementCreate;
-import com.ohgiraffers.geogieoddae.announcement.command.DTO.AnnouncementUpdateDto;
+import com.ohgiraffers.geogieoddae.announcement.command.DTO.AnnouncementRequestDto;
+import com.ohgiraffers.geogieoddae.announcement.command.DTO.AnnouncementResponseDto;
 import com.ohgiraffers.geogieoddae.announcement.command.entity.AnnouncementEntity;
 import com.ohgiraffers.geogieoddae.announcement.command.repository.AnnouncementCommandRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +15,40 @@ public class AnnouncementService {
 
     private final AnnouncementCommandRepository announcementRepository;
 
-    public Long create(AnnouncementCreate req) {
+    //공지 생성
+    public void create(AnnouncementRequestDto request) {
 
-        AnnouncementEntity entity = AnnouncementEntity.builder()
-                .announcementTitle(req.getAnnouncementTitle())
-                .announcementContent(req.getAnnouncementContent())
+        AnnouncementEntity announcementEntity = AnnouncementEntity.builder()
+                .announcementTitle(request.getAnnouncementTitle())
+                .announcementContent(request.getAnnouncementContent())
                 .build();
 
-        return announcementRepository.save(entity).getAnnouncementCode();
+       announcementRepository.save(announcementEntity);
+    }
+
+    //공지 수정
+    public AnnouncementResponseDto update(AnnouncementRequestDto request, Long announcementCode){
+        AnnouncementEntity entity = announcementRepository.findById(announcementCode)
+                 .orElseThrow(() -> new IllegalArgumentException("공지가 존재하지 않습니다.: " + announcementCode));
+
+        entity.setAnnouncementTitle(request.getAnnouncementTitle());
+        entity.setAnnouncementContent(request.getAnnouncementContent());
+
+        
+
+        return AnnouncementResponseDto.builder()
+                .announcementCode(entity.getAnnouncementCode())
+                .announcementTitle(entity.getAnnouncementTitle())
+                .announcementContent(entity.getAnnouncementContent())
+                .build();
+    }
+
+    //공지 삭제
+    public void delete(Long announcementCode){
+        if (!announcementRepository.existsById(announcementCode)) {
+            throw new IllegalArgumentException("공지가 존재하지 않습니다.: " + announcementCode);
+        }
+        announcementRepository.deleteById(announcementCode);
     }
 
 //    public void update(Long code, AnnouncementUpdateDto req) {
