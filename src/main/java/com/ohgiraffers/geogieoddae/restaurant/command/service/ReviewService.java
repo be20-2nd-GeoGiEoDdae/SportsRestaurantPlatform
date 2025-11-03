@@ -11,5 +11,6 @@ public interface ReviewService {
     void deleteReviewAdmin(Long reviewId);
 //    //작성한 리뷰 삭제
     void deleteReviewUser(Long reviewId);
+    //라뷰 수정
     void updateReview(Long reviewId, ReviewDto reviewDto);
 }

@@ -37,7 +37,7 @@ public class ViewingEntity extends BaseTimeEntity {
     private Integer viewingTotalDeposit;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "viewing_status", columnDefinition = "ENUM('진행','마감','삭제')")
+    @Column(name = "viewing_status")
     private ViewingStatus viewingStatus;
 
     @Column(name = "viewing_min_num")
