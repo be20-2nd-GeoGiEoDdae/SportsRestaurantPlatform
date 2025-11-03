@@ -38,19 +38,13 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
     testImplementation 'org.springframework.security:spring-security-test'
-//    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 }
-sourceSets {
-    main {
-        resources {
-            // ✅ 여기가 핵심!
-            // src/main/java 폴더 안의 XML 파일도 리소스로 포함시킨다.
-            srcDirs = ["src/main/resources", "src/main/java"]
-            includes = ["**/*.xml"]
-        }
-    }}
+
+
+
 
 
 
