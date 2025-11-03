@@ -14,7 +14,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -28,8 +27,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         System.out.println("LOG: OAuth2AuthenticationSuccessHandler.onAuthenticationSuccess 실행됨");
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Map<String, Object> kakaoAccount = (Map<String, Object>) oAuth2User.getAttributes().get("kakao_account");
-        String email = kakaoAccount != null ? (String)kakaoAccount.get("email") : null;
+        String email = oAuth2User.getAttribute("email");
 
         UserEntity user = userRepository.findByUserEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
