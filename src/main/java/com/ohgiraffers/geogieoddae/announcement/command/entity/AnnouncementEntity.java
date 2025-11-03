@@ -19,8 +19,8 @@ public class AnnouncementEntity extends BaseTimeEntity {
     @Column(name = "announcement_code")
     private Long announcementCode;
 
-    @Column(name = "announcement_author", nullable = false)
-    private String announcementAuthor;
+//    @Column(name = "announcement_author", nullable = false)
+//    private String announcementAuthor;
 
     @Column(name = "announcement_title", nullable = false)
     private String announcementTitle;
