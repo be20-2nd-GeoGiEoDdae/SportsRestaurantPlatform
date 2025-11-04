@@ -16,6 +16,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -43,8 +46,21 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
         System.out.println("LOG: 파싱된 이메일: " + attributes.getEmail());
 
+        // 카카오 토큰 및 만료시점 추출
+        String kakaoAccessToken = userRequest.getAccessToken().getTokenValue();
+        Instant accessTokenExpiresAt = userRequest.getAccessToken().getExpiresAt();
+        LocalDateTime kakaoAccessTokenExpiresAt = accessTokenExpiresAt != null
+                ? accessTokenExpiresAt.atZone(ZoneId.systemDefault()).toLocalDateTime()
+                : null;
+
+        String kakaoRefreshToken = userRequest.getAdditionalParameters().get("refresh_token") != null
+                ? userRequest.getAdditionalParameters().get("refresh_token").toString()
+                : null;
+        // refresh_token 만료시점은 카카오에서 별도 제공하지 않을 수 있음
+        LocalDateTime kakaoRefreshTokenExpiresAt = null;
+
         System.out.println("LOG: saveOrUpdate() 호출 시작");
-        UserEntity user = saveOrUpdate(attributes);
+        UserEntity user = saveOrUpdate(attributes, kakaoAccessToken, kakaoAccessTokenExpiresAt, kakaoRefreshToken, kakaoRefreshTokenExpiresAt);
         System.out.println("LOG: saveOrUpdate() 완료, User: " + user.getUserName());
 
         return new DefaultOAuth2User(
@@ -54,25 +70,38 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     @Transactional
-    public UserEntity saveOrUpdate(OAuthAttributes attributes) {
+    public UserEntity saveOrUpdate(
+            OAuthAttributes attributes,
+            String kakaoAccessToken,
+            LocalDateTime kakaoAccessTokenExpiresAt,
+            String kakaoRefreshToken,
+            LocalDateTime kakaoRefreshTokenExpiresAt
+    ) {
         String socialId = attributes.getAttributes().get(attributes.getNameAttributeKey()).toString();
         Optional<SocialEntity> socialEntityOptional = kakaoRepository.findBySocialIdAndSocialType(socialId, attributes.getSocialType());
 
         UserEntity userEntity;
         if (socialEntityOptional.isPresent()) {
-            System.out.println("LOG: 기존 소셜 연동 회원입니다.");
             userEntity = socialEntityOptional.get().getMember();
+            // 토큰 정보 업데이트
+            userEntity.setKakaoAccessToken(kakaoAccessToken);
+            userEntity.setKakaoAccessTokenExpiresAt(kakaoAccessTokenExpiresAt);
+            userEntity.setKakaoRefreshToken(kakaoRefreshToken);
+            userEntity.setKakaoRefreshTokenExpiresAt(kakaoRefreshTokenExpiresAt);
+            userRepository.save(userEntity);
         } else {
-            System.out.println("LOG: 신규 소셜 연동입니다. 이메일로 기존 회원 여부 확인");
             Optional<UserEntity> userEntityOptional = userRepository.findByUserEmail(attributes.getEmail());
             if (userEntityOptional.isPresent()) {
-                System.out.println("LOG: 이메일이 같은 기존 회원이 존재합니다. 소셜 정보와 연결합니다.");
                 userEntity = userEntityOptional.get();
             } else {
-                System.out.println("LOG: 완전 신규 회원입니다. 새로 생성합니다.");
                 userEntity = attributes.toEntity();
-                userRepository.save(userEntity);
             }
+            // 신규 회원 토큰 정보 세팅
+            userEntity.setKakaoAccessToken(kakaoAccessToken);
+            userEntity.setKakaoAccessTokenExpiresAt(kakaoAccessTokenExpiresAt);
+            userEntity.setKakaoRefreshToken(kakaoRefreshToken);
+            userEntity.setKakaoRefreshTokenExpiresAt(kakaoRefreshTokenExpiresAt);
+            userRepository.save(userEntity);
 
             SocialEntity newSocialEntity = SocialEntity.builder()
                     .socialId(socialId)
