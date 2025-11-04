@@ -1,7 +1,6 @@
 package com.ohgiraffers.geogieoddae.restaurant.query.service;
 
-import com.ohgiraffers.geogieoddae.restaurant.query.dto.ReviewDto;
-import com.ohgiraffers.geogieoddae.restaurant.query.mapping.BookmarkMapper;
+import com.ohgiraffers.geogieoddae.restaurant.query.mapper.BookmarkMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -12,7 +12,9 @@ import java.util.stream.IntStream;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@MapperScan("com.ohgiraffers.geogieoddae.restaurant.query.mapping")
+
+
+
 public class GeogieoddaeApplication {
 
     public static void main(String[] args) {

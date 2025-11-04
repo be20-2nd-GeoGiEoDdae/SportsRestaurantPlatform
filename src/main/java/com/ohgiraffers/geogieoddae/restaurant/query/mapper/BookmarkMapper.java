@@ -1,12 +1,10 @@
-package com.ohgiraffers.geogieoddae.restaurant.query.mapping;
+package com.ohgiraffers.geogieoddae.restaurant.query.mapper;
 
-import com.ohgiraffers.geogieoddae.restaurant.query.dto.ReviewDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Mapper
 public interface BookmarkMapper {

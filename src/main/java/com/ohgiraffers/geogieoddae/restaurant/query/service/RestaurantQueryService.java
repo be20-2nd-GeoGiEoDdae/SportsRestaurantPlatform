@@ -1,7 +1,7 @@
 package com.ohgiraffers.geogieoddae.restaurant.query.service;
 
 import com.ohgiraffers.geogieoddae.restaurant.query.dto.RestaurantDto;
-import com.ohgiraffers.geogieoddae.restaurant.query.mapping.RestaurantMapper;
+import com.ohgiraffers.geogieoddae.restaurant.query.mapper.RestaurantMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.ohgiraffers.geogieoddae.restaurant.query.mapping;
+package com.ohgiraffers.geogieoddae.restaurant.query.mapper;
 
 
 import com.ohgiraffers.geogieoddae.restaurant.query.dto.ReviewDto;
