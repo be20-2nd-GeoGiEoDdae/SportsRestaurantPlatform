@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ohgiraffers.geogieoddae.admin.query.mapper.UserQueryMapper">
+    <select id="selectAllUsers" resultType="com.ohgiraffers.geogieoddae.admin.query.dto.UserDto">
+        SELECT
+            user_code,
+            user_name,
+--          user_email,
+            user_phone_number,
+            user_address,
+            user_role,
+            created_at
+        FROM
+            member
+        ORDER BY
+            user_code DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="selectAllUserCount" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            MEMBER
+    </select>
+</mapper>
