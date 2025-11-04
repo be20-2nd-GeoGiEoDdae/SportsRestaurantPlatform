@@ -59,10 +59,8 @@ public class ViewingServiceImpl implements ViewingService {
 
         if (dto.getTeamId() != null && !dto.getTeamId().isEmpty()) {
 
-            // ✅ DB에서 실제 팀 엔티티들 조회
             List<TeamEntity> teams = teamRepository.findAllById(dto.getTeamId());
 
-            // ✅ 팀 개수 검증
             if (teams.isEmpty()) {
                 throw new IllegalArgumentException("유효한 팀이 없습니다.");
             }
@@ -70,14 +68,10 @@ public class ViewingServiceImpl implements ViewingService {
                 throw new IllegalArgumentException("팀은 최대 2개까지만 선택 가능합니다.");
             }
 
-            // ✅ ViewingEntity가 단일 team 필드만 가지고 있을 경우
-            // 첫 번째 팀만 저장
             viewing.setTeam(teams.get(0));
 
-            // ✅ 두 번째 팀이 있을 경우 (선택적 처리)
             if (teams.size() == 2) {
                 System.out.println("두 번째 팀: " + teams.get(1).getTeamName());
-                // TODO: ViewingTeamEntity 등을 만들어 2팀 모두 저장하도록 확장 가능
             }
         }
 
@@ -92,7 +86,6 @@ public void updateViewing(ViewingDto dto) {
     ViewingEntity viewing = viewingRepository.findById(dto.getViewingCode())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관람입니다."));
 
-    // ✅ 기본 정보 수정
     viewing.setViewingTitle(dto.getViewingTitle());
     viewing.setViewingBody(dto.getViewingBody());
     viewing.setViewingAt(dto.getViewingAt());
@@ -100,38 +93,31 @@ public void updateViewing(ViewingDto dto) {
     viewing.setViewingMinNum(dto.getViewingMinNum());
     viewing.setViewingMaxNum(dto.getViewingMaxNum());
 
-    // ✅ 가게 변경 (선택적)
     if (dto.getRestaurantId() != null) {
         RestaurantEntity restaurant = restaurantRepository.findById(dto.getRestaurantId())
                 .orElseThrow(() -> new IllegalArgumentException("가게가 존재하지 않습니다."));
         viewing.setRestaurant(restaurant);
     }
 
-    // ✅ 종목 변경 (선택적)
     if (dto.getSportsId() != null) {
         SportEntity sport = sportsRepository.findById(dto.getSportsId())
                 .orElseThrow(() -> new IllegalArgumentException("종목이 존재하지 않습니다."));
         viewing.setSport(sport);
     }
 
-    // ✅ 팀 변경 (무조건 2개 필요)
     if (dto.getTeamId() == null || dto.getTeamId().size() != 2) {
         throw new IllegalArgumentException("팀은 반드시 2개를 선택해야 합니다.");
     }
 
-    // ✅ 팀 DB 조회 및 검증
     List<TeamEntity> teams = teamRepository.findAllById(dto.getTeamId());
     if (teams.size() != 2) {
         throw new IllegalArgumentException("유효한 팀이 2개 존재해야 합니다.");
     }
 
-    // ✅ 첫 번째 팀만 실제로 Viewing에 매핑
     viewing.setTeam(teams.get(0));
 
-    // ✅ 두 번째 팀은 로그 또는 추후 확장용
     System.out.println("두 번째 팀: " + teams.get(1).getTeamName());
 
-    // ✅ 변경사항 저장
     viewingRepository.save(viewing);
 }
 
@@ -156,7 +142,7 @@ public void applyViewing(ViewingUserDto dto) {
             .viewingUserDeposit(dto.getViewingUserDeposit())
             .viewingUserIsAttend(false)
             .viewing(viewing)
-            .member(user) // ✅ 실제 영속된 유저 객체
+            .member(user)
             .build();
 
     viewingUserRepository.save(viewingUser);
