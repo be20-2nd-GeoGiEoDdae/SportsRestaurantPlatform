@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohgiraffers.geogieoddae.restaurant.query.mapper.ReviewMapper">
+    <!-- 특정 식당의 리뷰 목록 -->
+    <select id="findReviewsByRestaurantId"
+            resultType="com.ohgiraffers.geogieoddae.restaurant.query.dto.ReviewDto">
+        SELECT
+            r.review_code,
+            r.review_title,
+            r.review_body,
+            r.review_score,
+            r.user_code,
+            r.restaurant_code
+        FROM review r
+        WHERE r.restaurant_code = #{restaurantCode}
+        ORDER BY r.created_at DESC
+    </select>
+
+    <!-- 작성한 리뷰 조회 -->
+    <select id="findReviewsByUserId"
+            resultType="com.ohgiraffers.geogieoddae.restaurant.query.dto.ReviewDto">
+        SELECT
+            r.review_code,
+            r.review_title,
+            r.review_body,
+            r.review_score,
+            r.user_code,
+            r.restaurant_code
+        FROM review r
+        WHERE r.user_code = #{userCode}
+        ORDER BY r.created_at DESC
+    </select>
+
+    <!-- 리뷰를 별점 순으로 조회 -->
+    <select id="findReviewsByScore"
+            resultType="com.ohgiraffers.geogieoddae.restaurant.query.dto.ReviewDto">
+        SELECT
+        r.review_code,
+        r.review_title,
+        r.review_body,
+        r.review_score,
+        r.user_code,
+        r.restaurant_code,
+        r.created_at
+        FROM review r
+        WHERE r.restaurant_code = #{restaurantCode}
+        ORDER BY
+        r.review_score
+        <choose>
+            <when test="order == 'asc'">ASC</when>
+            <otherwise>DESC</otherwise>
+        </choose>,
+        r.created_at DESC
+    </select>
+</mapper>

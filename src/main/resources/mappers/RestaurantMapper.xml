@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohgiraffers.geogieoddae.restaurant.query.mapper.RestaurantMapper">
+
+    <select id="getRestaurantList"
+            parameterType="map"
+            resultType="com.ohgiraffers.geogieoddae.restaurant.query.dto.RestaurantDto">
+        SELECT
+        r.restaurant_code,
+        r.restaurant_name,
+        r.restaurant_location,
+        r.restaurant_category,
+        r.restaurant_people_number,
+        r.restaurant_score,
+        r.created_at
+        FROM restaurant r
+        <where>
+            <!-- 🍴 카테고리 필터 -->
+            <if test="category != null and category != ''">
+                r.restaurant_category = #{category}
+            </if>
+        </where>
+        <choose>
+            <when test="sort == 'name'">
+                ORDER BY r.restaurant_name ASC
+            </when>
+            <when test="sort == 'score'">
+                ORDER BY r.restaurant_score DESC
+            </when>
+            <otherwise>
+                ORDER BY r.created_at DESC
+            </otherwise>
+        </choose>
+    </select>
+
+
+    <!-- 1️⃣ 키워드 검색 -->
+    <select id="searchRestaurantsByKeyword"
+            parameterType="string"
+            resultType="com.ohgiraffers.geogieoddae.restaurant.query.dto.RestaurantDto">
+        SELECT r.restaurant_code,
+               r.restaurant_name,
+               r.restaurant_location,
+               r.restaurant_category,
+               r.restaurant_people_number,
+               r.restaurant_contents,
+               r.restaurant_score,
+               r.created_at
+        FROM restaurant r
+        WHERE r.restaurant_name LIKE CONCAT('%', #{keyword}, '%')
+           OR r.restaurant_location LIKE CONCAT('%', #{keyword}, '%')
+           OR r.restaurant_contents LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY r.created_at DESC
+    </select>
+
+
+    <select id="findRestaurantList"
+            parameterType="map"
+            resultType="com.ohgiraffers.geogieoddae.restaurant.query.dto.RestaurantDto">
+        SELECT DISTINCT
+        r.restaurant_code,
+        r.restaurant_name,
+        r.restaurant_location,
+        r.restaurant_category,
+        r.restaurant_people_number,
+        r.restaurant_contents,
+        r.restaurant_score,
+        r.created_at
+        FROM restaurant r
+        LEFT JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
+        LEFT JOIN keyword k ON rk.keyword_code = k.keyword_code
+        <where>
+            <!-- 🔍 검색어: 가게명 OR 키워드명 -->
+            <if test="keyword != null and keyword != ''">
+                (r.restaurant_name LIKE CONCAT('%', #{keyword}, '%')
+                OR k.keyword_name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+
+            <!-- 🍴 카테고리 필터 (예: 한식, 양식, 카페 등) -->
+            <if test="category != null and category != ''">
+                <if test="keyword != null and keyword != ''">
+                    AND
+                </if>
+                r.restaurant_category = #{category}
+            </if>
+        </where>
+        ORDER BY r.restaurant_name ASC
+    </select>
+
+    <select id="findRestaurantDetail"
+            parameterType="long"
+            resultType="com.ohgiraffers.geogieoddae.restaurant.query.dto.RestaurantDto">
+        SELECT
+            r.restaurant_code AS restaurantCode,
+            r.restaurant_name AS restaurantName,
+            r.restaurant_location AS restaurantLocation,
+            r.restaurant_category AS restaurantCategory,
+            r.restaurant_people_number AS restaurantPeopleNumber,
+            r.restaurant_contents AS restaurantContents,
+            r.restaurant_score AS restaurantScore,
+            GROUP_CONCAT(DISTINCT p.restaurant_picture_url) AS pictureUrls,
+            GROUP_CONCAT(DISTINCT k.keyword) AS keywords,
+            r.created_at AS createdAt
+        FROM restaurant r
+                 LEFT JOIN restaurant_picture p ON r.restaurant_code = p.restaurant_code
+                 LEFT JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
+                 LEFT JOIN keyword k ON rk.keyword_code = k.keyword_code
+        WHERE r.restaurant_code = #{restaurantCode}
+        GROUP BY
+            r.restaurant_code, r.restaurant_name, r.restaurant_location,
+            r.restaurant_category, r.restaurant_people_number,
+            r.restaurant_contents, r.restaurant_score, r.created_at
+    </select>
+
+</mapper>

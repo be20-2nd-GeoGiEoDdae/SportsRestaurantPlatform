@@ -69,9 +69,6 @@ public class SecurityConfig {
 //                            res.getWriter().write("{\"message\":\"Unauthorized\"}");
 //                        })
 //                )
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                );
 
 
 
