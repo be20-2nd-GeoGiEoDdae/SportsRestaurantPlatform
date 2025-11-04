@@ -37,10 +37,10 @@ public class AdminEntity {
     @Column(name = "admin_password", nullable = false)
     private String adminPassword;
 
-    @Column(name = "admin_refresh_token", nullable = false)
+    @Column(name = "admin_refresh_token", nullable = true)
     private String adminRefreshToken;
 
-    @Column(name = "admin_refresh_token_expires_at", nullable = false)
+    @Column(name = "admin_refresh_token_expires_at", nullable = true)
     private LocalDateTime adminRefreshTokenExpiresAt;
 
     // ✅ 관계 설정

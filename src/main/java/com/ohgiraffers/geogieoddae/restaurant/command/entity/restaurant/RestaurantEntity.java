@@ -3,11 +3,8 @@ package com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant;
 import com.ohgiraffers.geogieoddae.auth.command.entity.entrepreneur.EntrepreneurEntity;
 import com.ohgiraffers.geogieoddae.global.common.entity.BaseTimeEntity;
 import com.ohgiraffers.geogieoddae.report.command.entity.blacklist.RestaurantBlacklistEntity;
-import com.ohgiraffers.geogieoddae.restaurant.command.dto.KeywordDto;
-import com.ohgiraffers.geogieoddae.restaurant.command.dto.PictureDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.KeywordEntity;
-import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.RestaurantKeywordEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
