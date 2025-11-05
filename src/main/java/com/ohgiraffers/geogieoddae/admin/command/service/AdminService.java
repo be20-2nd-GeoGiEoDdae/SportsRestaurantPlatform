@@ -85,8 +85,8 @@ public class AdminService {
         }
 
         // 3. 새로운 access token과 refresh token 생성
-        String newAccessToken = jwtTokenProvider.generateAccessToken(admin.get().getAdminId());
-        String newRefreshToken = jwtTokenProvider.generateRefreshToken(admin.get().getAdminId());
+        String newAccessToken = jwtTokenProvider.generateAdminAccessToken(admin.get().getAdminId());
+        String newRefreshToken = jwtTokenProvider.generateAdminRefreshToken(admin.get().getAdminId());
 
         // 4. DB에 새로운 refresh token 저장
         admin.get().setAdminRefreshToken(newRefreshToken);
