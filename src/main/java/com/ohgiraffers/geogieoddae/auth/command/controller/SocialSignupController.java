@@ -10,15 +10,14 @@ import com.ohgiraffers.geogieoddae.auth.command.dto.SocialSignupRequest;
 import com.ohgiraffers.geogieoddae.auth.command.service.SocialSignupService;
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class SocialSignupController {
 
     private final SocialSignupService socialSignupService;
-
-    public SocialSignupController(SocialSignupService socialSignupService) {
-        this.socialSignupService = socialSignupService;
-    }
 
     @PostMapping("/social-signup")
     public ResponseEntity<ApiResponse<String>> socialSignup(@RequestBody SocialSignupRequest request) {

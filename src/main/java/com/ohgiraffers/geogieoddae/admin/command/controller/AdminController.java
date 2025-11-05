@@ -56,6 +56,4 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    @PostMapping("/entrepreneur/all")
-    public ResponseEntity<ApiResponse<List>>
 }

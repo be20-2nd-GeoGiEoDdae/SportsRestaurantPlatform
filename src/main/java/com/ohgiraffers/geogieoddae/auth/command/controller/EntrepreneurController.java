@@ -10,14 +10,13 @@ import com.ohgiraffers.geogieoddae.auth.command.dto.EntrepreneurRegisterRequestD
 import com.ohgiraffers.geogieoddae.auth.command.service.EntrepreneurService;
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth/entrepreneur")
 public class EntrepreneurController {
     private final EntrepreneurService entrepreneurService;
-
-    public EntrepreneurController(EntrepreneurService entrepreneurRegisterService) {
-        this.entrepreneurService = entrepreneurRegisterService;
-    }
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<String>> entrepreneurRegister(@RequestBody EntrepreneurRegisterRequestDto request) {

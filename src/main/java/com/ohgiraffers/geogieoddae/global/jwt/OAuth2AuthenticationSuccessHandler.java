@@ -1,19 +1,21 @@
 package com.ohgiraffers.geogieoddae.global.jwt;
 
-import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
-import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
+import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -32,8 +34,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         UserEntity user = userRepository.findByUserEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getUserEmail());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserEmail());
+        String accessToken = jwtTokenProvider.generateAdminAccessToken(user.getUserEmail());
+        String refreshToken = jwtTokenProvider.generateAdminRefreshToken(user.getUserEmail());
 
         user.setUserRefreshToken(refreshToken);
         user.setUserRefreshTokenExpiresAt(jwtTokenProvider.getRefreshTokenExpiryAsLocalDateTime());

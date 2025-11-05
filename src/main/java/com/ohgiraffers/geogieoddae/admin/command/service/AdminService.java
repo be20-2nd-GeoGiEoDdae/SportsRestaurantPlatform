@@ -40,8 +40,8 @@ public class AdminService {
         }
 
         // 3. JWT 토큰 생성
-        String accessToken = jwtTokenProvider.generateAccessToken(admin.getAdminId());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(admin.getAdminId());
+        String accessToken = jwtTokenProvider.generateAdminAccessToken(admin.getAdminId());
+        String refreshToken = jwtTokenProvider.generateAdminRefreshToken(admin.getAdminId());
 
         // 4. Refresh Token을 DB에 저장
         admin.setAdminRefreshToken(refreshToken);

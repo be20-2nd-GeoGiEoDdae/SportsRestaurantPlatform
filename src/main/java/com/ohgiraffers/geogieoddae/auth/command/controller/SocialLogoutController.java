@@ -9,15 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ohgiraffers.geogieoddae.auth.command.service.SocialLogoutService;
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class SocialLogoutController {
 
     private final SocialLogoutService socialLogoutService;
-
-    public SocialLogoutController(SocialLogoutService socialLogoutService) {
-        this.socialLogoutService = socialLogoutService;
-    }
 
     @PostMapping("/social-logout")
     public ResponseEntity<ApiResponse<String>> socialLogout(@RequestHeader("Authorization") String accessToken) {
