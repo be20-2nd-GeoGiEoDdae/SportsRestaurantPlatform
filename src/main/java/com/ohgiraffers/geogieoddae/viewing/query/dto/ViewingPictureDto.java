@@ -1,6 +1,7 @@
 package com.ohgiraffers.geogieoddae.viewing.query.dto;
 
 import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ViewingDto {
+public class ViewingPictureDto {
     private Long viewingCode;
     private String viewingTitle;
     private String viewingBody;
@@ -22,5 +23,5 @@ public class ViewingDto {
     private String restaurantName;
     private String sportName;
     private String teamName;
-
+    private List<String> pictureUrls;
 }

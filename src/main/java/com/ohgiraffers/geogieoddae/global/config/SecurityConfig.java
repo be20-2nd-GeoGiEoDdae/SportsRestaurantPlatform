@@ -51,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**").permitAll()
                         .requestMatchers("/api/admin/users-view", "/api/admin/logout").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
+
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(endpoint -> endpoint
@@ -62,14 +63,6 @@ public class SecurityConfig {
                         .successHandler(oAuth2AuthenticationSuccessHandler)
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//                .exceptionHandling(ex -> ex
-//                        .authenticationEntryPoint((req, res, e) -> {
-//                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                            res.setContentType("application/json;charset=UTF-8");
-//                            res.getWriter().write("{\"message\":\"Unauthorized\"}");
-//                        })
-//                )
-
 
 
         return http.build();

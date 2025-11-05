@@ -15,6 +15,7 @@ public class RestaurantQueryService {
 
     private final RestaurantMapper restaurantMapper;
 
+    //목록 조회
     public List<RestaurantDto> getRestaurantList(String category, String sort) {
         Map<String, Object> params = new HashMap<>();
         params.put("category", category);
@@ -22,15 +23,17 @@ public class RestaurantQueryService {
         return restaurantMapper.getRestaurantList(params);
     }
 
-    /** 🔍 가게명 + 키워드 검색 + 카테고리 필터 */
-    public List<RestaurantDto> findRestaurantList(String keyword, String category) {
+    //    가게명 + 키워드 검색 + 카테고리 필터
+    public List<RestaurantDto> findRestaurantList(String restaurantName, String keyword, String category) {
         Map<String, Object> params = new HashMap<>();
+        params.put("restaurant_name", restaurantName);
         params.put("keyword", keyword);
         params.put("category", category);
+
         return restaurantMapper.findRestaurantList(params);
     }
 
-    /** 🔎 상세 조회 */
+    //상세 조회
     public RestaurantDto getRestaurantDetail(Long restaurantCode) {
         return restaurantMapper.findRestaurantDetail(restaurantCode);
     }

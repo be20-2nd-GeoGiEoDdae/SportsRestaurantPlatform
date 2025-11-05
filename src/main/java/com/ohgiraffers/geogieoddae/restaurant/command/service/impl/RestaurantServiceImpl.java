@@ -67,11 +67,9 @@ public class RestaurantServiceImpl implements RestaurantService {
             restaurantPictureRepository.saveAll(pictureEntities);
             restaurant.setPictures(pictureEntities);
 
-            // 3️⃣ 키워드 매핑 (NPE 방지)
             if (restaurantDto.getKeywordIds() != null && !restaurantDto.getKeywordIds().isEmpty()) {
                 List<KeywordEntity> selectedKeywords = keywordRepository.findAllById(restaurantDto.getKeywordIds());
 
-                // ✅ keywords 리스트가 null이면 초기화
                 if (restaurant.getKeywords() == null) {
                     restaurant.setKeywords(new ArrayList<>());
                 }
