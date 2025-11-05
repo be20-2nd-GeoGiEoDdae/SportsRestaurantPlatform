@@ -68,16 +68,6 @@ public class AdminService {
 
         adminRepository.save(admin);
 
-        /*
-        Optional<AdminEntity> admin = adminRepository.findByAdminId(adminId);
-        if (admin.isPresent()) {
-            // 리프레시 토큰 무효화
-            admin.get().setAdminRefreshToken(null);
-            admin.get().setAdminRefreshTokenExpiresAt(null);
-            adminRepository.save(admin.get());
-        }
-         */
-
     }
 
     // 리프레시 토큰으로 새 토큰 발급
@@ -115,7 +105,16 @@ public class AdminService {
     public void approveEntrepreneur(Long id) {
         EntrepreneurEntity entrepreneur = entrepreneurRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("사업자 정보를 찾을 수 없습니다."));
-        entrepreneur.setEntrepreneurStatus(EntrepreneurStatus.APPROVED);
+        entrepreneur.setEntrepreneurStatus(EntrepreneurStatus.APPROVED);   // 사업자 등록 요청 승인
+        entrepreneurRepository.save(entrepreneur);
+    }
+
+    // 관리자 사업자등록 신청 거절
+    @Transactional
+    public void rejectEntrepreneur(Long id) {
+        EntrepreneurEntity entrepreneur = entrepreneurRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사업자 정보를 찾을 수 없습니다."));
+        entrepreneur.setEntrepreneurStatus(EntrepreneurStatus.REJECTED);  // 사업자 등록 요청 거절
         entrepreneurRepository.save(entrepreneur);
     }
 }

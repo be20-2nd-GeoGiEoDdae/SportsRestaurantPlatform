@@ -49,4 +49,10 @@ public class AdminController {
         adminService.approveEntrepreneur(id);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
+
+    @PostMapping("/entrepreneur/{id}/reject")
+    public ResponseEntity<ApiResponse<Void>> rejectEntrepreneur(@PathVariable Long id) {
+        adminService.rejectEntrepreneur(id);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
 }
