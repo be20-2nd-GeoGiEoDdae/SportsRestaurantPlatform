@@ -1,5 +1,7 @@
 package com.ohgiraffers.geogieoddae.restaurant.query.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -9,15 +11,20 @@ import lombok.*;
 @Builder
 @ToString
 public class RestaurantDto {
-
+    @NotNull
     private Long restaurantCode;
+    @NotNull
     private String restaurantName;
+    @NotNull
     private String restaurantLocation;
+    @NotNull
     private String restaurantCategory;
+    @NotNull
     private Integer restaurantPeopleNumber;
+    @NotNull
     private String restaurantContents;
+    @NotNull
     private Double restaurantScore;
-    private String pictureUrls;
-    private String keywords;
+    @NotNull
     private String createdAt;
 }

@@ -26,12 +26,13 @@ public class RestaurantQueryController {
 
 
     @GetMapping("/filter")
-    public ResponseEntity<List<RestaurantDto>> findRestaurants(
+    public ResponseEntity<List<RestaurantDto>> filterRestaurants(
+            @RequestParam(required = false) String restaurant_name,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String category) {
-
-        List<RestaurantDto> result = restaurantQueryService.findRestaurantList(keyword, category);
-        return ResponseEntity.ok(result);
+            @RequestParam(required = false) String category
+    ) {
+        List<RestaurantDto> restaurants = restaurantQueryService.findRestaurantList(restaurant_name, keyword, category);
+        return ResponseEntity.ok(restaurants);
     }
 
     @GetMapping("/{restaurantCode}")
