@@ -22,6 +22,12 @@ public class EntrepreneurEntity {
     @Column(name = "entrepreneur_id", nullable = false)
     private Integer entrepreneurId;
 
+    @Column(name = "entrepreneur_certificate_url", nullable = false)
+    private String entrepreneurCertificateUrl;                          // 사업자등록증 url
+
+    @Column(name = "entrepreneur_bank_account", nullable = false)
+    private Integer entrepreneurBankAccount;                            // 사업자 계좌번호
+
     @ManyToOne
     @JoinColumn(name = "user_code", nullable = false)
     private UserEntity member;
