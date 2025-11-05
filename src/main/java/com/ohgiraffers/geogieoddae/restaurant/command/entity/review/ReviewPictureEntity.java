@@ -1,6 +1,5 @@
 package com.ohgiraffers.geogieoddae.restaurant.command.entity.review;
 
-import com.ohgiraffers.geogieoddae.restaurant.command.entity.review.ReviewEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,13 +13,14 @@ import lombok.*;
 public class ReviewPictureEntity {
 
     @Id
-    @Column(name = "review_code")
-    private Long reviewCode;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "review_picture_id")
+    private Long reviewPictureId;
 
     @Column(name = "review_picture_url", nullable = false, length = 512)
     private String reviewPictureUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "review_code", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "review_code", nullable = false)
     private ReviewEntity review;
 }

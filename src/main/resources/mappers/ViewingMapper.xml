@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohgiraffers.geogieoddae.viewing.query.mapper.ViewingMapper">
+
+    <!-- 검색 -->
+    <select id="searchViewingsByKeyword" parameterType="string"
+            resultType="com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingDto">
+        SELECT v.viewing_code,
+               v.viewing_title,
+               v.viewing_body,
+               v.viewing_at,
+               v.viewing_total_deposit,
+               v.viewing_status,
+               v.viewing_min_num,
+               v.viewing_max_num,
+               r.restaurant_name AS restaurantName,
+               s.sport_name AS sportName,
+               t.team_name AS teamName
+        FROM viewing v
+                 JOIN restaurant r ON v.restaurant_code = r.restaurant_code
+                 JOIN sport s ON v.sport_code = s.sport_code
+                 JOIN team t ON v.team_code = t.team_code
+        WHERE v.viewing_title LIKE CONCAT('%', #{keyword}, '%')
+           OR v.viewing_body LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY v.created_at DESC
+    </select>
+
+    <!-- 목록별 조회 -->
+    <select id="findAllViewings" resultType="com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingDto">
+        SELECT v.viewing_code,
+               v.viewing_title,
+               v.viewing_body,
+               v.viewing_at,
+               v.viewing_total_deposit,
+               v.viewing_status,
+               v.viewing_min_num,
+               v.viewing_max_num,
+               r.restaurant_name AS restaurantName,
+               s.sport_name AS sportName,
+               t.team_name AS teamName
+        FROM viewing v
+                 JOIN restaurant r ON v.restaurant_code = r.restaurant_code
+                 JOIN sport s ON v.sport_code = s.sport_code
+                 JOIN team t ON v.team_code = t.team_code
+        ORDER BY v.created_at DESC
+    </select>
+
+    <!-- 조건별 조회 -->
+    <select id="findViewingsByCondition"
+            parameterType="map"
+            resultType="com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingDto">
+        SELECT v.viewing_code,
+               v.viewing_title,
+               v.viewing_body,
+               v.viewing_at,
+               v.viewing_total_deposit,
+               v.viewing_status,
+               v.viewing_min_num,
+               v.viewing_max_num,
+               r.restaurant_name AS restaurantName,
+               s.sport_name AS sportName,
+               t.team_name AS teamName
+        FROM viewing v
+                 JOIN restaurant r ON v.restaurant_code = r.restaurant_code
+                 JOIN sport s ON v.sport_code = s.sport_code
+                 JOIN team t ON v.team_code = t.team_code
+        WHERE (#{teamName} IS NULL OR t.team_name LIKE CONCAT('%', #{teamName}, '%'))
+          AND (#{restaurantName} IS NULL OR r.restaurant_name LIKE CONCAT('%', #{restaurantName}, '%'))
+          AND (#{sportName} IS NULL OR s.sport_name LIKE CONCAT('%', #{sportName}, '%'))
+        ORDER BY v.created_at DESC
+    </select>
+
+    <!-- 상세 조회 -->
+    <select id="findViewingDetail"
+            parameterType="long"
+            resultType="com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingPictureDto">
+        SELECT v.viewing_code,
+               v.viewing_title,
+               v.viewing_body,
+               v.viewing_at,
+               v.viewing_total_deposit,
+               v.viewing_status,
+               v.viewing_min_num,
+               v.viewing_max_num,
+               r.restaurant_code,
+               r.restaurant_name AS restaurantName,
+               s.sport_name AS sportName,
+               t.team_name AS teamName
+        FROM viewing v
+                 JOIN restaurant r ON v.restaurant_code = r.restaurant_code
+                 JOIN sport s ON v.sport_code = s.sport_code
+                 JOIN team t ON v.team_code = t.team_code
+        WHERE v.viewing_code = #{viewingCode}
+    </select>
+
+
+    <select id="findRestaurantPictures" parameterType="long" resultType="string">
+        SELECT rp.restaurant_picture_url
+        FROM restaurant_picture rp
+        WHERE rp.restaurant_code = #{restaurantCode}
+    </select>
+</mapper>

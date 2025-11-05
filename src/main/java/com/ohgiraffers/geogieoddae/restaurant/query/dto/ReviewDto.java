@@ -1,16 +1,25 @@
 package com.ohgiraffers.geogieoddae.restaurant.query.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 public class ReviewDto {
-    private Long reviewCode;
+    @NotNull
     private String reviewTitle;
+    @NotNull
     private String reviewBody;
+    @NotNull
     private Integer reviewScore;
-    private Long restaurantCode;
-    private Long userCode;
-//    private List<String> pictures;
+    @NotNull
+    private String restaurantName;
+    @NotNull
+    private String userName;
+    @NotNull
+    private String pictures;
 }
 
 
