@@ -1,20 +1,22 @@
 package com.ohgiraffers.geogieoddae.global.jwt;
 
-import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
-import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
+import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -28,15 +30,26 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         System.out.println("LOG: OAuth2AuthenticationSuccessHandler.onAuthenticationSuccess 실행됨");
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Map<String, Object> kakaoAccount = (Map<String, Object>) oAuth2User.getAttributes().get("kakao_account");
-        String email = kakaoAccount != null ? (String)kakaoAccount.get("email") : null;
+        // String email = oAuth2User.getAttribute("email");
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        String email = (String) kakaoAccount.get("email");
 
         UserEntity user = userRepository.findByUserEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getUserEmail());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserEmail());
+        // 사용자 role에 따라 토큰 발급 방식 분기
+        String accessToken;
+        String refreshToken;
+        if (user.getUserRole().name().equals("ADMIN")) {   // 관리자인 토큰 발급
+            accessToken = jwtTokenProvider.generateAdminAccessToken(user.getUserEmail());
+            refreshToken = jwtTokenProvider.generateAdminRefreshToken(user.getUserEmail());
+        } else {                    // 이용자인 경우
+            accessToken = jwtTokenProvider.generateUserAccessToken(user.getUserCode().toString(), user.getUserRole().name());
+            refreshToken = jwtTokenProvider.generateUserRefreshToken(user.getUserCode().toString());
+        }
 
+        // RefreshToken/만료시간 모두 저장
         user.setUserRefreshToken(refreshToken);
         user.setUserRefreshTokenExpiresAt(jwtTokenProvider.getRefreshTokenExpiryAsLocalDateTime());
         userRepository.save(user);
@@ -50,7 +63,6 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         System.out.println("LOG: 리다이렉트 URL 생성 완료: " + targetUrl);
 
-        // response.sendRedirect()를 직접 사용하여 리다이렉트
         response.sendRedirect(targetUrl);
     }
 }

@@ -1,17 +1,17 @@
-/* 로그인/회원가입 성공 시, 우리 서비스의 jwt 토큰을 담아 반환할 DTO(임시그릇)
- * @Author : 김성현
- * @Date : 2025-11-01
- * @Version : 1.0
- */
-
 package com.ohgiraffers.geogieoddae.auth.command.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class TokenResponse {
+public class SocialLoginResponseDto {
     private String accessToken;
     private String refreshToken;
+    private String userName;
+    private String userEmail;
 }

@@ -6,15 +6,16 @@
 
 package com.ohgiraffers.geogieoddae.global.common.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
 public class PageResponseDto<T> {
-    private List<T> data;
+    private List<T> users;
+    // private List<T> data;
     private PageInfoDto pageInfo;
 }

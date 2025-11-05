@@ -1,5 +1,10 @@
 package com.ohgiraffers.geogieoddae.auth.command.service;
 
+import java.time.LocalDateTime;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ohgiraffers.geogieoddae.auth.command.dto.SocialSignupRequest;
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.SocialEntity;
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.SocialType;
@@ -7,20 +12,14 @@ import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
 import com.ohgiraffers.geogieoddae.auth.command.repository.KakaoRepository;
 import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class SocialSignupService {
     private final UserRepository userRepository;
     private final KakaoRepository kakaoRepository;
-
-    public SocialSignupService(UserRepository userRepository, KakaoRepository kakaoRepository) {
-        this.userRepository = userRepository;
-        this.kakaoRepository = kakaoRepository;
-    }
 
     @Transactional
     public void socialSignup(SocialSignupRequest request) {

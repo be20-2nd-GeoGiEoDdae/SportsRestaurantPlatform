@@ -6,21 +6,22 @@
 
 package com.ohgiraffers.geogieoddae.global.jwt;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.stereotype.Component;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -38,8 +39,8 @@ public class JwtTokenProvider {
         return LocalDateTime.now().plusSeconds(refreshTokenValidity / 1000);
     }
 
-    // Access Token 생성
-    public String generateAccessToken(String adminId) {
+    // Access Token 생성 - 관리자용
+    public String generateAdminAccessToken(String adminId) {
         return Jwts.builder()
                 .setSubject(adminId)
                 .claim("role", "ROLE_ADMIN")
@@ -49,10 +50,31 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // Refresh Token 생성
-    public String generateRefreshToken(String adminId) {
+    // Refresh Token 생성 - 관리자용
+    public String generateAdminRefreshToken(String adminId) {
         return Jwts.builder()
                 .setSubject(adminId)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidity))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // Access Token 생성 - 사용자용
+    public String generateUserAccessToken(String userId, String role) {
+        return Jwts.builder()
+                .setSubject(userId)
+                .claim("role", "ROLE_USER")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // Refresh Token 생성 - 사용자용
+    public String generateUserRefreshToken(String userId) {
+        return Jwts.builder()
+                .setSubject(userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidity))
                 .signWith(secretKey, SignatureAlgorithm.HS256)

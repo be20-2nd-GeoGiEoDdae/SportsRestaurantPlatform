@@ -6,6 +6,8 @@
 
 package com.ohgiraffers.geogieoddae.global.jwt;
 
+import com.ohgiraffers.geogieoddae.admin.command.security.AdminDetails;
+import com.ohgiraffers.geogieoddae.admin.command.security.AdminDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
@@ -28,6 +30,7 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final AdminDetailsService adminDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -60,9 +63,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println("adminId : " + adminId + " ");
                 System.out.println("role : " + role + " ");
 
+                // DB에서 AdminDetails 로드
+                AdminDetails adminDetails = (AdminDetails) adminDetailsService.loadUserByUsername(adminId);
+
                 // 인증객체 생성 및 SecurityContext에 등록
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        adminId, null, Collections.singletonList(new SimpleGrantedAuthority(role))
+                        adminDetails,
+                        null,
+                        adminDetails.getAuthorities()
                 );
 
                 // 인증객체 로그
