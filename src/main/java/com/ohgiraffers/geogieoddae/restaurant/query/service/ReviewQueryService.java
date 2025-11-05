@@ -21,7 +21,6 @@ public class ReviewQueryService {
 
     public List<ReviewDto> getReviewsByUser(Long userCode) {
         List<ReviewDto> reviews = reviewMapper.findReviewsByUserId(userCode);
-        System.out.println("조회된 리뷰 개수: " + reviews.size());
         reviews.forEach(System.out::println);
         return reviewMapper.findReviewsByUserId(userCode);
     }

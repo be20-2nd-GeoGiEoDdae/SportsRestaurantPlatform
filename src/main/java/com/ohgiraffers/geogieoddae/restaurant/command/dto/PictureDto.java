@@ -1,5 +1,6 @@
 package com.ohgiraffers.geogieoddae.restaurant.command.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -8,5 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class PictureDto {
+    @NotBlank
     private String pictureUrl;
 }

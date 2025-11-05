@@ -39,9 +39,9 @@ public class ReviewEntity extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "user_code", nullable = false)
     private UserEntity member;
-//
-//    @OneToMany(mappedBy = "review")
-//    private List<ReviewPictureEntity> pictures;
+
+    @OneToMany(mappedBy = "review",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewPictureEntity> pictures;
 
 //    public static void updatedReview(ReviewDto dto, ReviewEntity review) {
 //        review.setReviewTitle(dto.getReviewTitle());
