@@ -21,7 +21,6 @@ public class EntrepreneurController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<String>> entrepreneurRegister(@RequestBody EntrepreneurRegisterRequestDto request) {
-        System.out.println("==== Controller 진입 ====");
         entrepreneurService.register(request);
         return ResponseEntity.ok(ApiResponse.success("사업자 등록신청 완료"));
     }

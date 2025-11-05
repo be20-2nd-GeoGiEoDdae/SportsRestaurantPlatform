@@ -46,30 +46,5 @@ public class EntrepreneurService {
         System.out.println("Saved : " + request.toString());
         
     }
-        /*
-    // 사업자 등록 신청
-    public void registerEntrepreneur(
-            Integer entrepreneurId,
-            String entrepreneurCertificateUrl,
-            Integer entrepreneurBankAccount,
-            Long userCode
-    ) {
-        UserEntity user = userRepository.findById(userCode).orElseThrow(
-                ()->new IllegalArgumentException("존재하지 않는 회원입니다.")
-        );
 
-        EntrepreneurEntity entrepreneur = EntrepreneurEntity.builder()
-                .entrepreneurId(entrepreneurId)
-                .entrepreneurCertificateUrl(entrepreneurCertificateUrl)
-                .entrepreneurBankAccount(entrepreneurBankAccount)
-                .member(user)
-                .build();
-
-        System.out.println("entrepreneur: " + entrepreneur.toString() + "");
-
-        entrepreneurRepository.save(entrepreneur);
-
-        System.out.println("저장 여부 : " + entrepreneurRepository.save(entrepreneur));
-    }
-        */
 }
