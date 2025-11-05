@@ -1,7 +1,15 @@
 package com.ohgiraffers.geogieoddae.global.config;
 
+import com.ohgiraffers.geogieoddae.auth.command.service.CustomOAuth2UserService;
+import com.ohgiraffers.geogieoddae.global.jwt.JwtAuthenticationFilter;
+import com.ohgiraffers.geogieoddae.global.jwt.OAuth2AuthenticationSuccessHandler;
+import com.ohgiraffers.geogieoddae.global.security.CookieOAuth2AuthorizationRequestRepository;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,14 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.ohgiraffers.geogieoddae.auth.command.service.CustomOAuth2UserService;
-import com.ohgiraffers.geogieoddae.global.jwt.JwtAuthenticationFilter;
-import com.ohgiraffers.geogieoddae.global.jwt.OAuth2AuthenticationSuccessHandler;
-import com.ohgiraffers.geogieoddae.global.security.CookieOAuth2AuthorizationRequestRepository;
-
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -48,9 +48,8 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
-                        /*.requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")*/
-                    .requestMatchers("/**").permitAll()
+                        .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**").permitAll()
+                        .requestMatchers("/api/admin/users-view", "/api/admin/logout").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
 
                 )
@@ -64,6 +63,7 @@ public class SecurityConfig {
                         .successHandler(oAuth2AuthenticationSuccessHandler)
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
