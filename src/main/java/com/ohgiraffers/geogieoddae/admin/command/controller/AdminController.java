@@ -2,7 +2,7 @@ package com.ohgiraffers.geogieoddae.admin.command.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,23 +30,23 @@ public class AdminController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(
-            @AuthenticationPrincipal AdminDetails adminDetails
-    ) {
-        String adminId = adminDetails.getAdminId();
-        adminService.logout(adminDetails.getAdminId());
-        return ResponseEntity.ok(ApiResponse.success(null));
-    }
-    /*
     public ResponseEntity<ApiResponse<Void>> logout(Authentication authentication) {
+        
         AdminDetails adminDetails = (AdminDetails) authentication.getPrincipal();
         adminService.logout(adminDetails.getUsername());
         return ResponseEntity.ok(ApiResponse.success(null));
+        
     }
-    */
+
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AdminTokenResponse>> refresh(@RequestBody AdminRefreshTokenRequest request) {
         AdminTokenResponse response = adminService.refreshToken(request.getAdminRefreshToken());
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PostMapping("/entrepreneur/{id}/approve")
+    public ResponseEntity<ApiResponse<Void>> approveEntrepreneur(@PathVariable Long id) {
+        adminService.approveEntrepreneur(id);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

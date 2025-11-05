@@ -1,18 +1,23 @@
 package com.ohgiraffers.geogieoddae.admin.command.service;
 
-import com.ohgiraffers.geogieoddae.admin.command.dto.AdminLoginRequest;
-import com.ohgiraffers.geogieoddae.admin.command.dto.AdminTokenResponse;
-import com.ohgiraffers.geogieoddae.admin.command.entity.AdminEntity;
-import com.ohgiraffers.geogieoddae.admin.command.repository.AdminRepository;
-import com.ohgiraffers.geogieoddae.exception.AdminNotFoundException;
-import com.ohgiraffers.geogieoddae.global.jwt.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import com.ohgiraffers.geogieoddae.admin.command.dto.AdminLoginRequest;
+import com.ohgiraffers.geogieoddae.admin.command.dto.AdminTokenResponse;
+import com.ohgiraffers.geogieoddae.admin.command.entity.AdminEntity;
+import com.ohgiraffers.geogieoddae.admin.command.repository.AdminRepository;
+import com.ohgiraffers.geogieoddae.auth.command.entity.entrepreneur.EntrepreneurEntity;
+import com.ohgiraffers.geogieoddae.auth.command.entity.entrepreneur.EntrepreneurStatus;
+import com.ohgiraffers.geogieoddae.auth.command.repository.EntrepreneurRepository;
+import com.ohgiraffers.geogieoddae.exception.AdminNotFoundException;
+import com.ohgiraffers.geogieoddae.global.jwt.JwtTokenProvider;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +26,7 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final EntrepreneurRepository entrepreneurRepository; // EntrepreneurRepository 주입
 
     // 관리자 로그인
     public AdminTokenResponse login(AdminLoginRequest request) {
@@ -102,5 +108,14 @@ public class AdminService {
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .build();
+    }
+
+    // 관리자 사업자등록 신청 승인
+    @Transactional
+    public void approveEntrepreneur(Long id) {
+        EntrepreneurEntity entrepreneur = entrepreneurRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사업자 정보를 찾을 수 없습니다."));
+        entrepreneur.setEntrepreneurStatus(EntrepreneurStatus.APPROVED);
+        entrepreneurRepository.save(entrepreneur);
     }
 }

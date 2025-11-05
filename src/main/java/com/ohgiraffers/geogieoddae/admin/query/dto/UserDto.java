@@ -6,13 +6,12 @@
 
 package com.ohgiraffers.geogieoddae.admin.query.dto;
 
+import java.time.LocalDateTime;
+
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTi
-}
-me;
 
 @Getter
 @Setter
@@ -24,3 +23,4 @@ public class UserDto {
     private String userAddress;
     private UserRole user;
     private LocalDateTime createdAt;
+}
