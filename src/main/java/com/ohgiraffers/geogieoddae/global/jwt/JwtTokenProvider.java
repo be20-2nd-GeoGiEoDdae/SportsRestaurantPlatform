@@ -71,10 +71,10 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // Refresh Token 생성 - 사업자용
-    public String generateUserRefreshToken(String adminId) {
+    // Refresh Token 생성 - 사용자용
+    public String generateUserRefreshToken(String userId) {
         return Jwts.builder()
-                .setSubject(adminId)
+                .setSubject(userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidity))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
