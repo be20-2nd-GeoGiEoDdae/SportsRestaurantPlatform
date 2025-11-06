@@ -13,9 +13,9 @@ import java.util.List;
 @Builder
 public class ReportTypeEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_type_code")
-    private String reportTypeCode;
+    private Long reportTypeCode;
 
     @Column(name = "report_type_type")
     private String reportTypeType;

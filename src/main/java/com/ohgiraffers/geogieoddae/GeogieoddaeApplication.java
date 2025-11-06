@@ -1,8 +1,11 @@
 package com.ohgiraffers.geogieoddae;
 
-import java.time.LocalDateTime;
-import java.util.stream.IntStream;
-
+import com.ohgiraffers.geogieoddae.admin.command.entity.AdminEntity;
+import com.ohgiraffers.geogieoddae.admin.command.repository.AdminRepository;
+import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
+import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
+import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,14 +13,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.ohgiraffers.geogieoddae.admin.command.entity.AdminEntity;
-import com.ohgiraffers.geogieoddae.admin.command.repository.AdminRepository;
-import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
-import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
-import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
+import java.time.LocalDateTime;
+import java.util.stream.IntStream;
 
 @SpringBootApplication
 @EnableJpaAuditing
+@MapperScan(basePackages = "com.ohgiraffers.geogieoddae.**.query.mapper")
 public class GeogieoddaeApplication {
 
     public static void main(String[] args) {
@@ -65,6 +66,7 @@ public class GeogieoddaeApplication {
                 System.out.println("====== 더미 회원 데이터 생성완료 =======");
             }
         };
+
     }
 
 }

@@ -6,7 +6,7 @@ import com.ohgiraffers.geogieoddae.notification.command.event.AlarmCreatedEvent;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.bookmark.BookmarkRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantRepository;
-import com.ohgiraffers.geogieoddae.sports.command.entity.SportEntity;
+import com.ohgiraffers.geogieoddae.sports.command.entity.SportsEntity;
 import com.ohgiraffers.geogieoddae.sports.command.entity.TeamEntity;
 import com.ohgiraffers.geogieoddae.sports.command.repository.SportsRepository;
 import com.ohgiraffers.geogieoddae.sports.command.repository.TeamRepository;
@@ -56,7 +56,7 @@ public class ViewingServiceImpl implements ViewingService {
                 .orElseThrow(() -> new IllegalArgumentException("가게가 존재하지 않습니다."));
         viewing.setRestaurant(restaurant);
 
-        SportEntity sport = sportsRepository.findById(dto.getSportsId())
+        SportsEntity sport = sportsRepository.findById(dto.getSportsId())
                 .orElseThrow(() -> new IllegalArgumentException("종목이 존재하지 않습니다."));
         viewing.setSport(sport);
 
@@ -113,7 +113,7 @@ public void updateViewing(ViewingDto dto) {
     }
 
     if (dto.getSportsId() != null) {
-        SportEntity sport = sportsRepository.findById(dto.getSportsId())
+        SportsEntity sport = sportsRepository.findById(dto.getSportsId())
                 .orElseThrow(() -> new IllegalArgumentException("종목이 존재하지 않습니다."));
         viewing.setSport(sport);
     }
