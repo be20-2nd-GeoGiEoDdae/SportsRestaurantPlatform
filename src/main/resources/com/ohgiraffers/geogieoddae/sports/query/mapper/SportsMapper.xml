@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ohgiraffers.geogieoddae.sports.query.mapper.SportsMapper">
 
-    <resultMap id="sportResultMap" type="com.ohgiraffers.geogieoddae.sports.query.dto.SportQueryDto">
+    <resultMap id="sportResultMap" type="com.ohgiraffers.geogieoddae.sports.query.dto.SportsQueryDto">
         <result property="sportName" column="sport_name"/>
         <result property="sportDescription" column="sport_decription"/>
     </resultMap>

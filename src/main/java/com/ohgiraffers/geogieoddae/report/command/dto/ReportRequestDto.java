@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportRequestDto {
-    private String reportTitle;      // 신고 제목
     private String reportContents;   // 신고 내용
     private Long restaurantCode;
-    private String reportTypeCode;
+    private Long reportTypeCode;
 }

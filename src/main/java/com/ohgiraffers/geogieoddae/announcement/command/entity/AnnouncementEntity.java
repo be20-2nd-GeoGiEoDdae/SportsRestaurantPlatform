@@ -27,7 +27,7 @@ public class AnnouncementEntity extends BaseTimeEntity {
 
     @Column(name = "announcement_content", nullable = false)
     private String announcementContent;
-
+//
 //    @ManyToOne
 //    @JoinColumn(name = "admin_code", nullable = false)
 //    private AdminEntity admin;

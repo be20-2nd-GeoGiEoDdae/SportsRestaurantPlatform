@@ -4,7 +4,6 @@ import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 
 @Entity
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ReportEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_code")
     private Long reportCode;
 
@@ -24,14 +23,8 @@ public class ReportEntity {
     private String reportContents;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "report_status", columnDefinition = "ENUM('승인','보류','미승인')")
+    @Column(name = "report_status")
     private ReportStatus reportStatus;
-
-    @Column(name = "report_completed_at")
-    private LocalDateTime reportCompletedAt;
-
-    @Column(name = "report_created_at")
-    private LocalDateTime reportCreatedAt;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_code", nullable = false)

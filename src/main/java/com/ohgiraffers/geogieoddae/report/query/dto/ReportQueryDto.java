@@ -20,4 +20,5 @@ public class ReportQueryDto {
     private String reportTypeType;
     private Long userCode;
     private String userName;
+    private Integer reportCount;   // ✅ 가게별 신고 누적 횟수
 }
