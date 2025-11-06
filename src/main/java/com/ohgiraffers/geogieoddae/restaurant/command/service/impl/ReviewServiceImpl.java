@@ -12,6 +12,7 @@ import com.ohgiraffers.geogieoddae.restaurant.command.repository.review.ReviewRe
 import com.ohgiraffers.geogieoddae.restaurant.command.service.ReviewService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
     private final ReviewPictureRepository reviewPictureRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     @Override
@@ -45,6 +47,11 @@ public class ReviewServiceImpl implements ReviewService {
                 .member(user)
                 .build();
 
+/*      Long notificationReviewType=(long)5;
+      publisher.publishEvent(new AlarmCreatedEvent(restaurant
+          .getEntrepreneur()
+          .getMember()
+          .getUserCode(),notificationReviewType));*/
         reviewRepository.save(review);
 
         List<String> pictureUrls = saveReviewPictures(review, pictures);

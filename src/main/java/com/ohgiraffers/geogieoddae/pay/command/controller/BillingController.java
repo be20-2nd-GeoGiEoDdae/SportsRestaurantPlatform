@@ -1,13 +1,13 @@
 package com.ohgiraffers.geogieoddae.pay.command.controller;
 
+import com.ohgiraffers.geogieoddae.auth.command.repository.EntrepreneurRepository;
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
-import com.ohgiraffers.geogieoddae.pay.command.dto.EntrepreneurSubscribeChargeRequest;
-import com.ohgiraffers.geogieoddae.pay.command.repository.EntrepreneurSubscribePaymentRepository;
-import com.ohgiraffers.geogieoddae.pay.command.repository.UserRepository;
 import com.ohgiraffers.geogieoddae.pay.command.service.EntrepreneurSubscribePaymentService;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,15 +23,15 @@ public class BillingController {
   private String clientKey;
   // Base64가 시크릿 키를 암호화하거나 보호하지 않지만, HTTP 헤더로 안전하게 텍스트로 전송
   private final EntrepreneurSubscribePaymentService entrepreneurSubscribePaymentService;
-  private final EntrepreneurSubscribePaymentRepository subscribePaymentRepository;
-  private final UserRepository userRepository;
 
-  @GetMapping("/index/{userCode}")
-  public String subscribePage(@PathVariable Long userCode, Model model) {
+  private final EntrepreneurRepository entrepreneurRepository;
+
+  @GetMapping("/index/{entrepreneurCode}")
+  public String subscribePage(@PathVariable Long entrepreneurCode, Model model) {
     model.addAttribute("clientKey",clientKey );
-    model.addAttribute("customerKey", userCode+"_"+UUID.randomUUID());
-    model.addAttribute("userName",userRepository.findById(userCode).orElseThrow().getUserName());
-    model.addAttribute("userEmail",userRepository.findById(userCode).orElseThrow().getUserEmail());
+    model.addAttribute("customerKey", entrepreneurCode+"_"+UUID.randomUUID());
+  //  model.addAttribute("userName", entrepreneurRepository.findById(entrepreneurCode).orElseThrow().getMember().getUserName());
+ //   model.addAttribute("userEmail",entrepreneurRepository.findById(entrepreneurCode).orElseThrow().getMember().getUserName());
 
     return "index";
   }
@@ -57,19 +57,36 @@ public class BillingController {
   }
 
   //빌링키로 결제
+  //@PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/charge/{userCode}")
-  public ResponseEntity<ApiResponse<Map<String, Object>>> charge(@RequestBody EntrepreneurSubscribeChargeRequest req ,@PathVariable long userCode) {
-    Map<String,Object> toss =entrepreneurSubscribePaymentService.subscribeCharge(req,userCode);
+  public ResponseEntity<ApiResponse<Map<String, Object>>> charge(@PathVariable Long userCode) {
+    Map<String,Object> toss =entrepreneurSubscribePaymentService.subscribePaymentCharge(userCode);
 
     return ResponseEntity.ok(ApiResponse.success(toss));
   }
 
   //빌링키 삭제
   @DeleteMapping("/charge/{userCode}")
-  public ResponseEntity<ApiResponse<Void>> deleteBillingKey(@PathVariable long userCode) {
+  public ResponseEntity<ApiResponse<String>> deleteBillingKey(@PathVariable Long userCode) {
     return ResponseEntity.ok(
         ApiResponse.success(entrepreneurSubscribePaymentService.deleteBillingKey(userCode)));
   }
 
+  //구독 결제검색
+  @GetMapping("/{entrepreneurCode}")
+  public ResponseEntity<String> tossSelect(
+      @PathVariable Long entrepreneurCode
+  ){
+    return entrepreneurSubscribePaymentService.subscribePaymentSelectByOrderId(entrepreneurCode);
+  }
+
+  //@PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("/log")
+  public ResponseEntity<String> getSubscribeLog(
+      @RequestParam LocalDateTime startDate,
+      @RequestParam LocalDateTime endDate
+  ) {
+      return entrepreneurSubscribePaymentService.subscribePaymentLogAll(startDate,endDate);
+  }
 
 }

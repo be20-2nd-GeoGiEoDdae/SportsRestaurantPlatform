@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>결제</title>
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+<body>
+<div id="payment-method"></div>
+<div id="agreement"></div>
+<button id="pay">결제하기</button>
+
+<script th:inline="javascript">
+  // 서버에서 주입되는 값(Thymeleaf)
+  const customerKey = /*[[${customerKey}]]*/ "";
+  const orderId   = /*[[${orderId}]]*/ "";
+  const amountRaw   = /*[[${amount}]]*/ 0;
+  const clientKey   = /*[[${clientKey}]]*/ "";
+
+  (async () => {
+    if (typeof TossPayments === 'undefined') {
+      alert('토스 결제 SDK 로드 실패'); return;
+    }
+    // 필수값 검증
+    const amount = Number(amountRaw);
+    if (!clientKey||!orderId || !customerKey || !Number.isFinite(amount) || amount <= 0) {
+      alert('초기화 값이 올바르지 않습니다.'); return;
+    }
+
+    // SDK 초기화 + 위젯 준비
+    const tossPayments = TossPayments(clientKey);
+    const widgets = tossPayments.widgets({ customerKey });
+
+    // 금액 설정 → UI 렌더
+    await widgets.setAmount({ value: amount, currency: "KRW" });
+    await widgets.renderPaymentMethods({ selector: "#payment-method" });
+    await widgets.renderAgreement({ selector: "#agreement" });
+
+    // 결제 요청
+    document.getElementById('pay').addEventListener('click', async () => {
+      try {
+        await widgets.requestPayment({
+          orderId,
+          orderName: 'Goegieoddae 결제',
+          successUrl: location.origin + '/viewingPay/success', // 서버의 성공 핸들러
+          failUrl:    location.origin + '/pay/fail'     // 서버의 실패 핸들러
+          // 필요시: customerEmail, customerName 등 추가
+        });
+      } catch (e) {
+        console.error('[requestPayment error]', e?.code, e?.message, e);
+        alert('결제호출 실패: 콘솔 로그를 확인하세요.');
+      }
+    });
+  })();
+</script>
+</body>
+</html>
+

@@ -4,7 +4,6 @@ import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 import com.ohgiraffers.geogieoddae.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notification")
@@ -19,8 +18,10 @@ public class NotificationEntity extends BaseTimeEntity {
     @Column(name = "notification_code")
     private Long notificationCode;
 
-    @Column(name = "notification_checked", columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean notificationChecked;
+
+    @Column(name = "notification_checked")//, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Builder.Default
+    private Boolean notificationChecked=false;
 
     @ManyToOne
     @JoinColumn(name = "Key2", nullable = false)

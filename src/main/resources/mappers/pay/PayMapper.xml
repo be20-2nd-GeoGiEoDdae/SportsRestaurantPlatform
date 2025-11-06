@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ohgiraffers.geogieoddae.pay.query.mapper.PayMapper">
+
+  <select id="selectPayByPayCode"
+    resultType="com.ohgiraffers.geogieoddae.pay.query.dto.PaySearchResponse">
+    SELECT
+      vp.viewing_pay_code            AS viewingPayCode,
+      vp.viewing_pay_price           AS viewingPayPrice,
+      vp.created_at                  AS createdAt,
+      vp.viewing_pay_refund_date     AS viewingPayRefundDate,
+      u.user_name                    AS userName,
+      u.user_email                   AS userEmail,
+      vp.viewing_pay_customer_key   AS customerKey,
+      vp.viewing_pay_order_id       AS orderId,
+      vp.viewing_pay_payment_key    AS paymentKey,
+      vp.viewing_pay_status         AS  viewingPayStatus
+    FROM viewing_pay vp
+           JOIN member u ON u.user_code = vp.user_code
+    WHERE vp.viewing_pay_code = #{payCode}
+  </select>
+
+  <select id="selectPayByViewingCode"
+    resultType="com.ohgiraffers.geogieoddae.pay.query.dto.PaySearchResponse">
+    SELECT
+      vp.viewing_pay_code            AS viewingPayCode,
+      vp.viewing_pay_price           AS viewingPayPrice,
+      vp.created_at                  AS createdAt,
+      vp.viewing_pay_refund_date     AS viewingPayRefundDate,
+      u.user_name                    AS userName,
+      u.user_email                   AS userEmail,
+      vp.viewing_pay_customer_key   AS customerKey,
+      vp.viewing_pay_order_id       AS orderId,
+      vp.viewing_pay_payment_key    AS paymentKey,
+      vp.viewing_pay_status         AS  viewingPayStatus
+    FROM viewing_pay vp
+           JOIN member u ON u.user_code = vp.user_code
+    WHERE vp.viewing_code=#{viewingCode}
+    ORDER BY createdAt DESC
+  </select>
+
+  <select id="selectPayAll"
+    resultType="com.ohgiraffers.geogieoddae.pay.query.dto.PaySearchResponse">
+    SELECT
+      vp.viewing_pay_code            AS viewingPayCode,
+      vp.viewing_pay_price           AS viewingPayPrice,
+      vp.created_at                  AS createdAt,
+      vp.viewing_pay_refund_date     AS viewingPayRefundDate,
+      u.user_name                    AS userName,
+      u.user_email                   AS userEmail,
+      vp.viewing_pay_customer_key   AS customerKey,
+      vp.viewing_pay_order_id       AS orderId,
+      vp.viewing_pay_payment_key    AS paymentKey,
+      vp.viewing_pay_status         AS  viewingPayStatus
+    FROM viewing_pay vp
+           JOIN member u ON u.user_code = vp.user_code
+    ORDER BY createdAt DESC
+  </select>
+
+  <select id="selectPayByUserCode"
+    resultType="com.ohgiraffers.geogieoddae.pay.query.dto.PaySearchResponse">
+    SELECT
+      vp.viewing_pay_code            AS viewingPayCode,
+      vp.viewing_pay_price           AS viewingPayPrice,
+      vp.created_at                  AS createdAt,
+      vp.viewing_pay_refund_date     AS viewingPayRefundDate,
+      u.user_name                    AS userName,
+      u.user_email                   AS userEmail,
+      vp.viewing_pay_customer_key   AS customerKey,
+      vp.viewing_pay_order_id       AS orderId,
+      vp.viewing_pay_payment_key    AS paymentKey,
+      vp.viewing_pay_status         AS  viewingPayStatus
+    FROM viewing_pay vp
+           JOIN member u ON u.user_code = vp.user_code
+    WHERE u.user_code=#{userCode}
+    ORDER BY createdAt DESC
+  </select>
+</mapper>
+

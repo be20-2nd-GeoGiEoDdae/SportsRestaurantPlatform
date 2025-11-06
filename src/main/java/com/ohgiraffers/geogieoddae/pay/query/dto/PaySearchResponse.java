@@ -1,6 +1,7 @@
 package com.ohgiraffers.geogieoddae.pay.query.dto;
 
-import java.time.LocalDate;
+import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayStatus;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +10,13 @@ import lombok.Setter;
 public class PaySearchResponse {
   private Long viewingPayCode;
   private Integer viewingPayPrice;
-  private LocalDate createdAt;
-  private LocalDate viewingPayRefundDate;
+  private LocalDateTime createdAt;
+  private LocalDateTime viewingPayRefundDate;
   private String userName;
   private String userEmail;
+  private String customerKey;
+  private String orderId;
+  private String paymentKey;
+  private ViewingPayStatus viewingPayStatus;
+
 }

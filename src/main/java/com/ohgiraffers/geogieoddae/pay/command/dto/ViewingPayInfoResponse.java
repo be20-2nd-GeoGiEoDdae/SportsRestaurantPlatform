@@ -1,4 +1,6 @@
 package com.ohgiraffers.geogieoddae.pay.command.dto;
+import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayStatus;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -6,14 +8,16 @@ import lombok.Setter;
 @Setter
 public class ViewingPayInfoResponse {
   private Long viewingCode;
-  private Integer viewingPayPrice;
+  private Long viewingPayPrice;
+  private LocalDateTime viewingPayRefundDate;
+  private String customerKey;
   private String orderId;
-  private Integer deposit;
+  private String paymentKey;
+  private ViewingPayStatus viewingPayStatus;
 
-  public ViewingPayInfoResponse(Long viewingPayCode, Integer viewingPayPrice,String orderId,Integer deposit) {
+  public ViewingPayInfoResponse(Long viewingPayCode, Long viewingPayPrice,String orderId) {
     this.viewingCode = viewingPayCode;
     this.viewingPayPrice = viewingPayPrice;
     this.orderId = orderId;
-    this.deposit = deposit;
   }
 }
