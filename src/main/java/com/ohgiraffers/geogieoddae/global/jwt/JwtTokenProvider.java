@@ -64,7 +64,7 @@ public class JwtTokenProvider {
     public String generateUserAccessToken(String userId, String role) {
         return Jwts.builder()
                 .setSubject(userId)
-                .claim("role", "ROLE_USER")
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
