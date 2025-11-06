@@ -150,7 +150,7 @@ public class ReportCommandService {
                 .build();
 
         restaurantBlacklistRepository.save(restaurantBlacklistEntity);
-    }w
+    }
 
 ////    /**
 ////     * ✅ 자동 등록 (신고 5회 이상 시)
