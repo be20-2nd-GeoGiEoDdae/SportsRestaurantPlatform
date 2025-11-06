@@ -2,7 +2,9 @@ package com.ohgiraffers.geogieoddae.viewing.command.service;
 
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
+import com.ohgiraffers.geogieoddae.notification.command.event.AlarmCreatedEvent;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
+import com.ohgiraffers.geogieoddae.restaurant.command.repository.bookmark.BookmarkRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantRepository;
 import com.ohgiraffers.geogieoddae.sports.command.entity.SportEntity;
 import com.ohgiraffers.geogieoddae.sports.command.entity.TeamEntity;
@@ -17,6 +19,7 @@ import com.ohgiraffers.geogieoddae.viewing.command.repository.ViewingRepository;
 import com.ohgiraffers.geogieoddae.viewing.command.repository.ViewingUserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +34,8 @@ public class ViewingServiceImpl implements ViewingService {
     private final SportsRepository sportsRepository;
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
-
+    private final ApplicationEventPublisher publisher;
+    private final BookmarkRepository bookmarkRepository;
 
     /* ================= 사업자 ================= */
     @Transactional
@@ -75,6 +79,15 @@ public class ViewingServiceImpl implements ViewingService {
             }
         }
 
+      List<Long>userIds =bookmarkRepository.findByRestaurant_RestaurantCode(dto.getRestaurantId())
+          .stream()
+          .map(b->b.getMember().getUserCode())
+          .distinct()              // 중복 제거(옵션)
+          .toList();
+      Long notificationTypeCode = (long)3;
+      for(Long u:userIds){
+        publisher.publishEvent(new AlarmCreatedEvent(u,notificationTypeCode) );
+      }
         viewingRepository.save(viewing);
 
 
@@ -126,6 +139,15 @@ public void deleteViewing(Long viewingCode) {
     ViewingEntity viewing = viewingRepository.findById(viewingCode)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관람입니다."));
     viewing.setViewingStatus(ViewingStatus.DELETED);
+  List<Long> userIds=viewingUserRepository.findByViewing_ViewingCode(viewingCode).stream()
+      .map(vu->vu.getMember().getUserCode())
+      .distinct()
+      .toList();
+  System.out.println("유저 아이디:"+userIds);
+  Long notificationTypeCode = (long)2;
+  for(Long u:userIds){
+    publisher.publishEvent(new AlarmCreatedEvent(u,notificationTypeCode) );
+  }
 }
 
 /* ================= 이용자 ================= */

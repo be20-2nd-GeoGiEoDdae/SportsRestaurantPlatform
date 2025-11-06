@@ -22,10 +22,25 @@ public class ViewingPayEntity extends BaseTimeEntity {
     private Long viewingPayCode;
 
     @Column(name = "viewing_pay_price", nullable = false)
-    private Integer viewingPayPrice;
+    private Long viewingPayPrice;
 
-    @Column(name = "viewing_pay_refund_date", nullable = false)
+    @Column(name = "viewing_pay_refund_date")//true->
     private LocalDateTime viewingPayRefundDate;
+
+    @Column(name = "viewing_pay_customer_key")
+    private String viewingPayCustomerKey;
+
+    @Column(name = "viewing_pay_order_id")
+    private String viewingPayOrderId;
+
+  @Column(name = "viewing_pay_payment_key")
+  private String viewingPayPaymentKey;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name= "viewing_pay_status")
+  private ViewingPayStatus  viewingPayStatus;
+
+
 
 
     @ManyToOne
@@ -35,4 +50,11 @@ public class ViewingPayEntity extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "viewing_code", nullable = false)
     private ViewingEntity viewing;
+
+    public void addOrderId(String orderId) {
+      this.viewingPayOrderId = orderId;
+    }
+    public void addPaymentKey(String paymentKey) {
+      this.viewingPayPaymentKey = paymentKey;
+    }
 }

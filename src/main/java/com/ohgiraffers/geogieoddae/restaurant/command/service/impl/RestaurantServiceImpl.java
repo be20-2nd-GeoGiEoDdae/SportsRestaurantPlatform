@@ -1,5 +1,6 @@
 package com.ohgiraffers.geogieoddae.restaurant.command.service.impl;
 
+import com.ohgiraffers.geogieoddae.auth.command.repository.EntrepreneurRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.KeywordEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.RestaurantKeywordEntity;
@@ -9,7 +10,6 @@ import com.ohgiraffers.geogieoddae.restaurant.command.repository.keyword.Keyword
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.keyword.RestaurantKeywordRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantPictureRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantRepository;
-import com.ohgiraffers.geogieoddae.restaurant.command.repository.review.ReviewRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.service.RestaurantService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +32,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final KeywordRepository keywordRepository;
     private final RestaurantKeywordRepository restaurantKeywordRepository;
     private final RestaurantPictureRepository restaurantPictureRepository;
+    private final EntrepreneurRepository entrepreneurRepository;
     @Transactional
     @Override
     public void registerRestaurant(RestaurantDto restaurantDto, List<MultipartFile> pictures) throws IOException {
@@ -40,6 +41,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .restaurantLocation(restaurantDto.getRestaurantLocation())
                 .restaurantCategory(restaurantDto.getRestaurantCategory())
                 .restaurantPeopleNumber(restaurantDto.getRestaurantPeopleNumber())
+                .entrepreneur(entrepreneurRepository.findById(restaurantDto.getEntrepreneurId()).orElseThrow())
                 .restaurantContents(restaurantDto.getRestaurantContents())
                 .restaurantScore(restaurantDto.getRestaurantScore())
                 .restaurantIsDeleted(false)

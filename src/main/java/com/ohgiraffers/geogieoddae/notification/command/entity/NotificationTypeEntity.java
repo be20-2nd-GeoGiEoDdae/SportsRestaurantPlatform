@@ -21,7 +21,7 @@ public class NotificationTypeEntity {
     private String notificationTypeType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "notification_type_status", columnDefinition = "ENUM('Y','N') DEFAULT 'Y'")
+    @Column(name = "notification_type_status")
     private NotificationStatus notificationTypeStatus;
 
     @Column(name = "notification_content", nullable = false)
@@ -29,4 +29,9 @@ public class NotificationTypeEntity {
 
     @OneToMany(mappedBy = "notificationType")
     private List<NotificationEntity> notifications;
+
+    public void deleteNotificationType()
+    {
+      this.notificationTypeStatus=NotificationStatus.N;
+    }
 }

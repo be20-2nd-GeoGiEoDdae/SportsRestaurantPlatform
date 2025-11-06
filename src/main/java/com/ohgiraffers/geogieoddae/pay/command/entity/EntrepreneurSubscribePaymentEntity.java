@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 public class EntrepreneurSubscribePaymentEntity extends BaseTimeEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id// @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "entrepreneur_code")
     private Long entrepreneurCode;
 
@@ -29,6 +29,14 @@ public class EntrepreneurSubscribePaymentEntity extends BaseTimeEntity {
 
     @Column(name = "entrepreneur_subscribe_billingkey")
     private String entrepreneurSubscribeBillingkey;
+
+    @Column(name = "entrepreneur_subscribe_customerKey")
+    private String entrepreneurSubscribeCustomerKey;
+
+  @Column(name = "entrepreneur_subscribe_orderid")
+  private String entrepreneurSubscribeOrderId;
+
+
 
     @ManyToOne
     @JoinColumn(name = "entrepreneur_code", insertable = false, updatable = false)
