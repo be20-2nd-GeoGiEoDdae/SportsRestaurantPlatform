@@ -6,6 +6,7 @@ import com.ohgiraffers.geogieoddae.restaurant.command.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,14 +54,16 @@ public class ReviewController {
 
     //리뷰 삭제(사용자)
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<ApiResponse<?>> deleteReview(@PathVariable Long reviewId) {
+    public ResponseEntity<ApiResponse<?>> deleteReviewUser(@PathVariable Long reviewId) {
         reviewService.deleteReviewUser(reviewId);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
-    // 리뷰 삭제 (관리자)
+
+//    //     리뷰 삭제 (관리자)
+//    @PreAuthorize("hasRole('ADMIN')")
 //    @DeleteMapping("/{reviewId}")
-//    public ResponseEntity<ApiResponse<?>> deleteReview(@PathVariable Long reviewId) {
-//         reviewService.deleteReviewUser(reviewId);
-//          return ResponseEntity.ok(ApiResponse.success(null)); // }
+//    public ResponseEntity<ApiResponse<?>> deleteReviewAdmin(@PathVariable Long reviewId) {
+//        reviewService.deleteReviewUser(reviewId);
+//        return ResponseEntity.ok(ApiResponse.success(null)); // }
 //    }
-    }
+}
