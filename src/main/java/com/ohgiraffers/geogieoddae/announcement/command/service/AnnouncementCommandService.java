@@ -44,26 +44,11 @@ public class AnnouncementCommandService {
     }
 
     //공지 삭제
-    public void delete(Long announcementCode){
-        if (!announcementRepository.existsById(announcementCode)) {
-            throw new IllegalArgumentException("공지가 존재하지 않습니다.: " + announcementCode);
-        }
-        announcementRepository.deleteById(announcementCode);
+        public void delete(Long announcementCode){
+            if (!announcementRepository.existsById(announcementCode)) {
+                throw new IllegalArgumentException("공지가 존재하지 않습니다.: " + announcementCode);
+            }
+            announcementRepository.deleteById(announcementCode);
     }
 
-//    public void update(Long code, AnnouncementUpdateDto req) {
-//        AnnouncementEntity entity = announcementRepository.findById(code)
-//                .orElseThrow(() -> new IllegalArgumentException("공지 없음: " + code));
-//
-//        entity.setAnnouncementTitle(req.getAnnouncementTitle());
-//        entity.setAnnouncementContent(req.getAnnouncementContent());
-//        // @Version 사용 시 버전 검증 로직 추가 가능
-//    }
-
-//    public void delete(Long code) {
-//        if (!announcementRepository.existsById(code)) {
-//            throw new IllegalArgumentException("공지 없음: " + code);
-//        }
-//        announcementRepository.deleteById(code);
-//    }
 }

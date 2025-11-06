@@ -19,7 +19,6 @@ public class AnnouncementCommandController {
     public ResponseEntity<ApiResponse<Void>> create(@RequestBody AnnouncementRequestDto dto) {
         announcementCommandService.create(dto);
         return ResponseEntity.ok(ApiResponse.success(null));
-//        return ResponseEntity.ok(ApiResponse.failure(400, " 등록 실패"));
     }
 
     @PatchMapping("/{code}")
