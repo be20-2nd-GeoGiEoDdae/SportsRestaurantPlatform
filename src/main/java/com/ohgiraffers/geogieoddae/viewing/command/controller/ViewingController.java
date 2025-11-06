@@ -6,6 +6,7 @@ import com.ohgiraffers.geogieoddae.viewing.command.dto.ViewingUserDto;
 import com.ohgiraffers.geogieoddae.viewing.command.service.ViewingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,10 +17,7 @@ public class ViewingController {
     private final ViewingService viewingService;
 
     /* ====================== 사업자 기능 ====================== */
-
-    /**
-     * 관람 생성 (사업자)
-     */
+    @PreAuthorize("hasAuthority('ENTREPRENEUR')")
     @PostMapping
     public ResponseEntity<ApiResponse<?>> createViewing(@RequestBody ViewingDto dto) {
         viewingService.createViewing(dto);
@@ -29,6 +27,7 @@ public class ViewingController {
     /**
      * 관람 수정 (사업자)
      */
+    @PreAuthorize("hasAuthority('ENTREPRENEUR')")
     @PutMapping("/{viewingCode}")
     public ResponseEntity<ApiResponse<?>> updateViewing(
             @PathVariable Long viewingCode,
@@ -42,6 +41,7 @@ public class ViewingController {
     /**
      * 관람 삭제 (사업자)
      */
+    @PreAuthorize("hasAuthority('ENTREPRENEUR')")
     @DeleteMapping("/{viewingCode}")
     public ResponseEntity<ApiResponse<?>> deleteViewing(@PathVariable Long viewingCode) {
         viewingService.deleteViewing(viewingCode);

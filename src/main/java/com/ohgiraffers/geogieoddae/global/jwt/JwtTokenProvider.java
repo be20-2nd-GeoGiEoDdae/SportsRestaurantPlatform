@@ -6,6 +6,7 @@
 
 package com.ohgiraffers.geogieoddae.global.jwt;
 
+import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -51,6 +52,26 @@ public class JwtTokenProvider {
 
     // Refresh Token 생성
     public String generateRefreshToken(String adminId) {
+        return Jwts.builder()
+                .setSubject(adminId)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidity))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+    // Access Token 생성
+    public String generateAccessTokenUser(String adminId) {
+        return Jwts.builder()
+                .setSubject(adminId)
+                .claim("role", UserRole.USER)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // Refresh Token 생성
+    public String generateRefreshTokenUser(String adminId) {
         return Jwts.builder()
                 .setSubject(adminId)
                 .setIssuedAt(new Date())

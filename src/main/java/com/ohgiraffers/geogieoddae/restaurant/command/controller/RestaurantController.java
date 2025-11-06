@@ -21,7 +21,7 @@ public class RestaurantController {
 
     public final RestaurantService restaurantService;
 
-    //    @PreAuthorize("hasRole('ENTREPRENEUR')")
+    @PreAuthorize("hasAuthority('ENTREPRENEUR')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<RestaurantDto>> registerRestaurant(@RequestPart("restaurant") RestaurantDto restaurantDto,
                                                                          @RequestPart(value = "pictures", required = false) List<MultipartFile> pictures) throws IOException {
@@ -29,14 +29,14 @@ public class RestaurantController {
         return ResponseEntity.ok(ApiResponse.success(restaurantDto));
     }
 
-    //    @PreAuthorize("hasRole('ENTREPRENEUR')")
+    @PreAuthorize("hasAuthority('ENTREPRENEUR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<RestaurantDto>> deleteRestaurant(@PathVariable Long id) {
         restaurantService.deleteRestaurant(id);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    @PatchMapping(value = "/{restaurantId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAuthority('ENTREPRENEUR')")
     public ResponseEntity<ApiResponse<?>> updateRestaurant(
             @PathVariable Long restaurantId,
             @RequestPart("restaurant") RestaurantDto restaurantDto,

@@ -34,8 +34,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         UserEntity user = userRepository.findByUserEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getUserEmail());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUserEmail());
+        String accessToken = jwtTokenProvider.generateAccessTokenUser(user.getUserEmail());
+        String refreshToken = jwtTokenProvider.generateRefreshTokenUser(user.getUserEmail());
 
         user.setUserRefreshToken(refreshToken);
         user.setUserRefreshTokenExpiresAt(jwtTokenProvider.getRefreshTokenExpiryAsLocalDateTime());

@@ -50,6 +50,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**").permitAll()
                         .requestMatchers("/api/admin/users-view", "/api/admin/logout").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/bookmarks/**"
+
+                        ).permitAll()
                         .anyRequest().authenticated()
 
                 )
