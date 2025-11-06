@@ -1,7 +1,7 @@
 package com.ohgiraffers.geogieoddae.announcement.command.service;
 
-import com.ohgiraffers.geogieoddae.announcement.command.dto.AnnouncementRequestDto;
-import com.ohgiraffers.geogieoddae.announcement.command.dto.AnnouncementResponseDto;
+import com.ohgiraffers.geogieoddae.announcement.command.DTO.AnnouncementRequestDto;
+import com.ohgiraffers.geogieoddae.announcement.command.DTO.AnnouncementResponseDto;
 import com.ohgiraffers.geogieoddae.announcement.command.entity.AnnouncementEntity;
 import com.ohgiraffers.geogieoddae.announcement.command.repository.AnnouncementCommandRepository;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,7 @@ package com.ohgiraffers.geogieoddae.report.query.controller;
 
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 import com.ohgiraffers.geogieoddae.report.query.dto.ReportQueryDto;
-import com.ohgiraffers.geogieoddae.report.query.service.ReportService;
+import com.ohgiraffers.geogieoddae.report.query.service.ReportQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/reports")
 @RequiredArgsConstructor
-public class ReportController {
+public class ReportQueryController {
 
-    private final ReportService reportService;
+    private final ReportQueryService reportService;
 
     // 관리자용 신고 목록 조회 (게시글처럼 조회)
     @GetMapping

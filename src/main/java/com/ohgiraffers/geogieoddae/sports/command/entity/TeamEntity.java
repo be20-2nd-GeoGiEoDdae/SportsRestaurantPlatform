@@ -26,7 +26,7 @@ public class TeamEntity {
 
     @ManyToOne
     @JoinColumn(name = "sport_code", nullable = false)
-    private SportEntity sport;
+    private SportsEntity sport;
 
     @OneToMany(mappedBy = "team")
     private List<ViewingEntity> viewings;

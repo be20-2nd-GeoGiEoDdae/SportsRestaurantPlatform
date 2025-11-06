@@ -3,6 +3,8 @@ package com.ohgiraffers.geogieoddae.admin.command.entity;
 import com.ohgiraffers.geogieoddae.announcement.command.entity.AnnouncementEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -30,7 +32,5 @@ public class AdminEntity {
     @Column(name = "admin_refresh_token_expires_at", nullable = true)
     private LocalDateTime adminRefreshTokenExpiresAt;
 
-    // ✅ 관계 설정
-    @OneToMany(mappedBy = "admin")
-    private List<AnnouncementEntity> announcements;
+//
 }

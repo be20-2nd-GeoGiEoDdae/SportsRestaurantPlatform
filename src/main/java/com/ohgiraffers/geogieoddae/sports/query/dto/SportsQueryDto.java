@@ -1,16 +1,17 @@
-package com.ohgiraffers.geogieoddae.sports.command.dto;
+package com.ohgiraffers.geogieoddae.sports.query.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@Builder
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SportResponseDto {
-    private Long sportCode;
+@Builder
+public class SportsQueryDto {
     private String sportName;
     private String sportDescription;
 }

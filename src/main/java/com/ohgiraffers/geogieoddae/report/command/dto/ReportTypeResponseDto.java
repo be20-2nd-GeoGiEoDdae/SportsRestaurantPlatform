@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportTypeResponseDto {
-    private String reportTypeCode;
     private String reportTypeType;
 }

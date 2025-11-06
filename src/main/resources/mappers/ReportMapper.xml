@@ -14,6 +14,7 @@
         <result property="reportTypeType" column="report_type_type"/>
         <result property="userCode" column="user_code"/>
         <result property="userName" column="user_name"/>
+        <result property="reportCount" column="report_count"/>  <!-- ✅ 추가 -->
     </resultMap>
 
     <!-- 관리자용 신고 목록 조회 -->
@@ -30,6 +31,11 @@
                rt.report_type_type,
                r.user_code,
                m.user_name
+               (
+                SELECT COUNT(*)
+                FROM report rr
+                WHERE rr.restaurant_code = r.restaurant_code
+                ) AS report_count  <!-- ✅ 가게별 신고 누적 횟수 -->
           FROM report r
           JOIN restaurant res ON r.restaurant_code = res.restaurant_code
           JOIN report_type rt ON r.report_type_code = rt.report_type_code
@@ -51,6 +57,11 @@
                rt.report_type_type,
                r.user_code,
                m.user_name
+                (
+                SELECT COUNT(*)
+                FROM report rr
+                WHERE rr.restaurant_code = r.restaurant_code
+                ) AS report_count  <!-- ✅ 동일하게 추가 -->
           FROM report r
           JOIN restaurant res ON r.restaurant_code = res.restaurant_code
           JOIN report_type rt ON r.report_type_code = rt.report_type_code

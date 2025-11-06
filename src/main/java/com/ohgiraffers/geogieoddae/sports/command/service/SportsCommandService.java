@@ -1,10 +1,10 @@
 package com.ohgiraffers.geogieoddae.sports.command.service;
 
-import com.ohgiraffers.geogieoddae.sports.command.dto.SportRequestDto;
-import com.ohgiraffers.geogieoddae.sports.command.dto.SportResponseDto;
+import com.ohgiraffers.geogieoddae.sports.command.dto.SportsRequestDto;
+import com.ohgiraffers.geogieoddae.sports.command.dto.SportsResponseDto;
 import com.ohgiraffers.geogieoddae.sports.command.dto.TeamRequestDto;
 import com.ohgiraffers.geogieoddae.sports.command.dto.TeamResponseDto;
-import com.ohgiraffers.geogieoddae.sports.command.entity.SportEntity;
+import com.ohgiraffers.geogieoddae.sports.command.entity.SportsEntity;
 import com.ohgiraffers.geogieoddae.sports.command.entity.TeamEntity;
 import com.ohgiraffers.geogieoddae.sports.command.repository.SportsRepository;
 import com.ohgiraffers.geogieoddae.sports.command.repository.TeamRepository;
@@ -15,30 +15,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class SportsService {
+public class SportsCommandService {
 
     private final SportsRepository sportsRepository;
     private final TeamRepository teamRepository;
 
     // 스포츠 종목 등록
-    public void createSport(SportRequestDto request) {
-        SportEntity sportEntity = SportEntity.builder()
+    public void createSport(SportsRequestDto request) {
+        SportsEntity sportsEntity = SportsEntity.builder()
                 .sportName(request.getSportName())
                 .sportDescription(request.getSportDescription())
                 .build();
 
-        sportsRepository.save(sportEntity);
+        sportsRepository.save(sportsEntity);
     }
 
     // 스포츠 종목 수정
-    public SportResponseDto updateSport(SportRequestDto request, Long sportCode) {
-        SportEntity entity = sportsRepository.findById(sportCode)
+    public SportsResponseDto updateSport(SportsRequestDto request, Long sportCode) {
+        SportsEntity entity = sportsRepository.findById(sportCode)
                 .orElseThrow(() -> new IllegalArgumentException("스포츠 종목이 존재하지 않습니다.: " + sportCode));
 
         entity.setSportName(request.getSportName());
         entity.setSportDescription(request.getSportDescription());
 
-        return SportResponseDto.builder()
+        return SportsResponseDto.builder()
                 .sportCode(entity.getSportCode())
                 .sportName(entity.getSportName())
                 .sportDescription(entity.getSportDescription())
@@ -48,20 +48,20 @@ public class SportsService {
     // 스포츠 종목 삭제
     public void deleteSport(Long sportCode) {
         if (!sportsRepository.existsById(sportCode)) {
-            throw new IllegalArgumentException("스포츠 종목이 존재하지 않습니다.: " + sportCode);
+            throw new IllegalArgumentException("스포츠 종목이 존재하지 않습니다." + sportCode);
         }
         sportsRepository.deleteById(sportCode);
     }
 
     // 스포츠 팀 등록
     public void createTeam(TeamRequestDto request) {
-        SportEntity sportEntity = sportsRepository.findById(request.getSportCode())
+        SportsEntity sportsEntity = sportsRepository.findById(request.getSportCode())
                 .orElseThrow(() -> new IllegalArgumentException("스포츠 종목이 존재하지 않습니다.: " + request.getSportCode()));
 
         TeamEntity teamEntity = TeamEntity.builder()
                 .teamName(request.getTeamName())
                 .teamDescription(request.getTeamDescription())
-                .sport(sportEntity)
+                .sport(sportsEntity)
                 .build();
 
         teamRepository.save(teamEntity);
@@ -72,15 +72,15 @@ public class SportsService {
         TeamEntity entity = teamRepository.findById(teamCode)
                 .orElseThrow(() -> new IllegalArgumentException("스포츠 팀이 존재하지 않습니다.: " + teamCode));
 
-        entity.setTeamName(request.getTeamName());
-        entity.setTeamDescription(request.getTeamDescription());
+        String name = request.getTeamName();
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("팀 이름은 비어 있을 수 없습니다.");
+        }
+        entity.setTeamName(name);
 
         return TeamResponseDto.builder()
                 .teamCode(entity.getTeamCode())
-                .teamName(entity.getTeamName())
-                .teamDescription(entity.getTeamDescription())
                 .sportCode(entity.getSport().getSportCode())
-                .sportName(entity.getSport().getSportName())
                 .build();
     }
 

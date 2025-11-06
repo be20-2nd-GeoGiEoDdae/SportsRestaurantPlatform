@@ -3,7 +3,7 @@ package com.ohgiraffers.geogieoddae.viewing.command.entity;
 import com.ohgiraffers.geogieoddae.global.common.entity.BaseTimeEntity;
 import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
-import com.ohgiraffers.geogieoddae.sports.command.entity.SportEntity;
+import com.ohgiraffers.geogieoddae.sports.command.entity.SportsEntity;
 import com.ohgiraffers.geogieoddae.sports.command.entity.TeamEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -52,7 +52,7 @@ public class ViewingEntity extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "sport_code", nullable = false)
-    private SportEntity sport;
+    private SportsEntity sport;
 
     @ManyToOne
     @JoinColumn(name = "team_code", nullable = false)

@@ -14,5 +14,4 @@ public class TeamResponseDto {
     private String teamName;
     private String teamDescription;
     private Long sportCode;
-    private String sportName;
 }
