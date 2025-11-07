@@ -1,4 +1,4 @@
-# 한화시스템 Beyond SW 20기 백엔드 프로젝트 — 거기어떄
+# 한화시스템 Beyond SW 20기 백엔드 프로젝트 — 거기어때?
 
 <img width="1124" height="581" alt="Image" src="https://github.com/user-attachments/assets/f7965036-ef64-4dbb-9ddc-198d322ed567" />
 
