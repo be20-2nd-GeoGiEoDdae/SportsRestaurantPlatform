@@ -118,7 +118,7 @@
   ## 📄 API 명세서 & 단위 테스트
 
   
-- **Ordering 명세서**
+- **POST MAN**
 https://documenter.getpostman.com/view/48691546/2sB3QQH7M6
 
 - **Swagger**
@@ -126,4 +126,283 @@ https://documenter.getpostman.com/view/48691546/2sB3QQH7M6
 
 
 
-  ---
+
+
+
+ ## 📄**테스트 케이스 상세**
+
+ ###  회원 관리 기능
+
+  <details>
+  <summary>소셜 회원가입</summary>
+  
+  ![Image](https://github.com/user-attachments/assets/fd0a5770-0885-4c33-a877-f001b5757f94)
+  
+ 
+</details>
+
+<details>
+<summary>소셜 로그인</summary>
+
+![Image](https://github.com/user-attachments/assets/1eaf8785-b8bf-458a-aea5-ee1fb6d8012a)
+</details>
+
+<details>
+<summary>회원 계정 복구</summary>
+
+![Image](https://github.com/user-attachments/assets/989163c0-a8a1-470a-b629-d1193a8c6058)
+</details>
+
+<details>
+<summary>테스트 유저 로그인</summary>
+
+![Image](https://github.com/user-attachments/assets/cd88061c-6e70-420d-aaab-a652a2d8ac3a)
+</details>
+
+
+ ###  결제 관련 기능
+ <details>
+ <summary>회원 예약금 결제등록</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/57ab064c-5d1e-400a-9ba0-573bb6a74ed0)
+ </details>
+
+<details>
+ <summary>회원 예약금 결제api</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/88153d2f-bc7f-4907-886b-ea82e528fcd7)
+ </details>
+
+ <details>
+ <summary>회원 예약금 환불</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/6eb1b5c9-f6d7-4057-992d-215b1866a7b1)
+ </details>
+
+ <details>
+ <summary>점주 구독결제 customerkey생성 </summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/edeab915-2fae-4c2c-bcbc-60dbf2c1ff56)
+ 
+ </details>
+
+ <details>
+ <summary>점주 구독상품 결제 빌링키 생성 </summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/f72c01c1-182d-44be-8a6d-47b08dfa1656)
+ 
+ </details>
+
+ <details>
+ <summary> 정기 구독결제 승인</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/cbb37630-a414-49ac-aad5-437417ca6ed4)
+ 
+ </details>
+
+ <details>
+ <summary>정기 구독결제 삭제</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/5accc921-9588-4a0e-a696-ce083013e81b)
+ 
+ </details>
+ <details>
+ <summary>관람 결제정보 전체조회</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/d6b7538a-7e89-4ca0-b88b-17be640ec577)
+ 
+ </details>
+ <details>
+ <summary>관람 결제정보 관람코드기준 조회</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/c92cb919-5d7c-4b55-b525-6cc45c4d1652)
+ 
+ </details>
+
+ <details>
+ <summary>구독 결제 기간별 조회</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/73318b6b-05e2-47c0-baa0-142b74949c15)
+ 
+ </details>
+ <details>
+ <summary>구독결제 사업자코드로 조회</summary>
+
+ ![Image](https://github.com/user-attachments/assets/ce68d255-44f2-4bdf-badd-7eb362b9df91)
+ 
+ 
+ </details>
+
+  ###  가게 관련 기능
+  <details>
+  <summary>사업자 등록 신청</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/00ca0ff5-9cbf-4f41-a052-3d072662464d)
+
+  </details>
+  <details>
+  <summary>사업자 가게 등록</summary>
+ 
+ 
+![Image](https://github.com/user-attachments/assets/0bf12597-be58-4bf0-b2b4-f241d19709ab)
+
+  </details>
+  <details>
+  <summary>가게 삭제</summary>
+  
+  ![Image](https://github.com/user-attachments/assets/f6c8e7af-f7e7-4552-9b35-e6bb083e9c16)
+  </details>
+  <details>
+  <summary>가게 키워드 등록</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/2c60f1c5-e8c1-42b2-a6e4-8e01bf2396e5)
+ 
+  </details>
+  <details>
+  <summary>가게 키워드 삭제</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/62d06f5f-c9da-4fa5-a62f-13f42f0dcecd)
+  </details>
+  <details>
+  <summary>가게 리뷰 등록</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/77cdcf95-a4d8-4d88-ba56-d246a65441c5)
+  </details>
+  <details>
+  <summary>가게 리뷰 수정</summary>
+ 
+ 
+![Image](https://github.com/user-attachments/assets/df1d1397-e04e-456b-a347-e0fb0ceb5a8a)
+  </details>
+  <details>
+  <summary>가게 리뷰 삭제</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/b0cfc78c-256b-448c-961c-e11615fc8b49)
+  </details>
+  <details>
+  <summary>가게 리뷰 점수별 조회</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/3c12d761-d932-479e-bb66-4817f4501fb8)
+
+  </details>
+  <details>
+  <summary>가게 즐겨찾기 등록</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/b1b91a9f-f4de-4c27-8715-d388b0d0204a)
+  </details>
+  <details>
+  <summary>가게목록 전체 조회</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/adddbbe2-c1df-42ec-8ef4-f63cb4ad5180)
+  </details>
+   <details>
+  <summary>가게 상세 조회</summary>
+ 
+ ![Image](https://github.com/user-attachments/assets/ef202faf-634c-4546-92f0-d829be03276d)
+ 
+  </details>
+
+ ###  관람 관련 기능
+ <details>
+ <summary></summary>
+ 
+ 
+ </details>
+ <details>
+ <summary></summary>
+ 
+ 
+ </details>
+
+<details>
+ <summary></summary>
+ 
+ 
+ </details>
+
+<details>
+ <summary></summary>
+ 
+ 
+ </details>
+
+<details>
+ <summary></summary>
+ 
+ 
+ </details>
+
+<details>
+ <summary></summary>
+ 
+ 
+ </details>
+<details>
+ <summary></summary>
+ 
+ 
+ </details>
+<details>
+ <summary></summary>
+ 
+ 
+ </details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ###  신고 및 블랙리스트 관련기능
+  <details>
+  <summary>블랙리스트 추가</summary>
+
+  ![Image](https://github.com/user-attachments/assets/23d3eea4-aeab-477e-81fe-39cc193a16ce)
+
+  </details>
+  <details>
+  <summary>블랙리스트 삭제</summary>
+
+  ![Image](https://github.com/user-attachments/assets/d2b32088-d0bc-455f-86fa-b88d98b4a891)
+  </details>
+   <details>
+  <summary>신고타입 등록</summary>
+
+  ![Image](https://github.com/user-attachments/assets/2cd2cbed-f8d2-4583-90e7-20cd74aba50e)
+
+  </details>
+   <details>
+  <summary>신고타입 삭제</summary>
+
+  ![Image](https://github.com/user-attachments/assets/e7cd0f85-91b6-4626-a292-815c63d9549b)
+  </details>
+   <details>
+  <summary>신고 등록</summary>
+
+  ![Image](https://github.com/user-attachments/assets/062c0edc-d2f0-42ff-94e5-4b0e9fc10fea)
+  </details>
+   <details>
+  <summary>관리자 신고승인</summary>
+
+  ![Image](https://github.com/user-attachments/assets/d41869f4-7496-481a-a70c-e56c1085ed93)
+  </details>
+   <details>
+  <summary>관리자 신고삭제</summary>
+
+  ![Image](https://github.com/user-attachments/assets/31a190b5-56d4-4e7b-a683-24623a98302a)
+  </details>
+ 
