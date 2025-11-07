@@ -1,6 +1,7 @@
 package com.ohgiraffers.geogieoddae.restaurant.command.service;
 
 
+import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDistanceResponse;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,5 +17,6 @@ public interface RestaurantService {
     void deleteRestaurant(Long RestaurantId);
     //가게 수정
     void updateRestaurant(Long RestaurantId, RestaurantDto restaurantDto,List<MultipartFile> pictures) throws IOException;
-
+    /** ✅ 거리순 정렬 조회 */
+    List<RestaurantDistanceResponse> getRestaurantsSortedByDistance(double userLat, double userLon);
 }
