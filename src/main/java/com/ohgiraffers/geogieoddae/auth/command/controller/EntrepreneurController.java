@@ -1,5 +1,6 @@
 package com.ohgiraffers.geogieoddae.auth.command.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "사업자 등록 신청 api")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth/entrepreneur")

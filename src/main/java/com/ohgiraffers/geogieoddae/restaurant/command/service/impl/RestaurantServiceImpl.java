@@ -30,7 +30,6 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final KeywordRepository keywordRepository;
-    private final RestaurantKeywordRepository restaurantKeywordRepository;
     private final RestaurantPictureRepository restaurantPictureRepository;
     private final EntrepreneurRepository entrepreneurRepository;
     @Transactional
@@ -41,7 +40,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .restaurantLocation(restaurantDto.getRestaurantLocation())
                 .restaurantCategory(restaurantDto.getRestaurantCategory())
                 .restaurantPeopleNumber(restaurantDto.getRestaurantPeopleNumber())
-//                .entrepreneur(entrepreneurRepository.findById(restaurantDto.getEntrepreneurId()).orElseThrow())
+                .entrepreneur(entrepreneurRepository.findById(restaurantDto.getEntrepreneurCode()).orElseThrow())
                 .restaurantContents(restaurantDto.getRestaurantContents())
                 .restaurantScore(restaurantDto.getRestaurantScore())
                 .restaurantIsDeleted(false)

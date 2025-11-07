@@ -2,6 +2,7 @@ package com.ohgiraffers.geogieoddae.restaurant.command.service.impl;
 
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
+import com.ohgiraffers.geogieoddae.notification.command.event.NotificationCreatedEvent;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.ReviewDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.review.ReviewEntity;
@@ -47,11 +48,11 @@ public class ReviewServiceImpl implements ReviewService {
                 .member(user)
                 .build();
 
-/*      Long notificationReviewType=(long)5;
-      publisher.publishEvent(new AlarmCreatedEvent(restaurant
+      Long notificationReviewType=(long)5;
+      publisher.publishEvent(new NotificationCreatedEvent(restaurant
           .getEntrepreneur()
           .getMember()
-          .getUserCode(),notificationReviewType));*/
+          .getUserCode(),notificationReviewType));
         reviewRepository.save(review);
 
         List<String> pictureUrls = saveReviewPictures(review, pictures);

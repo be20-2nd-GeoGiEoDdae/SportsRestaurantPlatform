@@ -3,9 +3,7 @@ package com.ohgiraffers.geogieoddae.pay.command.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
-import com.ohgiraffers.geogieoddae.notification.command.event.AlarmCreatedEvent;
-import com.ohgiraffers.geogieoddae.notification.command.service.AlarmSseService;
-import com.ohgiraffers.geogieoddae.notification.command.service.NotificationService;
+import com.ohgiraffers.geogieoddae.notification.command.event.NotificationCreatedEvent;
 import com.ohgiraffers.geogieoddae.pay.command.dto.ViewingPayRequest;
 import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayEntity;
 import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayStatus;
@@ -19,7 +17,6 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,7 +24,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jmx.export.notification.NotificationPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,9 +38,9 @@ public class ViewingPayService {
   private final ApplicationEventPublisher publisher;
 
 
-  public Long viewingSave(ViewingPayRequest request){
-    String orderId = request.getUserCode()+"_"+UUID.randomUUID().toString().substring(0, 20);
-    String viewingCustomerKey =request.getViewingCode()+"_"+ UUID.randomUUID().toString().substring(0, 20);
+  public String viewingSave(ViewingPayRequest request){
+    String orderId = UUID.randomUUID().toString();
+    String viewingCustomerKey =UUID.randomUUID().toString();
 
     ViewingPayEntity viewingPayEntity = ViewingPayEntity.builder()
         .viewingPayPrice(request.getViewingPayPrice())
@@ -54,7 +50,8 @@ public class ViewingPayService {
         .member(userRepository.getReferenceById(request.getUserCode()))
         .viewing(viewingRepository.getReferenceById(request.getViewingCode()))
         .build();
-    return viewingPayRepository.save(viewingPayEntity).getViewingPayCode();
+    viewingPayRepository.save(viewingPayEntity);
+    return orderId;
   }
 
   @Transactional
@@ -68,7 +65,6 @@ public class ViewingPayService {
         ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body("결제 처리 중 오류 발생: 가격 불일치 ");
       }
-      //viewingPay.getViewingPayPrice()Long타입으로 변환 필요  OrderId는 Integer타입
 
       //토스페이먼츠 결제 승인 API 호출
       HttpHeaders headers = new HttpHeaders();
@@ -96,7 +92,7 @@ public class ViewingPayService {
       if (response.getStatusCode() == HttpStatus.OK) {
         Long userId  = viewingPay.getMember().getUserCode();
         Long notificationTypeCode = (long)1;
-        publisher.publishEvent(new AlarmCreatedEvent(userId,notificationTypeCode) );
+        publisher.publishEvent(new NotificationCreatedEvent(userId,notificationTypeCode) );
         viewingPay.setViewingPayPaymentKey(paymentKey);
         viewingPay.setViewingPayStatus(ViewingPayStatus.approve);
 

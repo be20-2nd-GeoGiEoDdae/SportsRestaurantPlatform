@@ -1,5 +1,6 @@
 package com.ohgiraffers.geogieoddae.report.command.service;
 
+import com.ohgiraffers.geogieoddae.notification.command.event.NotificationCreatedEvent;
 import com.ohgiraffers.geogieoddae.report.command.dto.ReportRequestDto;
 import com.ohgiraffers.geogieoddae.report.command.dto.ReportResponseDto;
 import com.ohgiraffers.geogieoddae.report.command.dto.ReportStatusUpdateDto;
@@ -15,10 +16,10 @@ import com.ohgiraffers.geogieoddae.report.command.entity.blacklist.RestaurantBla
 import com.ohgiraffers.geogieoddae.report.command.repository.ReportRepository;
 import com.ohgiraffers.geogieoddae.report.command.repository.ReportTypeRepository;
 import com.ohgiraffers.geogieoddae.report.command.repository.RestaurantBlacklistRepository;
-import com.ohgiraffers.geogieoddae.report.query.mapper.ReportMapper;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ public class ReportCommandService {
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;
     private final RestaurantBlacklistRepository restaurantBlacklistRepository;
+    private final ApplicationEventPublisher publisher;
 
     // 회원 신고 작성
     public ReportResponseDto createReport(ReportRequestDto reportRequestDto, Long userCode) {
@@ -73,6 +75,9 @@ public class ReportCommandService {
                 .orElseThrow(() -> new IllegalArgumentException("신고가 존재하지 않습니다.: " + reportCode));
 
         reportEntity.setReportStatus(reportStatusUpdateDto.getReportStatus());
+
+        Long notificationType=(long)6;
+        publisher.publishEvent(new NotificationCreatedEvent(reportEntity.getRestaurant().getEntrepreneur().getMember().getUserCode(),notificationType));
 
 
         if (!reportEntity.getReportStatus().canChangeTo(reportStatusUpdateDto.getReportStatus())) {
@@ -148,6 +153,17 @@ public class ReportCommandService {
                                 .getRestaurant()
                 )
                 .build();
+
+        Long notificationType=(long)7;
+        //Long restaurant =restaurantRepository.findById(restaurantBlacklistRequestDto.getRestaurantCode()).orElseThrow().getEntrepreneur().getMember().getUserCode();
+
+        publisher.publishEvent(new NotificationCreatedEvent(restaurantBlacklistEntity
+            .getRestaurant()
+            .getEntrepreneur()
+            .getMember()
+            .getUserCode()
+            ,notificationType));
+
 
         restaurantBlacklistRepository.save(restaurantBlacklistEntity);
     }

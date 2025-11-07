@@ -1,5 +1,6 @@
 package com.ohgiraffers.geogieoddae.admin.query.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import com.ohgiraffers.geogieoddae.global.common.dto.PageResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "관리자 전용 조회 API", description = "전체 유저 목록 확인")
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor

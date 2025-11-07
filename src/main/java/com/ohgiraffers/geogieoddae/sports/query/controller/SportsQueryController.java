@@ -4,20 +4,23 @@ import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 import com.ohgiraffers.geogieoddae.sports.query.dto.SportsQueryDto;
 import com.ohgiraffers.geogieoddae.sports.query.dto.TeamQueryDto;
 import com.ohgiraffers.geogieoddae.sports.query.service.SportsQueryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "스포츠 조회 api")
 @RestController
-@RequestMapping("/sports")
+@RequestMapping("/api/sports")
 @RequiredArgsConstructor
 public class SportsQueryController {
 
     private final SportsQueryService sportsQueryService;
 
     // 스포츠 종목 목록 조회
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<SportsQueryDto>>> listSports() {
         List<SportsQueryDto> result = sportsQueryService.listSports();

@@ -3,18 +3,19 @@ package com.ohgiraffers.geogieoddae.restaurant.command.controller;
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.ReviewDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.service.ReviewService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
+@Tag(name = "리뷰 관리 api")
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/api/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
 

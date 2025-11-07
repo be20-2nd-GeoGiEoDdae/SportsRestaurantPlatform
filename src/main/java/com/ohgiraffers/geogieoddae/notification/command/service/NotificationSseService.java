@@ -9,7 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
 @RequiredArgsConstructor
-public class AlarmSseService {
+public class NotificationSseService {
 
   private final EmitterRepository emitterRepository;
   //연결 지속시간 한시간

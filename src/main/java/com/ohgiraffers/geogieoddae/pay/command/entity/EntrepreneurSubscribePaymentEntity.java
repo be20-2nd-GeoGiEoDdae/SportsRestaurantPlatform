@@ -17,28 +17,44 @@ import java.time.LocalDateTime;
 @Builder
 public class EntrepreneurSubscribePaymentEntity extends BaseTimeEntity {
 
-    @Id// @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "entrepreneur_code")
-    private Long entrepreneurCode;
+  @Id// @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "entrepreneur_code")
+  private Long entrepreneurCode;
 
-    @Column(name = "entrepreneur_subscribe_end_at")
-    private LocalDateTime entrepreneurSubscribeEndAt;
+  @Column(name = "entrepreneur_subscribe_end_at")
+  private LocalDateTime entrepreneurSubscribeEndAt;
 
-    @Column(name = "entrepreneur_subscribe_payment")
-    private Integer entrepreneurSubscribePayment;
+  @Column(name = "entrepreneur_subscribe_payment")
+  private Integer entrepreneurSubscribePayment;
 
-    @Column(name = "entrepreneur_subscribe_billingkey")
-    private String entrepreneurSubscribeBillingkey;
+  @Column(name = "entrepreneur_subscribe_billingkey")
+  private String entrepreneurSubscribeBillingkey;
 
-    @Column(name = "entrepreneur_subscribe_customerKey")
-    private String entrepreneurSubscribeCustomerKey;
+  @Column(name = "entrepreneur_subscribe_customerKey")
+  private String entrepreneurSubscribeCustomerKey;
 
   @Column(name = "entrepreneur_subscribe_orderid")
   private String entrepreneurSubscribeOrderId;
 
 
+  @ManyToOne
+  @JoinColumn(name = "entrepreneur_code", insertable = false, updatable = false)
+  private EntrepreneurEntity entrepreneur;
 
-    @ManyToOne
-    @JoinColumn(name = "entrepreneur_code", insertable = false, updatable = false)
-    private EntrepreneurEntity entrepreneur;
+  public void updateEntrepreneurSubscribePayment(
+      //Long entrepreneurCode,
+     // LocalDateTime entrepreneurSubscribeEndAt
+       Integer entrepreneurSubscribePayment
+      , String entrepreneurSubscribeBillingkey
+   //   , String entrepreneurSubscribeCustomerKey
+    //  , String entrepreneurSubscribeOrderId
+      ) {
+ //   this.entrepreneurCode=entrepreneurCode;
+  //  this.entrepreneurSubscribeEndAt=entrepreneurSubscribeEndAt;
+    this.entrepreneurSubscribePayment=entrepreneurSubscribePayment;
+    this.entrepreneurSubscribeBillingkey=entrepreneurSubscribeBillingkey;
+  //  this.entrepreneurSubscribeCustomerKey=entrepreneurSubscribeCustomerKey;
+   // this.entrepreneurSubscribeOrderId=entrepreneurSubscribeOrderId;
+
+  }
 }

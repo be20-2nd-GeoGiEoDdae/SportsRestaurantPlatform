@@ -1,5 +1,6 @@
 package com.ohgiraffers.geogieoddae.admin.command.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "관리자 API", description = "로그인 및 사업자 등록  ")
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor

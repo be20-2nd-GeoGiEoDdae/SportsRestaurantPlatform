@@ -2,7 +2,8 @@ package com.ohgiraffers.geogieoddae.viewing.command.service;
 
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
-import com.ohgiraffers.geogieoddae.notification.command.event.AlarmCreatedEvent;
+
+import com.ohgiraffers.geogieoddae.notification.command.event.NotificationCreatedEvent;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.bookmark.BookmarkRepository;
 import com.ohgiraffers.geogieoddae.restaurant.command.repository.restaurant.RestaurantRepository;
@@ -86,7 +87,7 @@ public class ViewingServiceImpl implements ViewingService {
           .toList();
       Long notificationTypeCode = (long)3;
       for(Long u:userIds){
-        publisher.publishEvent(new AlarmCreatedEvent(u,notificationTypeCode) );
+        publisher.publishEvent(new NotificationCreatedEvent(u,notificationTypeCode) );
       }
         viewingRepository.save(viewing);
 
@@ -146,7 +147,7 @@ public void deleteViewing(Long viewingCode) {
   System.out.println("유저 아이디:"+userIds);
   Long notificationTypeCode = (long)2;
   for(Long u:userIds){
-    publisher.publishEvent(new AlarmCreatedEvent(u,notificationTypeCode) );
+    publisher.publishEvent(new NotificationCreatedEvent(u,notificationTypeCode) );
   }
 }
 

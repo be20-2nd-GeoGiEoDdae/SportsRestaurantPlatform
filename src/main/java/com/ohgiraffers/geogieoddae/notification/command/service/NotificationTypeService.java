@@ -1,5 +1,6 @@
 package com.ohgiraffers.geogieoddae.notification.command.service;
 
+
 import com.ohgiraffers.geogieoddae.notification.command.dto.NotificationTypeRequest;
 import com.ohgiraffers.geogieoddae.notification.command.entity.NotificationStatus;
 import com.ohgiraffers.geogieoddae.notification.command.entity.NotificationTypeEntity;
@@ -7,6 +8,7 @@ import com.ohgiraffers.geogieoddae.notification.command.repository.NotificationT
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor

@@ -3,7 +3,7 @@ package com.ohgiraffers.geogieoddae.notification.command.service;
 import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
 import com.ohgiraffers.geogieoddae.notification.command.dto.NotificationRequest;
 import com.ohgiraffers.geogieoddae.notification.command.entity.NotificationEntity;
-import com.ohgiraffers.geogieoddae.notification.command.event.AlarmCreatedEvent;
+import com.ohgiraffers.geogieoddae.notification.command.event.NotificationCreatedEvent;
 import com.ohgiraffers.geogieoddae.notification.command.repository.NotificationRepository;
 import com.ohgiraffers.geogieoddae.notification.command.repository.NotificationTypeRepository;
 import jakarta.transaction.Transactional;
@@ -12,18 +12,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
   private final NotificationRepository notificationRepository;
-  private final UserRepository userRepository;
-  private final NotificationTypeRepository notificationTypeRepository;
-  private final AlarmSseService alarmSseService;
   private final ApplicationEventPublisher publisher;
 
   @Transactional
   public String notificationSave(NotificationRequest request) {
-    publisher.publishEvent(new AlarmCreatedEvent(request.getMemberCode(), request.getNotificationTypeCode()));
+    publisher.publishEvent(new NotificationCreatedEvent(request.getMemberCode(), request.getNotificationTypeCode()));
 
     return "저장 완료";
   }

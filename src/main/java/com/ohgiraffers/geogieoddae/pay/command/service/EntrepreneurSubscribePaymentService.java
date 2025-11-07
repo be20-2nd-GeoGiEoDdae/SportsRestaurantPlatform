@@ -1,16 +1,15 @@
 package com.ohgiraffers.geogieoddae.pay.command.service;
 
 
-import com.ohgiraffers.geogieoddae.auth.command.repository.EntrepreneurRepository;
-import com.ohgiraffers.geogieoddae.pay.command.dto.EntrepreneurSubscribeChargeRequest;
-import com.ohgiraffers.geogieoddae.pay.command.dto.EntrepreneurSubscribePaymentRequest;
 import com.ohgiraffers.geogieoddae.pay.command.entity.EntrepreneurSubscribePaymentEntity;
 import com.ohgiraffers.geogieoddae.pay.command.repository.EntrepreneurSubscribePaymentRepository;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,14 +30,14 @@ public class EntrepreneurSubscribePaymentService {
 
   private final RestTemplate rest = new RestTemplate();
   private final EntrepreneurSubscribePaymentRepository entrepreneurSubscribePaymentRepository;
-  private final EntrepreneurRepository entrepreneurRepository;
-  private final long thirtyDays = 1000L * 60 * 60 * 24 * 30;
+
 
   @Value("${toss-api-key}")
   private String SECRET_KEY;
+  private final int SUBSCRIBE_PAY = 10000;
 
   @Transactional
-  public Map<String,Object> billingKeyGet(String authKey,String customerKey){
+  public String billingKeyGet(String authKey, String customerKey) {
     try {
       // Basic 인증 헤더 생성
       String encodedAuth = Base64.getEncoder()
@@ -64,43 +64,36 @@ public class EntrepreneurSubscribePaymentService {
       );
 
       Map<String, Object> responseBody = response.getBody();
-      EntrepreneurSubscribePaymentRequest subscribePaymentRequest
-          = new EntrepreneurSubscribePaymentRequest();
 
-      int set=customerKey.indexOf('_');
-      if(set>=0){
-        Long entrepreneurCode=Long.parseLong(customerKey.substring(0,set));
-        subscribePaymentRequest.setEntrepreneurId(Long.parseLong(customerKey.substring(0,set)));
-        System.out.println("ID값 : "+Long.parseLong(customerKey.substring(0,set)));
-        subscribePaymentRequest.setEntrepreneurSubscribeAmount((10000));
-        subscribePaymentRequest.setEntrepreneurSubscribeBillingkey(
-            (String) responseBody.get("billingKey"));
-        subscribePaymentRequest.setEntrepreneurSubscribeCustomerKey(customerKey);
-        subscribePaymentRequest.setEntrepreneurSubscribeOrderId( entrepreneurCode+"_"+ UUID.randomUUID());
-      }
+      EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment
+          = entrepreneurSubscribePaymentRepository
+          .findByEntrepreneurSubscribeCustomerKey(customerKey);
+
+      entrepreneurSubscribePayment.updateEntrepreneurSubscribePayment(
+          SUBSCRIBE_PAY,
+          (String) responseBody.get("billingKey")
+      );
       System.out.println("빌링키 : " + responseBody.get("billingKey"));
-
-      subscribePaymentSave(subscribePaymentRequest);
-
       System.out.println(response.getBody());
-      return response.getBody();
+
+      return "빌링키 발급 완료";
 
     } catch (Exception e) {
       Map<String, Object> error = new HashMap<>();
       error.put("error", e.getMessage());
-      return error;
+      return "빌링키 생성 중 오류 발생";
     }
   }
 
 
-@Transactional
+  @Transactional
   public Map<String, Object> subscribePaymentCharge(
-      Long userId) {//유저아이디가 아닌 사업자 구별번호일듯
-    EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment=entrepreneurSubscribePaymentRepository.findById(userId).orElseThrow();
-    String billingKey = entrepreneurSubscribePayment.getEntrepreneurSubscribeBillingkey();
-    String customerKey =entrepreneurSubscribePayment.getEntrepreneurSubscribeCustomerKey();
+      String billingKey) {//유저아이디가 아닌 사업자 구별번호일듯
+    EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment =
+        entrepreneurSubscribePaymentRepository.findByEntrepreneurSubscribeBillingkey(billingKey);
+    String customerKey = entrepreneurSubscribePayment.getEntrepreneurSubscribeCustomerKey();
     Integer amount = entrepreneurSubscribePayment.getEntrepreneurSubscribePayment();
-    String orderId = entrepreneurSubscribePayment.getEntrepreneur().getEntrepreneurId()+"_"+UUID.randomUUID();//결제 생성시 마다 주문아이디 생성
+    String orderId=UUID.randomUUID().toString();
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBasicAuth(SECRET_KEY, "");               // Authorization: Basic base64(secretKey:)
@@ -108,7 +101,7 @@ public class EntrepreneurSubscribePaymentService {
 
     Map<String, Object> body = new HashMap<>();
     body.put("customerKey", customerKey);//db에 저장된 유저 커스텀 키로 수정
-    body.put("amount",amount);
+    body.put("amount", amount);
     body.put("orderId", orderId);
     body.put("orderName", "구독 결제");
 
@@ -117,30 +110,18 @@ public class EntrepreneurSubscribePaymentService {
         new HttpEntity<>(body, headers),
         Map.class
     );
+    entrepreneurSubscribePayment.setEntrepreneurSubscribeEndAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusDays(30));
+//    entrepreneurSubscribePayment.setEntrepreneurSubscribeEndAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusSeconds(30));
     entrepreneurSubscribePayment.setEntrepreneurSubscribeOrderId(orderId);
     return toss;
 
   }
 
-  public void subscribePaymentSave(
-
-      EntrepreneurSubscribePaymentRequest request) {
-    EntrepreneurSubscribePaymentEntity subscribePaymentEntity = EntrepreneurSubscribePaymentEntity.builder()
-        .entrepreneurCode(request.getEntrepreneurId())
-        .entrepreneurSubscribeEndAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusDays(30))
-        .entrepreneurSubscribePayment(request.getEntrepreneurSubscribeAmount())
-        .entrepreneurSubscribeBillingkey(request.getEntrepreneurSubscribeBillingkey())
-        .entrepreneurSubscribeCustomerKey(request.getEntrepreneurSubscribeCustomerKey())
-        .entrepreneur(entrepreneurRepository.findById(request.getEntrepreneurId()).orElseThrow())
-        .build();
-    entrepreneurSubscribePaymentRepository.save(subscribePaymentEntity);
-  }
-
   @Transactional
-  public String deleteBillingKey(Long userId) {//유저아이디가 아닌 사업자 구별번호일듯
+  public String deleteBillingKey(Long entrepreneurCode) {//유저아이디가 아닌 사업자 구별번호일듯
 
-    String billingKey = entrepreneurSubscribePaymentRepository.findById(userId).get()
-        .getEntrepreneurSubscribeBillingkey();
+    String billingKey = entrepreneurSubscribePaymentRepository.findByEntrepreneurCode(
+        entrepreneurCode).getEntrepreneurSubscribeBillingkey();
     String url = "https://api.tosspayments.com/v1/billing/"
         + billingKey;//https://api.tosspayments.com/v1/billing/{billingKey} url형태 설정
 
@@ -149,23 +130,24 @@ public class EntrepreneurSubscribePaymentService {
 
     HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
     try {
-        rest.exchange(url, HttpMethod.DELETE, httpEntity, Void.class);//성공시 db삭제
-        entrepreneurSubscribePaymentRepository.deleteById(userId);
-        return "삭제 성공";
-    }catch (Exception e) {
+      rest.exchange(url, HttpMethod.DELETE, httpEntity, Void.class);//성공시 db삭제
+      entrepreneurSubscribePaymentRepository.deleteById(entrepreneurCode);
+      return "삭제 성공";
+    } catch (Exception e) {
     }
     return null;
   }
 
   public ResponseEntity<String> subscribePaymentSelectByOrderId(Long entrepreneurCode) {
-    String orderId=entrepreneurSubscribePaymentRepository.findById(entrepreneurCode).orElseThrow().getEntrepreneurSubscribeOrderId();
-    String url = "https://api.tosspayments.com/v1/payments/orders/"+orderId;
+    String orderId = entrepreneurSubscribePaymentRepository.findById(entrepreneurCode).orElseThrow()
+        .getEntrepreneurSubscribeOrderId();
+    String url = "https://api.tosspayments.com/v1/payments/orders/" + orderId;
     String encodedAuth = Base64.getEncoder()
         .encodeToString((SECRET_KEY + ":").getBytes());
     HttpHeaders headers = new HttpHeaders();
     headers.set("Authorization", "Basic " + encodedAuth);
 
-    HttpEntity<Map<String,Object>> request=new HttpEntity<>(headers);
+    HttpEntity<Map<String, Object>> request = new HttpEntity<>(headers);
 
     RestTemplate restTemplate = new RestTemplate();
 
@@ -177,11 +159,11 @@ public class EntrepreneurSubscribePaymentService {
     );
     return response;
   }
-  public ResponseEntity<String> subscribePaymentLogAll(LocalDateTime startDate,LocalDateTime endDate) {
-    String url = "https://api.tosspayments.com/v1/transactions"+
-        "?startDate="+startDate+"&endDate="+endDate;
-       // + "?startDate=2025-10-25T00:00:00"
-        //+ "&endDate=2025-11-03T23:59:59";
+
+  public ResponseEntity<String> subscribePaymentLogAll(LocalDateTime startDate,
+      LocalDateTime endDate) {
+    String url = "https://api.tosspayments.com/v1/transactions" +
+        "?startDate=" + startDate + "&endDate=" + endDate;
 
     String encodedAuth = Base64.getEncoder()
         .encodeToString((SECRET_KEY + ":").getBytes());
@@ -200,5 +182,83 @@ public class EntrepreneurSubscribePaymentService {
 
     return ResponseEntity.status(response.getStatusCode())
         .body(response.getBody());
+  }
+
+  public Map<String, String> request(Long entrepreneurCode) {
+    String customerKey = UUID.randomUUID().toString();
+    Map<String, String> map = new HashMap<>();
+    EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment = EntrepreneurSubscribePaymentEntity.builder()
+        .entrepreneurCode(entrepreneurCode)
+        .entrepreneurSubscribeCustomerKey(customerKey)
+        .build();
+    entrepreneurSubscribePaymentRepository.save(entrepreneurSubscribePayment);
+    map.put("customerKey", customerKey);
+    return map;
+
+  }
+  // 매일 특정 시간에 실행 (예: 매일 01:00)
+  @Transactional
+  @Scheduled(cron = "0 0 01 * * ?",zone="Asia/Seoul")
+  public void checkAndExecuteBilling() {
+    System.out.println("빌링키 정기 구독 실행");
+    ZoneId zone = ZoneId.of("Asia/Seoul");
+    LocalDateTime start = LocalDate.now(zone).atStartOfDay(); // 00:00
+    LocalDateTime end   = start.plusDays(1);
+
+    // DB에서 오늘 결제해야 할 구독 목록 조회
+    List<EntrepreneurSubscribePaymentEntity> SubscribePaymentDueToday =
+        entrepreneurSubscribePaymentRepository.findByEntrepreneurSubscribeEndAtBetween(start,  end);
+
+    for (EntrepreneurSubscribePaymentEntity SubscribePayment : SubscribePaymentDueToday) {
+      try {
+        // 각 구독별로 자동결제 실행
+        String orderId=chargeBilling(
+            SubscribePayment.getEntrepreneurSubscribeBillingkey(),
+            SubscribePayment.getEntrepreneurSubscribeCustomerKey(),
+            SubscribePayment.getEntrepreneurSubscribePayment()
+        );
+
+        // 다음 결제일 계산 및 업데이트
+        LocalDateTime nextSubscribeEndAt = LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusDays(30);
+        //LocalDateTime nextSubscribeEndAt = LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusSeconds(30);
+        SubscribePayment.setEntrepreneurSubscribeEndAt(nextSubscribeEndAt);
+        SubscribePayment.setEntrepreneurSubscribeOrderId(orderId);
+
+        entrepreneurSubscribePaymentRepository.save(SubscribePayment);
+        System.out.println("정기결제 성공");
+      } catch (Exception e) {
+        System.out.println("빌링키 정기결제 오류");
+      }
+    }
+  }
+
+  private String chargeBilling(String billingKey, String customerKey,
+      Integer amount) {
+    try {
+      RestTemplate restTemplate = new RestTemplate();
+      String orderId = UUID.randomUUID().toString();
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.setBasicAuth(SECRET_KEY, "");               // Authorization: Basic base64(secretKey:)
+      headers.setContentType(MediaType.APPLICATION_JSON);
+
+      Map<String, Object> body = new HashMap<>();
+      body.put("customerKey", customerKey);//db에 저장된 유저 커스텀 키로 수정
+      body.put("amount", amount);
+      body.put("orderId", orderId);
+      body.put("orderName", "구독 결제");
+
+      HttpEntity<Map<String, Object>> request =
+          new HttpEntity<>(body, headers);
+
+      restTemplate.postForEntity(
+          "https://api.tosspayments.com/v1/billing/" + billingKey,
+          request,
+          String.class
+      );
+      return orderId;
+    }catch (Exception e) {
+      return e.getMessage();
+    }
   }
 }

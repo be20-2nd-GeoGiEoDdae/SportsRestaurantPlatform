@@ -1,6 +1,8 @@
 package com.ohgiraffers.geogieoddae.pay.command.controller;
 
+import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayEntity;
 import com.ohgiraffers.geogieoddae.pay.command.repository.ViewingPayRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -10,9 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Tag(name = "관람 결제 페이지 api")
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/viewingPay")
+@RequestMapping("/api/viewingPay")
 public class ViewHtmlController {
   private final ViewingPayRepository viewingPayRepository;
 
@@ -34,11 +37,12 @@ public class ViewHtmlController {
     model.addAttribute("amount", amount);
     return "pay/success.html";
   }
-  @GetMapping("/index/{viewingPayCode}")
-  public String subscribePage(@PathVariable Long viewingPayCode, Model model) {
-    model.addAttribute("customerKey", viewingPayRepository.findById(viewingPayCode).get().getViewingPayCustomerKey());
-    model.addAttribute("orderId",viewingPayRepository.findById(viewingPayCode).get().getViewingPayOrderId());
-    model.addAttribute("amount",viewingPayRepository.findById(viewingPayCode).get().getViewingPayPrice());
+  @GetMapping("/index/{orderId}")
+  public String subscribePage(@PathVariable String orderId, Model model) {
+    ViewingPayEntity viewingPay =viewingPayRepository.findByViewingPayOrderId(orderId);
+    model.addAttribute("customerKey", viewingPay.getViewingPayCustomerKey());
+    model.addAttribute("orderId",viewingPay.getViewingPayOrderId());
+    model.addAttribute("amount",viewingPay.getViewingPayPrice());
     model.addAttribute("clientKey",widgetExampleKey);
     return "check";
   }

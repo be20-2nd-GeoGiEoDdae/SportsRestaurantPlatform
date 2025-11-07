@@ -4,12 +4,11 @@ import com.ohgiraffers.geogieoddae.auth.command.entity.entrepreneur.Entrepreneur
 import com.ohgiraffers.geogieoddae.global.common.entity.BaseTimeEntity;
 import com.ohgiraffers.geogieoddae.report.command.entity.blacklist.RestaurantBlacklistEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
-import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.KeywordEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.RestaurantKeywordEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 
@@ -47,10 +46,10 @@ public class RestaurantEntity extends BaseTimeEntity {
 
     @Column(name = "restaurant_score")
     private Integer restaurantScore;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "entrepreneur_code", nullable = false)
-//    private EntrepreneurEntity entrepreneur;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entrepreneur_code", nullable = false)
+    private EntrepreneurEntity entrepreneur;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RestaurantPictureEntity> pictures;

@@ -27,7 +27,7 @@ public class RestaurantDto {
     @NotBlank
     private Integer restaurantScore;
     @NotBlank
-    private Long entrepreneurId;
+    private Long entrepreneurCode;
     @NotBlank
     private List<Long> keywordIds;
     @NotBlank

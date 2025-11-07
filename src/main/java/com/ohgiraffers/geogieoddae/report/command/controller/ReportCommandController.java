@@ -8,12 +8,16 @@ import com.ohgiraffers.geogieoddae.report.command.dto.ReportTypeRequestDto;
 import com.ohgiraffers.geogieoddae.report.command.dto.ReportTypeResponseDto;
 import com.ohgiraffers.geogieoddae.report.command.dto.RestaurantBlacklistRequestDto;
 import com.ohgiraffers.geogieoddae.report.command.service.ReportCommandService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+
+@Tag(name = "신고 작성 및 관리 api")
 @RestController
-@RequestMapping("/reports")
+@RequestMapping("/api/reports")
 @RequiredArgsConstructor
 public class ReportCommandController {
 
@@ -29,6 +33,7 @@ public class ReportCommandController {
     }
 
     // 관리자: 신고 승인 또는 미승인 처리
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{reportCode}/status")
     public ResponseEntity<ApiResponse<ReportResponseDto>> updateReportStatus(
             @PathVariable Long reportCode,
@@ -38,6 +43,7 @@ public class ReportCommandController {
     }
 
     // 관리자: 신고 삭제
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{reportCode}")
     public ResponseEntity<ApiResponse<Void>> deleteReport(@PathVariable Long reportCode) {
         reportCommandService.deleteReport(reportCode);
@@ -52,6 +58,7 @@ public class ReportCommandController {
 //    }
 
     // 관리자: 신고 유형 등록
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/types")
     public ResponseEntity<ApiResponse<ReportTypeResponseDto>> createReportType(@RequestBody ReportTypeRequestDto reportTypeRequestDto) {
         ReportTypeResponseDto result = reportCommandService.createReportType(reportTypeRequestDto);
@@ -59,6 +66,7 @@ public class ReportCommandController {
     }
 
     // 관리자: 신고 유형 삭제
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/types/{reportTypeCode}")
     public ResponseEntity<ApiResponse<Void>> deleteReportType(@PathVariable Long reportTypeCode) {
         reportCommandService.deleteReportType(reportTypeCode);
@@ -72,7 +80,8 @@ public class ReportCommandController {
     /**
      * ✅ 관리자 수동 등록
      */
-    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/blackList")
     public ResponseEntity<ApiResponse<Void>> addToBlackList(@RequestBody RestaurantBlacklistRequestDto requestDto) {
         reportCommandService.addToBlacklist(requestDto);
         return ResponseEntity.ok(ApiResponse.success(null));
@@ -81,7 +90,8 @@ public class ReportCommandController {
     /**
      * ✅ 관리자 수동 삭제
      */
-    @DeleteMapping("/{restaurantCode}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/blackList/{restaurantCode}")
     public ResponseEntity<ApiResponse<Void>> removeFromBlackList(@PathVariable Long restaurantCode) {
         reportCommandService.removeFromBlackList(restaurantCode);
         return ResponseEntity.ok(ApiResponse.success(null));

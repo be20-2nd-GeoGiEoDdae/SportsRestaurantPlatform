@@ -2,15 +2,17 @@ package com.ohgiraffers.geogieoddae.restaurant.query.controller;
 
 import com.ohgiraffers.geogieoddae.restaurant.query.dto.RestaurantDto;
 import com.ohgiraffers.geogieoddae.restaurant.query.service.RestaurantQueryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "가게 조회 api")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/restaurants")
+@RequestMapping("/api/restaurants")
 public class RestaurantQueryController {
 
     private final RestaurantQueryService restaurantQueryService;

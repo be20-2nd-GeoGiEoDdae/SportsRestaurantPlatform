@@ -1,7 +1,7 @@
 package com.ohgiraffers.geogieoddae.restaurant.query.controller;
 import com.ohgiraffers.geogieoddae.restaurant.query.dto.ReviewDto;
 import com.ohgiraffers.geogieoddae.restaurant.query.service.ReviewQueryService;
-import lombok.Getter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name = "리뷰 조회 api")
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/api/reviews")
 @RequiredArgsConstructor
 public class ReviewQueryController {
 

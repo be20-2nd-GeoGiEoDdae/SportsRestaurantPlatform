@@ -3,6 +3,7 @@ package com.ohgiraffers.geogieoddae.viewing.query.controller;
 import com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingDto;
 import com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingPictureDto;
 import com.ohgiraffers.geogieoddae.viewing.query.service.ViewingQueryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,8 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "관람 조회 api")
 @RestController
-@RequestMapping("/viewings")
+@RequestMapping("/api/viewings")
 @RequiredArgsConstructor
 public class ViewingQueryController {
 

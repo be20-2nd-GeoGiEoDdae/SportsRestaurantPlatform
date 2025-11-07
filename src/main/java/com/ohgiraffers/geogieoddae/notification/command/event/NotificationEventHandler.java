@@ -7,11 +7,7 @@ import com.ohgiraffers.geogieoddae.notification.command.entity.NotificationStatu
 import com.ohgiraffers.geogieoddae.notification.command.entity.NotificationTypeEntity;
 import com.ohgiraffers.geogieoddae.notification.command.repository.NotificationRepository;
 import com.ohgiraffers.geogieoddae.notification.command.repository.NotificationTypeRepository;
-import com.ohgiraffers.geogieoddae.notification.command.service.AlarmSseService;
-import java.lang.reflect.Member;
-import java.util.HashMap;
-import java.util.Map;
-import javax.management.Notification;
+import com.ohgiraffers.geogieoddae.notification.command.service.NotificationSseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -22,9 +18,9 @@ import org.springframework.transaction.event.TransactionPhase;
 @Component
 @RequiredArgsConstructor
 @Transactional
-public class AlarmEventHandler {
+public class NotificationEventHandler {
 
-  private final AlarmSseService sse;
+  private final NotificationSseService sse;
   private final NotificationTypeRepository notificationTypeRepository;
   private final NotificationRepository notificationRepository;
   private final UserRepository userRepository;
@@ -32,7 +28,7 @@ public class AlarmEventHandler {
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void onCreated(AlarmCreatedEvent e) {
+  public void onCreated(NotificationCreatedEvent e) {
     try {
       System.out.println("알림타입 코드 상태 : "+notificationTypeRepository.findById(e.notificationTypeCode()).orElseThrow().getNotificationTypeStatus());
       if(notificationTypeRepository.findById(e.notificationTypeCode()).orElseThrow().getNotificationTypeStatus()== NotificationStatus.Y){
@@ -45,7 +41,7 @@ public class AlarmEventHandler {
       System.out.println(exception.getMessage());
     }
   }
-  public String notificationSave(AlarmCreatedEvent e){
+  public String notificationSave(NotificationCreatedEvent e){
     UserEntity user = userRepository.findById(e.userId()).orElseThrow();
 
     NotificationTypeEntity notificationType = notificationTypeRepository.findById(e.notificationTypeCode()).orElseThrow();

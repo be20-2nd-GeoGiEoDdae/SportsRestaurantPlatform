@@ -3,6 +3,7 @@ package com.ohgiraffers.geogieoddae.admin.command.controller;
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 import com.ohgiraffers.geogieoddae.auth.command.service.UserService;
 import com.ohgiraffers.geogieoddae.global.jwt.JwtTokenProvider;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,8 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Tag(name = "관리자 권한 변경 API", description = "유저 권한 변경")
 @RestController
-@RequestMapping("/admin/users")
+@RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
 public class AdminUserController {
     private final UserService userService;
