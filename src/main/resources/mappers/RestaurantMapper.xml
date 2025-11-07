@@ -14,6 +14,7 @@
         r.restaurant_location,
         r.restaurant_category,
         r.restaurant_people_number,
+        r.restaurant_contents,
         r.restaurant_score,
         r.created_at
         FROM restaurant r
