@@ -26,8 +26,8 @@ public class RestaurantDto {
     private String restaurantContents;
     @NotBlank
     private Integer restaurantScore;
-    @NotBlank
-    private Long entrepreneurId;
+//    @NotBlank
+//    private Long entrepreneurId;
     @NotBlank
     private List<Long> keywordIds;
     @NotBlank

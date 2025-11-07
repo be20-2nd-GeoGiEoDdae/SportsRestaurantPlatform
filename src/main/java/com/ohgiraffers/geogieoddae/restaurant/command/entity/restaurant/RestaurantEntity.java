@@ -32,6 +32,12 @@ public class RestaurantEntity extends BaseTimeEntity {
     @Column(name = "restaurant_location", nullable = false)
     private String restaurantLocation;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "restaurant_category", nullable = false)
     private RestaurantCategory restaurantCategory;
@@ -48,9 +54,9 @@ public class RestaurantEntity extends BaseTimeEntity {
     @Column(name = "restaurant_score")
     private Integer restaurantScore;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "entrepreneur_code", nullable = false)
-    private EntrepreneurEntity entrepreneur;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "entrepreneur_code", nullable = false)
+//    private EntrepreneurEntity entrepreneur;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RestaurantPictureEntity> pictures;
