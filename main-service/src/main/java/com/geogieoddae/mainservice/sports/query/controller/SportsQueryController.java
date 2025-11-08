@@ -1,0 +1,54 @@
+package com.geogieoddae.mainservice.sports.query.controller;
+
+import com.geogieoddae.mainservice.global.common.dto.ApiResponse;
+import com.geogieoddae.mainservice.sports.query.dto.SportsQueryDto;
+import com.geogieoddae.mainservice.sports.query.dto.TeamQueryDto;
+import com.geogieoddae.mainservice.sports.query.service.SportsQueryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/sports")
+@RequiredArgsConstructor
+public class SportsQueryController {
+
+    private final SportsQueryService sportsQueryService;
+
+    // 스포츠 종목 목록 조회
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<SportsQueryDto>>> listSports() {
+        List<SportsQueryDto> result = sportsQueryService.listSports();
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    // 스포츠 종목 상세 조회
+    @GetMapping("/{sportCode}")
+    public ResponseEntity<ApiResponse<SportsQueryDto>> detailSport(@PathVariable Long sportCode) {
+        SportsQueryDto result = sportsQueryService.detailSports(sportCode);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    // 스포츠 팀 목록 조회 (전체)
+    @GetMapping("/teams")
+    public ResponseEntity<ApiResponse<List<TeamQueryDto>>> listTeams() {
+        List<TeamQueryDto> result = sportsQueryService.listTeams();
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    // 특정 스포츠 종목의 팀 목록 조회
+    @GetMapping("/{sportCode}/teams")
+    public ResponseEntity<ApiResponse<List<TeamQueryDto>>> listTeamsBySport(@PathVariable Long sportCode) {
+        List<TeamQueryDto> result = sportsQueryService.listTeamsBySport(sportCode);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    // 스포츠 팀 상세 조회
+    @GetMapping("/teams/{teamCode}")
+    public ResponseEntity<ApiResponse<TeamQueryDto>> detailTeams(@PathVariable Long teamCode) {
+        TeamQueryDto result = sportsQueryService.detailTeams(teamCode);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+}
