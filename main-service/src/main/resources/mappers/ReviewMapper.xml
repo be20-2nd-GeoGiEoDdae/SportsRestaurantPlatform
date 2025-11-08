@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.geogieoddae.mainservice.restaurant.query.mapper.ReviewMapper">
+
+    <!-- ✅ 특정 식당의 리뷰 목록 -->
+    <select id="findReviewsByRestaurantId"
+            parameterType="long"
+            resultType="com.geogieoddae.mainservice.restaurant.query.dto.ReviewDto">
+        SELECT
+            r.review_code,
+            r.review_title       AS reviewTitle,
+            r.review_body        AS reviewBody,
+            r.review_score       AS reviewScore,
+            res.restaurant_name  AS restaurantName,
+            u.user_name          AS userName,
+            GROUP_CONCAT(DISTINCT rp.review_picture_url) AS pictures
+        FROM review r
+                 JOIN restaurant res ON r.restaurant_code = res.restaurant_code
+                 JOIN member u       ON r.user_code = u.user_code
+                 LEFT JOIN review_picture rp ON r.review_code = rp.review_code
+        WHERE r.restaurant_code = #{restaurantCode}
+        GROUP BY
+            r.review_code, r.review_title, r.review_body, r.review_score,
+            res.restaurant_name, u.user_name
+        ORDER BY r.created_at DESC
+    </select>
+
+    <!-- ✅ 특정 사용자의 리뷰 목록 -->
+    <select id="findReviewsByUserId"
+            parameterType="long"
+            resultType="com.geogieoddae.mainservice.restaurant.query.dto.ReviewDto">
+        SELECT
+            r.review_code,
+            r.review_title       AS reviewTitle,
+            r.review_body        AS reviewBody,
+            r.review_score       AS reviewScore,
+            res.restaurant_name  AS restaurantName,
+            u.user_name          AS userName,
+            GROUP_CONCAT(DISTINCT rp.review_picture_url) AS pictures
+        FROM review r
+                 JOIN restaurant res ON r.restaurant_code = res.restaurant_code
+                 JOIN member u       ON r.user_code = u.user_code
+                 LEFT JOIN review_picture rp ON r.review_code = rp.review_code
+        WHERE r.user_code = #{userCode}
+        GROUP BY
+            r.review_code, r.review_title, r.review_body, r.review_score,
+            res.restaurant_name, u.user_name
+        ORDER BY r.created_at DESC
+    </select>
+
+    <!-- ✅ 리뷰를 별점순 정렬 -->
+    <select id="findReviewsByScore"
+            parameterType="map"
+            resultType="com.geogieoddae.mainservice.restaurant.query.dto.ReviewDto">
+        SELECT
+        r.review_code,
+        r.review_title       AS reviewTitle,
+        r.review_body        AS reviewBody,
+        r.review_score       AS reviewScore,
+        res.restaurant_name  AS restaurantName,
+        u.user_name          AS userName,
+        GROUP_CONCAT(DISTINCT rp.review_picture_url) AS pictures
+        FROM review r
+        JOIN restaurant res ON r.restaurant_code = res.restaurant_code
+        JOIN member u       ON r.user_code = u.user_code
+        LEFT JOIN review_picture rp ON r.review_code = rp.review_code
+        WHERE r.restaurant_code = #{restaurantCode}
+        GROUP BY
+        r.review_code, r.review_title, r.review_body, r.review_score,
+        res.restaurant_name, u.user_name
+        ORDER BY
+        r.review_score
+        <choose>
+            <when test="order == 'asc'">ASC</when>
+            <otherwise>DESC</otherwise>
+        </choose>,
+        r.created_at DESC
+    </select>
+
+</mapper>

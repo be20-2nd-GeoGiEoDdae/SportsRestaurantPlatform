@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geogieoddae.mainservice.report.query.mapper.ReportMapper">
+
+    <resultMap id="reportResultMap" type="com.geogieoddae.mainservice.report.query.dto.ReportQueryDto">
+        <id property="reportCode" column="report_code"/>
+        <result property="reportContents" column="report_contents"/>
+        <result property="reportStatus" column="report_status"/>
+        <result property="reportCompletedAt" column="report_completed_at"/>
+        <result property="reportCreatedAt" column="report_created_at"/>
+        <result property="restaurantCode" column="restaurant_code"/>
+        <result property="restaurantName" column="restaurant_name"/>
+        <result property="reportTypeCode" column="report_type_code"/>
+        <result property="reportTypeType" column="report_type_type"/>
+        <result property="userCode" column="user_code"/>
+        <result property="userName" column="user_name"/>
+        <result property="reportCount" column="report_count"/>  <!-- ✅ 추가 -->
+    </resultMap>
+
+    <!-- 관리자용 신고 목록 조회 -->
+    <select id="selectReportList" resultMap="reportResultMap">
+        SELECT
+               r.report_code,
+               r.report_contents,
+               r.report_status,
+               r.report_completed_at,
+               r.report_created_at,
+               r.restaurant_code,
+               res.restaurant_name,
+               r.report_type_code,
+               rt.report_type_type,
+               r.user_code,
+               m.user_name
+               (
+                SELECT COUNT(*)
+                FROM report rr
+                WHERE rr.restaurant_code = r.restaurant_code
+                ) AS report_count  <!-- ✅ 가게별 신고 누적 횟수 -->
+          FROM report r
+          JOIN restaurant res ON r.restaurant_code = res.restaurant_code
+          JOIN report_type rt ON r.report_type_code = rt.report_type_code
+          JOIN member m ON r.user_code = m.user_code
+         ORDER BY r.report_created_at DESC
+    </select>
+
+    <!-- 관리자용 신고 상세 조회 -->
+    <select id="selectReportByCode" resultMap="reportResultMap">
+        SELECT
+               r.report_code,
+               r.report_contents,
+               r.report_status,
+               r.report_completed_at,
+               r.report_created_at,
+               r.restaurant_code,
+               res.restaurant_name,
+               r.report_type_code,
+               rt.report_type_type,
+               r.user_code,
+               m.user_name
+                (
+                SELECT COUNT(*)
+                FROM report rr
+                WHERE rr.restaurant_code = r.restaurant_code
+                ) AS report_count  <!-- ✅ 동일하게 추가 -->
+          FROM report r
+          JOIN restaurant res ON r.restaurant_code = res.restaurant_code
+          JOIN report_type rt ON r.report_type_code = rt.report_type_code
+          JOIN member m ON r.user_code = m.user_code
+         WHERE r.report_code = #{reportCode}
+    </select>
+
+</mapper>

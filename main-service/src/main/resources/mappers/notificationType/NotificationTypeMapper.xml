@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geogieoddae.mainservice.notification.query.mapper.NotificationTypeMapper">
+  <select id="notificationTypeSelectAll"
+    resultType="com.geogieoddae.mainservice.notification.query.dto.NotificationTypeQueryResponse">
+    SELECT
+      nt.notification_type_Code     AS notificationTypeCode,
+      nt.notification_content          AS notificationContent,
+      nt.notification_type_type      AS notificationTypeType,
+      nt.notification_type_status   AS notificationTypeStatus
+    FROM notification_type nt;
+  </select>
+
+  <select id="notificationTypeSelectByCode"
+    resultType="com.geogieoddae.mainservice.notification.query.dto.NotificationTypeQueryResponse">
+    SELECT
+      nt.notification_type_Code     AS notificationTypeCode,
+      nt.notification_content          AS notificationContent,
+      nt.notification_type_type      AS notificationTypeType,
+      nt.notification_type_status   AS notificationTypeStatus
+    FROM notification_type nt
+    WHERE notification_type_Code =#{ notificationTypeCode } AND notification_type_status='Y'
+    ORDER BY notificationTypeCode DESC;
+  </select>
+
+  <select id="notificationTypeSelectByType"
+    resultType="com.geogieoddae.mainservice.notification.query.dto.NotificationTypeQueryResponse">
+    SELECT
+      nt.notification_type_Code     AS notificationTypeCode,
+      nt.notification_content          AS notificationContent,
+      nt.notification_type_type      AS notificationTypeType,
+      nt.notification_type_status   AS notificationTypeStatus
+    FROM notification_type nt
+    WHERE notification_type_type =#{ notificationTypeType } AND notification_type_status='Y'
+    ORDER BY notificationTypeCode DESC;
+  </select>
+
+</mapper>
+

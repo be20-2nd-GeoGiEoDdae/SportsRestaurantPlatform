@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geogieoddae.mainservice.notification.query.mapper.NotificationMapper">
+
+  <select id="notificationSelectByUserCode"
+    resultType="com.geogieoddae.mainservice.notification.query.dto.NotificationQueryResponse">
+    SELECT
+      n.notification_code     AS notificationCode,
+      n.notification_checked   AS notificationChecked,
+      nt.notification_type_type      AS notificationTypeType,
+      nt.notification_content   AS notificationContent
+    FROM notification n
+        JOIN notification_type nt ON n.notification_type_code = nt.notification_type_code
+    WHERE n.Key2= #{ userCode } AND n.notification_checked=FALSE
+    ORDER BY n.created_at DESC;
+  </select>
+
+</mapper>
+
