@@ -22,8 +22,8 @@
   document.getElementById("payment-button").addEventListener("click", async function() {
     await payment.requestBillingAuth({
       method: "CARD",
-      successUrl: window.location.origin + "/subscribe/billingKey/success",
-      failUrl: window.location.origin + "/subscribe/fail",
+      successUrl: window.location.origin + "/api/subscribe/billingKey/success",
+      failUrl: window.location.origin + "/api/subscribe/fail",
       customerEmail: userName,
       customerName: userEmail,
     });

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ViewHtmlController {
   private final ViewingPayRepository viewingPayRepository;
 
-  @Value("${toss-widget-example-client-key}")
+  @Value("${toss.widget.example.client.key}")
   private String widgetExampleKey;
 
   @GetMapping("/viewingPage")
@@ -40,7 +40,8 @@ public class ViewHtmlController {
   @GetMapping("/index/{orderId}")
   public String subscribePage(@PathVariable String orderId, Model model) {
     ViewingPayEntity viewingPay =viewingPayRepository.findByViewingPayOrderId(orderId);
-    model.addAttribute("customerKey", viewingPay.getViewingPayCustomerKey());
+    //model.addAttribute("customerKey", viewingPay.getViewingPayCustomerKey());
+    model.addAttribute("customerKey", viewingPay.getMember().getCustomerKey());
     model.addAttribute("orderId",viewingPay.getViewingPayOrderId());
     model.addAttribute("amount",viewingPay.getViewingPayPrice());
     model.addAttribute("clientKey",widgetExampleKey);

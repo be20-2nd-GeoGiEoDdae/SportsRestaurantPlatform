@@ -76,8 +76,8 @@ public class ReportCommandService {
 
         reportEntity.setReportStatus(reportStatusUpdateDto.getReportStatus());
 
-        Long notificationType=(long)6;
-        publisher.publishEvent(new NotificationCreatedEvent(reportEntity.getRestaurant().getEntrepreneur().getMember().getUserCode(),notificationType));
+        /*Long notificationType=(long)6;
+        publisher.publishEvent(new NotificationCreatedEvent(reportEntity.getRestaurant().getEntrepreneur().getMember().getUserCode(),notificationType));*/
 
 
         if (!reportEntity.getReportStatus().canChangeTo(reportStatusUpdateDto.getReportStatus())) {
@@ -154,7 +154,7 @@ public class ReportCommandService {
                 )
                 .build();
 
-        Long notificationType=(long)7;
+/*        Long notificationType=(long)7;
         //Long restaurant =restaurantRepository.findById(restaurantBlacklistRequestDto.getRestaurantCode()).orElseThrow().getEntrepreneur().getMember().getUserCode();
 
         publisher.publishEvent(new NotificationCreatedEvent(restaurantBlacklistEntity
@@ -162,7 +162,7 @@ public class ReportCommandService {
             .getEntrepreneur()
             .getMember()
             .getUserCode()
-            ,notificationType));
+            ,notificationType));*/
 
 
         restaurantBlacklistRepository.save(restaurantBlacklistEntity);

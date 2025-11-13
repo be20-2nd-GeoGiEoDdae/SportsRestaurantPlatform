@@ -42,7 +42,7 @@
         await widgets.requestPayment({
           orderId,
           orderName: 'Goegieoddae 결제',
-          successUrl: location.origin + '/viewingPay/success', // 서버의 성공 핸들러
+          successUrl: location.origin + '/api/viewingPay/success', // 서버의 성공 핸들러
           failUrl:    location.origin + '/pay/fail'     // 서버의 실패 핸들러
           // 필요시: customerEmail, customerName 등 추가
         });

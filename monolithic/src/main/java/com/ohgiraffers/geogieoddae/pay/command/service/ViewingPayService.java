@@ -1,6 +1,7 @@
 package com.ohgiraffers.geogieoddae.pay.command.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 import com.ohgiraffers.geogieoddae.notification.command.event.NotificationCreatedEvent;
@@ -10,6 +11,7 @@ import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayStatus;
 import com.ohgiraffers.geogieoddae.pay.command.repository.ViewingPayRepository;
 import com.ohgiraffers.geogieoddae.viewing.command.repository.ViewingRepository;
 import jakarta.transaction.Transactional;
+import java.lang.reflect.Member;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
@@ -30,7 +32,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class ViewingPayService {
-  @Value("${toss-widget-example-secret-key}")
+  @Value("${toss.widget.example.secret.key}")
   private String SECRET_KEY;
   private final ViewingPayRepository viewingPayRepository;
   private final UserRepository userRepository;
@@ -40,11 +42,14 @@ public class ViewingPayService {
 
   public String viewingSave(ViewingPayRequest request){
     String orderId = UUID.randomUUID().toString();
-    String viewingCustomerKey =UUID.randomUUID().toString();
+    //String viewingCustomerKey =UUID.randomUUID().toString();
+    UserEntity user=userRepository.findById(request.getUserCode()).orElseThrow();
+    String customerKey=userRepository.findById(request.getUserCode()).orElseThrow().getCustomerKey();
+
 
     ViewingPayEntity viewingPayEntity = ViewingPayEntity.builder()
         .viewingPayPrice(request.getViewingPayPrice())
-        .viewingPayCustomerKey(viewingCustomerKey)
+        //.viewingPayCustomerKey(viewingCustomerKey)
         .viewingPayOrderId(orderId)
         .viewingPayStatus(ViewingPayStatus.waiting)
         .member(userRepository.getReferenceById(request.getUserCode()))
@@ -105,6 +110,8 @@ public class ViewingPayService {
       return ResponseEntity.ok(ApiResponse.failure(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "결제시 오류 발생 : "+e.getMessage()));
     }
   }
+  //특정 시각에 환불ㄹ
+  //사업자가 상태변경 시 환불
   @Transactional
   public ResponseEntity<String> viewingPayCancel(Long viewingPayCode){
     ViewingPayEntity viewingPay=viewingPayRepository.findById(viewingPayCode).orElseThrow();

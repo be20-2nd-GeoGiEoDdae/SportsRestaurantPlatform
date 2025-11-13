@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ViewHtmlController {
   private final ViewingPayRepository viewingPayRepository;
 
-  @Value("${toss-widget-example-client-key}")
+  @Value("${toss.widget.example.client.key}")
   private String widgetExampleKey;
 
   @GetMapping("/viewingPage")

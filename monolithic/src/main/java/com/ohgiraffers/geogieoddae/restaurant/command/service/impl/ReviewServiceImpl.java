@@ -48,11 +48,11 @@ public class ReviewServiceImpl implements ReviewService {
                 .member(user)
                 .build();
 
-      Long notificationReviewType=(long)5;
+/*      Long notificationReviewType=(long)5;
       publisher.publishEvent(new NotificationCreatedEvent(restaurant
           .getEntrepreneur()
           .getMember()
-          .getUserCode(),notificationReviewType));
+          .getUserCode(),notificationReviewType));*/
         reviewRepository.save(review);
 
         List<String> pictureUrls = saveReviewPictures(review, pictures);

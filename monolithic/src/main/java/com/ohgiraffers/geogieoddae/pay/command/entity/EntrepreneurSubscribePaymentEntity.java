@@ -30,8 +30,8 @@ public class EntrepreneurSubscribePaymentEntity extends BaseTimeEntity {
   @Column(name = "entrepreneur_subscribe_billingkey")
   private String entrepreneurSubscribeBillingkey;
 
-  @Column(name = "entrepreneur_subscribe_customerKey")
-  private String entrepreneurSubscribeCustomerKey;
+  /*@Column(name = "entrepreneur_subscribe_customerKey")
+  private String entrepreneurSubscribeCustomerKey;*/
 
   @Column(name = "entrepreneur_subscribe_orderid")
   private String entrepreneurSubscribeOrderId;

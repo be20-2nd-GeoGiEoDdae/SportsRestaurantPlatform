@@ -2,6 +2,7 @@ package com.ohgiraffers.geogieoddae.auth.command.service;
 
 import java.time.LocalDateTime;
 
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ public class SocialSignupService {
                 .userRole(UserRole.USER) // 기본값
                 .userRefreshToken("initial_token")
                 .userRefreshTokenExpiresAt(LocalDateTime.now())
+            .customerKey(UUID.randomUUID().toString())
                 .build();
         userRepository.save(user);
 

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EntrepreneurSubscribePaymentRepository extends JpaRepository<EntrepreneurSubscribePaymentEntity, Long> {
 
-  EntrepreneurSubscribePaymentEntity findByEntrepreneurSubscribeCustomerKey(String customerKey);
+  //EntrepreneurSubscribePaymentEntity findByEntrepreneurSubscribeCustomerKey(String customerKey);
 
 
   EntrepreneurSubscribePaymentEntity findByEntrepreneurCode(Long entrepreneurCode);

@@ -27,8 +27,8 @@ public class ViewingPayEntity extends BaseTimeEntity {
     @Column(name = "viewing_pay_refund_date")//true->
     private LocalDateTime viewingPayRefundDate;
 
-    @Column(name = "viewing_pay_customer_key")
-    private String viewingPayCustomerKey;
+/*    @Column(name = "viewing_pay_customer_key")
+    private String viewingPayCustomerKey;*/
 
     @Column(name = "viewing_pay_order_id")
     private String viewingPayOrderId;

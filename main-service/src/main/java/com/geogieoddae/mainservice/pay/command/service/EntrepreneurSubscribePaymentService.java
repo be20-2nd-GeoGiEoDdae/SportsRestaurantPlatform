@@ -34,7 +34,7 @@ public class EntrepreneurSubscribePaymentService {
     private final EntrepreneurFeignClient entrepreneurFeignClient;
     private final long thirtyDays = 1000L * 60 * 60 * 24 * 30;
 
-    @Value("${toss-api-key}")
+    @Value("${toss.api.key}")
     private String SECRET_KEY;
 
     @Transactional

@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EntrepreneurRepository extends JpaRepository<EntrepreneurEntity, Long> {
-    // 기본 CRUD 로직 구현
+
+  EntrepreneurEntity findByMember_UserCode(Long userCode);
+  // 기본 CRUD 로직 구현
 }

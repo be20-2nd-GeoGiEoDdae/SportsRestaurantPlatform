@@ -1,6 +1,9 @@
 package com.ohgiraffers.geogieoddae.pay.command.service;
 
 
+import com.ohgiraffers.geogieoddae.auth.command.entity.entrepreneur.EntrepreneurEntity;
+import com.ohgiraffers.geogieoddae.auth.command.repository.EntrepreneurRepository;
+import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
 import com.ohgiraffers.geogieoddae.pay.command.entity.EntrepreneurSubscribePaymentEntity;
 import com.ohgiraffers.geogieoddae.pay.command.repository.EntrepreneurSubscribePaymentRepository;
 import jakarta.transaction.Transactional;
@@ -30,9 +33,11 @@ public class EntrepreneurSubscribePaymentService {
 
   private final RestTemplate rest = new RestTemplate();
   private final EntrepreneurSubscribePaymentRepository entrepreneurSubscribePaymentRepository;
+  private final EntrepreneurRepository entrepreneurRepository;
+  private final UserRepository userRepository;
 
 
-  @Value("${toss-api-key}")
+  @Value("${toss.api.key}")
   private String SECRET_KEY;
   private final int SUBSCRIBE_PAY = 10000;
 
@@ -54,35 +59,56 @@ public class EntrepreneurSubscribePaymentService {
       HttpEntity<Map<String, String>> entity =
           new HttpEntity<>(requestBody, headers);
       // API 호출
-      System.out.println("apikey" + encodedAuth);
+      Map<String, Object> responseBody = BillingKeyCall(entity);
 
-      RestTemplate restTemplate = new RestTemplate();
-      ResponseEntity<Map> response = restTemplate.postForEntity(
-          "https://api.tosspayments.com/v1/billing/authorizations/issue",
-          entity,
-          Map.class
-      );
 
-      Map<String, Object> responseBody = response.getBody();
 
-      EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment
+/*      EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment
           = entrepreneurSubscribePaymentRepository
-          .findByEntrepreneurSubscribeCustomerKey(customerKey);
+          .findByEntrepreneurSubscribeCustomerKey(customerKey);*/
+      System.out.println("검색 시 문제");
+      EntrepreneurEntity entrepreneurEntity=entrepreneurRepository.findByMember_UserCode
+          (userRepository.findByCustomerKey(customerKey).orElseThrow().getUserCode());
 
-      entrepreneurSubscribePayment.updateEntrepreneurSubscribePayment(
+      System.out.println("빌링키 : " + responseBody.get("billingKey"));
+      EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment=
+          EntrepreneurSubscribePaymentEntity.builder()
+              .entrepreneurCode(entrepreneurEntity.getEntrepreneurCode())
+              .entrepreneurSubscribePayment(SUBSCRIBE_PAY)
+              .entrepreneurSubscribeBillingkey((String) responseBody.get("billingKey"))
+              .build();
+      System.out.println("저장시 문제"+entrepreneurSubscribePayment);
+      System.out.println("저장시 문제"+entrepreneurEntity);
+      entrepreneurSubscribePaymentRepository.save(entrepreneurSubscribePayment);
+
+      System.out.println("저장 오류");
+
+
+      /*entrepreneurSubscribePayment.updateEntrepreneurSubscribePayment(
           SUBSCRIBE_PAY,
           (String) responseBody.get("billingKey")
-      );
-      System.out.println("빌링키 : " + responseBody.get("billingKey"));
-      System.out.println(response.getBody());
+      );*/
+     // System.out.println(response.getBody());
 
       return "빌링키 발급 완료";
 
     } catch (Exception e) {
       Map<String, Object> error = new HashMap<>();
       error.put("error", e.getMessage());
+      System.out.println("에러:"+e.getMessage());
       return "빌링키 생성 중 오류 발생";
     }
+  }
+
+  public Map<String,Object> BillingKeyCall(HttpEntity<Map<String, String>> entity) {
+
+    RestTemplate restTemplate = new RestTemplate();
+    ResponseEntity<Map> response = restTemplate.postForEntity(
+        "https://api.tosspayments.com/v1/billing/authorizations/issue",
+        entity,
+        Map.class
+    );
+    return response.getBody();
   }
 
 
@@ -91,8 +117,9 @@ public class EntrepreneurSubscribePaymentService {
       String billingKey) {//유저아이디가 아닌 사업자 구별번호일듯
     EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment =
         entrepreneurSubscribePaymentRepository.findByEntrepreneurSubscribeBillingkey(billingKey);
-    String customerKey = entrepreneurSubscribePayment.getEntrepreneurSubscribeCustomerKey();
+    String customerKey = entrepreneurSubscribePayment.getEntrepreneur().getMember().getCustomerKey();
     Integer amount = entrepreneurSubscribePayment.getEntrepreneurSubscribePayment();
+
     String orderId=UUID.randomUUID().toString();
 
     HttpHeaders headers = new HttpHeaders();
@@ -185,11 +212,12 @@ public class EntrepreneurSubscribePaymentService {
   }
 
   public Map<String, String> request(Long entrepreneurCode) {
-    String customerKey = UUID.randomUUID().toString();
+    //String customerKey = UUID.randomUUID().toString();
+    String customerKey=entrepreneurRepository.findById(entrepreneurCode).orElseThrow().getMember().getCustomerKey();
     Map<String, String> map = new HashMap<>();
     EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment = EntrepreneurSubscribePaymentEntity.builder()
         .entrepreneurCode(entrepreneurCode)
-        .entrepreneurSubscribeCustomerKey(customerKey)
+        //.entrepreneurSubscribeCustomerKey(customerKey)
         .build();
     entrepreneurSubscribePaymentRepository.save(entrepreneurSubscribePayment);
     map.put("customerKey", customerKey);
@@ -209,22 +237,23 @@ public class EntrepreneurSubscribePaymentService {
     List<EntrepreneurSubscribePaymentEntity> SubscribePaymentDueToday =
         entrepreneurSubscribePaymentRepository.findByEntrepreneurSubscribeEndAtBetween(start,  end);
 
-    for (EntrepreneurSubscribePaymentEntity SubscribePayment : SubscribePaymentDueToday) {
+    for (EntrepreneurSubscribePaymentEntity subscribePayment : SubscribePaymentDueToday) {
       try {
         // 각 구독별로 자동결제 실행
         String orderId=chargeBilling(
-            SubscribePayment.getEntrepreneurSubscribeBillingkey(),
-            SubscribePayment.getEntrepreneurSubscribeCustomerKey(),
-            SubscribePayment.getEntrepreneurSubscribePayment()
+            subscribePayment.getEntrepreneurSubscribeBillingkey(),
+            //SubscribePayment.getEntrepreneurSubscribeCustomerKey(),
+            subscribePayment.getEntrepreneur().getMember().getCustomerKey(),
+            subscribePayment.getEntrepreneurSubscribePayment()
         );
 
         // 다음 결제일 계산 및 업데이트
         LocalDateTime nextSubscribeEndAt = LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusDays(30);
         //LocalDateTime nextSubscribeEndAt = LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusSeconds(30);
-        SubscribePayment.setEntrepreneurSubscribeEndAt(nextSubscribeEndAt);
-        SubscribePayment.setEntrepreneurSubscribeOrderId(orderId);
+        subscribePayment.setEntrepreneurSubscribeEndAt(nextSubscribeEndAt);
+        subscribePayment.setEntrepreneurSubscribeOrderId(orderId);
 
-        entrepreneurSubscribePaymentRepository.save(SubscribePayment);
+        entrepreneurSubscribePaymentRepository.save(subscribePayment);
         System.out.println("정기결제 성공");
       } catch (Exception e) {
         System.out.println("빌링키 정기결제 오류");

@@ -57,6 +57,10 @@ public class UserEntity extends BaseTimeEntity {
         @Column(nullable = true)
         private LocalDateTime kakaoRefreshTokenExpiresAt;   // 카카오 리프레쉬토큰 만료
 
+        @Column(nullable = true)
+        private String customerKey;
+
+
         // ✅ 관계 매핑
         @OneToMany(mappedBy = "member")
         private List<SocialEntity> socials;

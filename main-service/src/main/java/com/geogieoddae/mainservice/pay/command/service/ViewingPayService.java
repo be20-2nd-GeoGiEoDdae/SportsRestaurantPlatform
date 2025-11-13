@@ -30,7 +30,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class ViewingPayService {
-  @Value("${toss-widget-example-secret-key}")
+  @Value("${toss.widget.example.secret.key}")
   private String SECRET_KEY;
   private final ViewingPayRepository viewingPayRepository;
   private final ViewingRepository viewingRepository;

@@ -21,7 +21,7 @@ import java.util.Map;
 @RequestMapping("/api/subscribe")
 public class BillingController {
 
-  @Value("${toss-client-key}")
+  @Value("${toss.client.key}")
   private String clientKey;
   // Base64가 시크릿 키를 암호화하거나 보호하지 않지만, HTTP 헤더로 안전하게 텍스트로 전송
   private final EntrepreneurSubscribePaymentService entrepreneurSubscribePaymentService;
