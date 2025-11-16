@@ -29,4 +29,13 @@ public class ReportQueryController {
         ReportQueryDto result = reportService.getReport(reportCode);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
+
+    // 관리자용 블랙리스트 조회
+    @GetMapping("/blackList")
+    public ResponseEntity<ApiResponse<List<BlacklistQueryDto>>> list() {
+        List<BlacklistQueryDto> result = ReportQueryService.list();
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+
 }

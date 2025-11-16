@@ -14,6 +14,7 @@ import java.util.List;
 public class ReportQueryService {
 
     private final ReportMapper reportMapper;
+    private final BlacklistQueryMapper blacklistQueryMapper;
 
     // 관리자용 신고 목록 조회 (게시글처럼 조회)
     public List<ReportQueryDto> listReports() {
@@ -28,4 +29,10 @@ public class ReportQueryService {
         }
         return result;
     }
+
+    // 관리자용 블랙리스트 조회(게시글처럼)
+    public List<BlacklistQueryDto> list() {
+        return blacklistQueryMapper.selectBlacklistList();
+    }
+
 }

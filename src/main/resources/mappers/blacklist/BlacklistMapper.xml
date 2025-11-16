@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohgiraffers.geogieoddae.report.query.mapper.BlacklistMapper">
+
+    <!-- 그냥 resultType 으로 바로 DTO 매핑하는 버전 -->
+    <select id="selectBlacklist"
+            resultType="com.ohgiraffers.geogieoddae.report.query.dto.BlacklistQueryDto">
+        SELECT
+             restaurantName,
+             reportCount
+        FROM blacklist
+        WHERE deleted_yn = 'N'
+        ORDER BY created_at DESC
+    </select>
+
+</mapper>

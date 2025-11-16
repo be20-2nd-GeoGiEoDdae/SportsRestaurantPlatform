@@ -69,18 +69,14 @@ public class ReportCommandController {
 
 
 
-    /**
-     * ✅ 관리자 수동 등록
-     */
+   // 관리자 블랙리스트 수동 등록
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addToBlackList(@RequestBody RestaurantBlacklistRequestDto requestDto) {
         reportCommandService.addToBlacklist(requestDto);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    /**
-     * ✅ 관리자 수동 삭제
-     */
+    // 관리자 블랙리스트 수동 삭제
     @DeleteMapping("/{restaurantCode}")
     public ResponseEntity<ApiResponse<Void>> removeFromBlackList(@PathVariable Long restaurantCode) {
         reportCommandService.removeFromBlackList(restaurantCode);

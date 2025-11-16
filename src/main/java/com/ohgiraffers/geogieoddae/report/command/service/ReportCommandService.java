@@ -130,9 +130,9 @@ public class ReportCommandService {
     }
 
 
-//    /**
-//     * ✅ 관리자 수동 추가
-//     */
+
+//     관리자 블랙리스트 수동 추가
+
     @Transactional
     public void addToBlacklist(RestaurantBlacklistRequestDto restaurantBlacklistRequestDto) {
         if (restaurantBlacklistRepository.existsById(restaurantBlacklistRequestDto.getReportCode())) {
@@ -152,9 +152,9 @@ public class ReportCommandService {
         restaurantBlacklistRepository.save(restaurantBlacklistEntity);
     }
 
-////    /**
-////     * ✅ 자동 등록 (신고 5회 이상 시)
-////     */
+
+//자동 등록 (신고 5회 이상 시)
+
 //    @Transactional
 //    public void checkAndAddBlackList(Long restaurantCode) {
 //        int count = reportRepository.countByRestaurantRestaurantCode(restaurantCode);
@@ -172,9 +172,9 @@ public class ReportCommandService {
 //        }
 //    }
 
-    /**
-     * ✅ 관리자 수동 삭제
-     */
+
+     // 관리자 수동 삭제
+
     @Transactional
     public void removeFromBlackList(Long restaurantCode) {
         RestaurantBlacklistEntity restaurantBlacklistEntity=
