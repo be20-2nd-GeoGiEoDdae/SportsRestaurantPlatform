@@ -9,11 +9,17 @@
     <select id="selectBlacklist"
             resultType="com.ohgiraffers.geogieoddae.report.query.dto.BlacklistQueryDto">
         SELECT
-             restaurantName,
-             reportCount
-        FROM blacklist
-        WHERE deleted_yn = 'N'
-        ORDER BY created_at DESC
+            r.restaurant_name              AS restaurantName,
+            COUNT(re.report_code)          AS reportCount
+        FROM restaurant r
+                 INNER JOIN report re
+                            ON re.restaurant_code = r.restaurant_code
+                 INNER JOIN restaurant_blacklist rb
+                            ON rb.report_code = re.report_code
+        WHERE r.restaurant_is_deleted = FALSE
+        GROUP BY r.restaurant_name
+        ORDER BY MAX(rb.restaurant_blacklist_created_at) DESC
+
     </select>
 
 </mapper>
