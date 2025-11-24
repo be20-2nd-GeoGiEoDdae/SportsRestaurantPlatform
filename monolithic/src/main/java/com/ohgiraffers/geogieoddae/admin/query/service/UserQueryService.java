@@ -6,15 +6,18 @@
 
 package com.ohgiraffers.geogieoddae.admin.query.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ohgiraffers.geogieoddae.admin.query.dto.UserDetailDto;
 import com.ohgiraffers.geogieoddae.admin.query.dto.UserDto;
 import com.ohgiraffers.geogieoddae.admin.query.mapper.UserQueryMapper;
 import com.ohgiraffers.geogieoddae.global.common.dto.PageInfoDto;
 import com.ohgiraffers.geogieoddae.global.common.dto.PageResponseDto;
-import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -38,5 +41,18 @@ public class UserQueryService {
 
         // 5. 페이징 응답 DTO 로 감싸서 반환
         return new PageResponseDto<>(users, pageInfo);
+    }
+
+    public UserDetailDto selectUserDetail(Long userCode) {
+        System.out.println(">>>> [UserQueryService] selectUserDetail 메서드 실행됨. UserCode: " + userCode);
+
+        UserDetailDto userDetail = userQueryMapper.selectUserDetail(userCode);
+
+        if (userDetail == null) {
+            throw new IllegalArgumentException("존재하지 않는 사용자입니다. UserCode: " + userCode);
+        }
+        
+        System.out.println(">>>> [UserQueryService] 사용자 조회 완료: " + userDetail.getUserName());
+        return userDetail;
     }
 }

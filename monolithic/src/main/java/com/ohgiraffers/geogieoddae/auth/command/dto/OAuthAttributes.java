@@ -1,13 +1,14 @@
 package com.ohgiraffers.geogieoddae.auth.command.dto;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.SocialType;
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
+
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
-import java.util.Map;
 
 @Getter
 public class OAuthAttributes {
@@ -55,13 +56,15 @@ public class OAuthAttributes {
 
     public UserEntity toEntity() {
         return UserEntity.builder()
-                .userName(name)
+                .userName("TEMP_USER") // 임시값으로 설정 (추가정보 입력에서 실제값으로 업데이트)
                 .userEmail(email)
-                .userPhoneNumber("N/A") // 임시값
-                .userAddress("N/A")   // 임시값
+                .userPhoneNumber("TEMP_PHONE") // 임시값으로 설정 (추가정보 입력에서 실제값으로 업데이트)
+                .userAddress(null)   // 추가정보 입력에서 받을 예정
                 .userRole(UserRole.USER) // 기본 권한
                 .userRefreshToken("initial_token") // 초기값 설정
                 .userRefreshTokenExpiresAt(LocalDateTime.now()) // 초기값 설정
+                .customerKey(java.util.UUID.randomUUID().toString()) // customerKey 생성
+                // 카카오 토큰은 OAuth2UserRequest에서 직접 접근할 수 없으므로 별도 처리 필요
                 .build();
     }
 }

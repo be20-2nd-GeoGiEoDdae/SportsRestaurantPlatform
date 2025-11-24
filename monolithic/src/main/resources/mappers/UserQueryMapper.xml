@@ -23,6 +23,21 @@
         SELECT
             COUNT(*)
         FROM
-            MEMBER
+            member
+    </select>
+
+    <select id="selectUserDetail" resultType="com.ohgiraffers.geogieoddae.admin.query.dto.UserDetailDto">
+        SELECT
+            user_code,
+            user_name,
+            user_email,
+            user_phone_number,
+            user_address,
+            user_role,
+            created_at
+        FROM
+            member
+        WHERE
+            user_code = #{userCode}
     </select>
 </mapper>

@@ -1,11 +1,9 @@
 package com.ohgiraffers.geogieoddae;
 
-import com.ohgiraffers.geogieoddae.admin.command.entity.AdminEntity;
-import com.ohgiraffers.geogieoddae.admin.command.repository.AdminRepository;
-import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
-import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
-import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
+import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.stream.IntStream;
+
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,8 +13,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
-import java.util.stream.IntStream;
+import com.ohgiraffers.geogieoddae.admin.command.entity.AdminEntity;
+import com.ohgiraffers.geogieoddae.admin.command.repository.AdminRepository;
+import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
+import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
+import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -27,8 +28,8 @@ public class GeogieoddaeApplication {
   public static void main(String[] args) {
     SpringApplication.run(GeogieoddaeApplication.class, args);
   }
-
-  // 더미 회원 데이터 생성 로직 추가
+  
+  // 더미 회원 데이터 생성 로직 추가 (주석처리 - 필요시 주석 해제)
   @Bean
   public CommandLineRunner initData(AdminRepository adminRepository, UserRepository userRepository,
       PasswordEncoder passwordEncoder) {
@@ -71,7 +72,8 @@ public class GeogieoddaeApplication {
         System.out.println("====== 더미 회원 데이터 생성완료 =======");
       }
     };
-
+  
   }
+  
 
 }

@@ -1,11 +1,7 @@
 package com.ohgiraffers.geogieoddae.global.config;
 
-import com.ohgiraffers.geogieoddae.auth.command.service.CustomOAuth2UserService;
-import com.ohgiraffers.geogieoddae.global.jwt.JwtAuthenticationFilter;
-import com.ohgiraffers.geogieoddae.global.jwt.OAuth2AuthenticationSuccessHandler;
-import com.ohgiraffers.geogieoddae.global.security.CookieOAuth2AuthorizationRequestRepository;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,6 +12,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.ohgiraffers.geogieoddae.auth.command.service.CustomOAuth2UserService;
+import com.ohgiraffers.geogieoddae.global.jwt.JwtAuthenticationFilter;
+import com.ohgiraffers.geogieoddae.global.jwt.OAuth2AuthenticationSuccessHandler;
+import com.ohgiraffers.geogieoddae.global.security.CookieOAuth2AuthorizationRequestRepository;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -34,8 +41,33 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        // 허용할 오리진 설정
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "http://127.0.0.1:3000"));
+        
+        // 허용할 HTTP 메서드
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        
+        // 허용할 헤더
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        // 자격 증명 허용 (쿠키, Authorization 헤더 등)
+        configuration.setAllowCredentials(true);
+        
+        // preflight 요청 캐시 시간
+        configuration.setMaxAge(3600L);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 이 줄 추가
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
@@ -46,7 +78,7 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**").permitAll()
+                        .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**", "/login**").permitAll()
                         .requestMatchers("/api/admin/users-view", "/api/admin/logout").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(
                                 "/swagger-ui/**",
@@ -79,9 +111,13 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService)
                         )
                         .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler((request, response, exception) -> {
+                            System.out.println("❌ OAuth2 로그인 실패: " + exception.getMessage());
+                            exception.printStackTrace();
+                            response.sendRedirect("http://localhost:3000/login/failure?error=" + exception.getMessage());
+                        })
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
 
         return http.build();
     }

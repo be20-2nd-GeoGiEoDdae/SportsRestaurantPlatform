@@ -6,17 +6,10 @@
 
 package com.ohgiraffers.geogieoddae.global.jwt;
 
-import com.ohgiraffers.geogieoddae.admin.command.security.AdminDetails;
-import com.ohgiraffers.geogieoddae.admin.command.security.AdminDetailsService;
-import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
-import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,9 +19,18 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
+import com.ohgiraffers.geogieoddae.admin.command.security.AdminDetails;
+import com.ohgiraffers.geogieoddae.admin.command.security.AdminDetailsService;
+import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
+import com.ohgiraffers.geogieoddae.auth.command.repository.UserRepository;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -44,7 +46,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        // OAuth2 로그인 과정에서는 JWT 토큰이 아직 생성되지 않았으므로 JWT 필터를 스킵
+        String requestURI = request.getRequestURI();
+        System.out.println("🔍 JWT 필터 처리 요청 URI: " + requestURI);
+        
+        // 정적 리소스 및 OAuth2 경로는 JWT 필터 제외
+        if (requestURI.startsWith("/oauth2/") ||                    // OAuth2 인증 시작
+            requestURI.startsWith("/login/oauth2/code/") ||         // OAuth2 콜백 처리
+            requestURI.startsWith("/login") ||                      // 로그인 페이지 및 에러 페이지
+            requestURI.equals("/h2-console") ||                     // H2 콘솔
+            requestURI.startsWith("/h2-console/") ||                // H2 콘솔 리소스
+            requestURI.equals("/api/admin/login") ||                // 관리자 로그인 (JWT 생성 전)
+            requestURI.equals("/api/admin/refresh") ||              // 토큰 재발급
+            requestURI.equals("/favicon.ico") ||                    // 파비콘
+            requestURI.startsWith("/css/") ||                       // CSS 파일
+            requestURI.startsWith("/js/") ||                        // JS 파일
+            requestURI.startsWith("/images/") ||                    // 이미지 파일
+            requestURI.startsWith("/static/") ||                    // 정적 리소스
+            requestURI.endsWith(".css") ||                          // CSS 파일 확장자
+            requestURI.endsWith(".js") ||                           // JS 파일 확장자
+            requestURI.endsWith(".ico") ||                          // 아이콘 파일
+            requestURI.endsWith(".png") ||                          // 이미지 파일
+            requestURI.endsWith(".jpg") ||                          // 이미지 파일
+            requestURI.endsWith(".jpeg") ||                         // 이미지 파일
+            requestURI.endsWith(".gif") ||                          // 이미지 파일
+            requestURI.endsWith(".svg")) {                          // SVG 파일
+            
+            System.out.println("🔄 JWT 필터 스킵 - 경로: " + requestURI);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = jwtTokenProvider.resolveToken(request);
+        
+        // 추가정보 입력 페이지의 경우 쿼리 파라미터에서 tempToken 확인
+        if (token == null && requestURI.equals("/api/auth/signup/additional")) {
+            String tempToken = request.getParameter("tempToken");
+            if (tempToken != null) {
+                token = tempToken;
+                System.out.println("🔗 쿼리 파라미터에서 tempToken 발견: " + tempToken.substring(0, Math.min(20, tempToken.length())) + "...");
+            }
+        }
 
         // 토큰 로그
         System.out.println("token : " + token + "");
@@ -81,7 +123,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 } else {
                     // ✅ 일반 사용자(소셜 로그인 유저)
-                    UserEntity user = userRepository.findById(Long.valueOf(id))
+                    UserEntity user = userRepository.findById(Long.parseLong(id))
                             .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + id));
 
                     principal = user; // 바로 엔티티 사용 (UserDetails 아님)
@@ -98,7 +140,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (Exception e) {
-                logger.error("JWT 필터 처리 중 오류 발생", e);
+                System.err.println("JWT 필터 처리 중 오류 발생: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 

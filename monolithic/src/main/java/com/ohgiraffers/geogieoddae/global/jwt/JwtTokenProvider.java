@@ -81,6 +81,20 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    // Access Token 생성 - 사용자용 (소셜 정보 포함)
+    public String generateUserAccessTokenWithSocial(String userId, String role, String email, String socialId, String socialType) {
+        return Jwts.builder()
+                .setSubject(userId)
+                .claim("role", role)
+                .claim("email", email)
+                .claim("socialId", socialId)
+                .claim("socialType", socialType)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     // 토큰 유효성 검증
     public boolean validateToken(String token) {
         try {
@@ -106,6 +120,36 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    // 토큰에서 이메일 추출
+    public String getEmailFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("email", String.class);
+    }
+
+    // 토큰에서 소셜 ID 추출
+    public String getSocialIdFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("socialId", String.class);
+    }
+
+    // 토큰에서 소셜 타입 추출
+    public String getSocialTypeFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("socialType", String.class);
     }
 
     // 요청 헤더에서 토큰 추출
