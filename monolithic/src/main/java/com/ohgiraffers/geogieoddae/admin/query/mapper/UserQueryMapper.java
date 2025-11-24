@@ -7,6 +7,7 @@
 package com.ohgiraffers.geogieoddae.admin.query.mapper;
 
 import com.ohgiraffers.geogieoddae.admin.query.dto.UserDto;
+import com.ohgiraffers.geogieoddae.admin.query.dto.UserDetailDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,6 +20,9 @@ public interface UserQueryMapper {
 
     // 전체 회원 수 조회 (페이징 계산용)
     int selectAllUserCount();
+
+    // 특정 회원의 상세 정보 조회
+    UserDetailDto selectUserDetail(@Param("userCode") Long userCode);
 }
 
 

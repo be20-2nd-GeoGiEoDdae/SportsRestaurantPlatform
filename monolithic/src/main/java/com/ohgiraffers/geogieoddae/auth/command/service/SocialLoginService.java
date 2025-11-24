@@ -1,5 +1,7 @@
 package com.ohgiraffers.geogieoddae.auth.command.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.ohgiraffers.geogieoddae.auth.command.dto.KakaoUserInfoDto;
@@ -16,17 +18,27 @@ public class SocialLoginService {
     private final UserRepository userRepository;
 
     public UserEntity findOrCreateUserByKakao(KakaoUserInfoDto kakaoUserInfo) {
-        UserEntity user = userRepository.findByUserEmail(kakaoUserInfo.getEmail())
-            .orElse(null);
-        if (user == null) {
-            user = UserEntity.builder()
+
+        Optional<UserEntity> userOptional = userRepository.findByUserEmail(kakaoUserInfo.getEmail());
+        
+        if (userOptional.isPresent()) {
+            UserEntity user = userOptional.get();
+            
+            // 탈퇴 체크 추가
+            if (user.getIsWithdrawn()) {
+                throw new RuntimeException("탈퇴한 회원입니다. 다시 가입해주세요.");
+            }
+            
+            return user;
+        } else {
+            // 회원이 없으면 새로 생성
+            UserEntity newUser = UserEntity.builder()
                 .userEmail(kakaoUserInfo.getEmail())
                 .userName(kakaoUserInfo.getNickname())
                 .userRole(UserRole.USER)
-                // 기타 필드 초기화
+                .isWithdrawn(false)  // 기본값 설정
                 .build();
-            userRepository.save(user);
+            return userRepository.save(newUser);
         }
-        return user;
     }
 }

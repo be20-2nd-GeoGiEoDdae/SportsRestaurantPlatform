@@ -1,12 +1,15 @@
 package com.ohgiraffers.geogieoddae.admin.query.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ohgiraffers.geogieoddae.admin.query.dto.UserDetailDto;
 import com.ohgiraffers.geogieoddae.admin.query.dto.UserDto;
 import com.ohgiraffers.geogieoddae.admin.query.service.UserQueryService;
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
@@ -34,4 +37,15 @@ public class UserQueryController {
         //PageResponseDto<UserDto> pagedUsers = userQueryService.selectAllUsers(page, size);
         return ResponseEntity.ok(ApiResponse.success(pageResponse));
     }
+
+    @GetMapping("/users/{userCode}")
+    public ResponseEntity<ApiResponse<UserDetailDto>> selectUserDetail(
+            @PathVariable Long userCode
+    ) {
+        System.out.println(">>>> [UserQueryController] selectUserDetail 메서드 실행됨. UserCode: " + userCode);
+
+        UserDetailDto userDetail = userQueryService.selectUserDetail(userCode);
+        return ResponseEntity.ok(ApiResponse.success(userDetail));
+    }
+
 }

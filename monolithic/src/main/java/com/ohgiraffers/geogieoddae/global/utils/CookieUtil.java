@@ -1,12 +1,13 @@
 package com.ohgiraffers.geogieoddae.global.utils;
 
+import java.util.Base64;
+import java.util.Optional;
+
+import org.springframework.util.SerializationUtils;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.util.SerializationUtils;
-
-import java.util.Base64;
-import java.util.Optional;
 
 public class CookieUtil {
 
@@ -28,7 +29,9 @@ public class CookieUtil {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setMaxAge(maxAge);
-
+        // CORS 환경에서 쿠키 공유를 위한 설정
+        cookie.setDomain("localhost"); // 도메인 명시적 설정
+        
         response.addCookie(cookie);
     }
 

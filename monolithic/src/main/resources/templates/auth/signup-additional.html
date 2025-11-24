@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 정보 입력 - 거기어때</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            background-color: #4FC3F7;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 24px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4FC3F7;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: #f9f9f9;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4FC3F7;
+            background-color: white;
+        }
+
+        .phone-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .phone-input {
+            flex: 1;
+        }
+
+        .verify-btn {
+            background-color: #4FC3F7;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .verify-btn:hover {
+            background-color: #29B6F6;
+        }
+
+        .address-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .address-input {
+            flex: 1;
+        }
+
+        .search-btn {
+            background-color: #4FC3F7;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .search-btn:hover {
+            background-color: #29B6F6;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: #4FC3F7;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+
+        .submit-btn:hover {
+            background-color: #29B6F6;
+        }
+
+        .submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .success-message {
+            color: #4caf50;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 로고 -->
+        <div class="logo">
+            <div class="logo-icon">🍽️</div>
+            <div class="logo-text">거기어때?</div>
+        </div>
+
+        <!-- 제목 -->
+        <h1 class="title">회원 정보 입력</h1>
+
+        <!-- 폼 -->
+        <form id="signupForm">
+            <!-- 숨겨진 필드들 -->
+            <input type="hidden" id="tempToken" th:value="${tempToken}">
+            <input type="hidden" id="userEmail" th:value="${email}">
+
+            <!-- 이름 -->
+            <div class="form-group">
+                <label class="form-label" for="userName">이름</label>
+                <input type="text" id="userName" name="userName" class="form-input" 
+                       placeholder="이름을 입력해주세요" required>
+                <div class="error-message" id="nameError"></div>
+            </div>
+
+            <!-- 전화번호 -->
+            <div class="form-group">
+                <label class="form-label" for="userPhoneNumber">전화번호</label>
+                <div class="phone-group">
+                    <input type="tel" id="userPhoneNumber" name="userPhoneNumber" 
+                           class="form-input phone-input" 
+                           placeholder="휴대폰 번호를 입력해주세요" required>
+                    <button type="button" class="verify-btn" id="verifyPhoneBtn">인증 번호</button>
+                </div>
+                <div class="error-message" id="phoneError"></div>
+                <div class="success-message" id="phoneSuccess"></div>
+            </div>
+
+            <!-- 인증번호 입력 (숨김 상태로 시작) -->
+            <div class="form-group hidden" id="verificationGroup">
+                <input type="text" id="verificationCode" class="form-input" 
+                       placeholder="인증번호를 입력 해주세요" maxlength="6">
+                <div class="error-message" id="verificationError"></div>
+                <div class="success-message" id="verificationSuccess"></div>
+            </div>
+
+            <!-- 주소 -->
+            <div class="form-group">
+                <label class="form-label" for="userAddress">주소</label>
+                <div class="address-group">
+                    <input type="text" id="userAddress" name="userAddress" 
+                           class="form-input address-input" 
+                           placeholder="주소를 입력해주세요" required>
+                    <button type="button" class="search-btn" id="searchAddressBtn">검색</button>
+                </div>
+                <!-- 상세주소 입력 필드 -->
+                <input type="text" id="detailAddress" class="form-input" 
+                       placeholder="상세주소를 입력해주세요" style="margin-top: 8px;">
+                <div class="error-message" id="addressError"></div>
+            </div>
+
+            <!-- 가입 버튼 -->
+            <button type="submit" class="submit-btn" id="submitBtn">가입</button>
+        </form>
+    </div>
+
+    <script>
+        // 전화번호 포맷팅
+        document.getElementById('userPhoneNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            
+            if (value.length <= 3) {
+                e.target.value = value;
+            } else if (value.length <= 7) {
+                e.target.value = value.slice(0, 3) + '-' + value.slice(3);
+            } else {
+                e.target.value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
+            }
+        });
+
+        // 인증번호 발송
+        document.getElementById('verifyPhoneBtn').addEventListener('click', async function() {
+            const phoneNumber = document.getElementById('userPhoneNumber').value;
+            
+            if (!phoneNumber || !phoneNumber.match(/^010-\d{4}-\d{4}$/)) {
+                document.getElementById('phoneError').textContent = '올바른 전화번호를 입력해주세요 (010-1234-5678)';
+                document.getElementById('phoneError').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('phoneError').style.display = 'none';
+            
+            try {
+                // 실제 SMS API 호출
+                const response = await fetch('/api/auth/sms/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ phoneNumber: phoneNumber })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    document.getElementById('phoneSuccess').textContent = result.data;
+                    document.getElementById('phoneSuccess').style.display = 'block';
+                    document.getElementById('verificationGroup').classList.remove('hidden');
+                    
+                    // 인증번호 발송 버튼 비활성화 (재발송 방지)
+                    this.disabled = true;
+                    this.textContent = '발송됨';
+                    
+                    // 5분 후 재활성화
+                    setTimeout(() => {
+                        this.disabled = false;
+                        this.textContent = '인증 번호';
+                    }, 300000); // 5분 = 300000ms
+                    
+                } else {
+                    document.getElementById('phoneError').textContent = result.message || '인증번호 발송에 실패했습니다.';
+                    document.getElementById('phoneError').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('SMS 발송 오류:', error);
+                document.getElementById('phoneError').textContent = '네트워크 오류가 발생했습니다.';
+                document.getElementById('phoneError').style.display = 'block';
+            }
+        });
+
+        // 인증번호 확인
+        document.getElementById('verificationCode').addEventListener('blur', async function() {
+            const phoneNumber = document.getElementById('userPhoneNumber').value;
+            const verificationCode = this.value;
+            
+            if (!verificationCode || verificationCode.length !== 6) {
+                return; // 6자리가 아니면 확인하지 않음
+            }
+            
+            try {
+                const response = await fetch('/api/auth/sms/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        phoneNumber: phoneNumber,
+                        verificationCode: verificationCode 
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    document.getElementById('verificationError').style.display = 'none';
+                    document.getElementById('verificationSuccess').textContent = result.data;
+                    document.getElementById('verificationSuccess').style.display = 'block';
+                    
+                    // 인증 완료 표시
+                    this.style.borderColor = '#4caf50';
+                    this.style.backgroundColor = '#f1f8e9';
+                    this.disabled = true;
+                    
+                } else {
+                    document.getElementById('verificationSuccess').style.display = 'none';
+                    document.getElementById('verificationError').textContent = result.message || '인증번호가 올바르지 않습니다.';
+                    document.getElementById('verificationError').style.display = 'block';
+                    
+                    this.style.borderColor = '#f44336';
+                }
+            } catch (error) {
+                console.error('인증번호 확인 오류:', error);
+                document.getElementById('verificationError').textContent = '네트워크 오류가 발생했습니다.';
+                document.getElementById('verificationError').style.display = 'block';
+            }
+        });
+
+        // 주소 검색 (다음 우편번호 서비스 등을 연동할 수 있습니다)
+        document.getElementById('searchAddressBtn').addEventListener('click', function() {
+            // 간단한 예시 - 실제로는 다음 우편번호 API 등을 사용
+            alert('주소 검색 기능은 추후 구현 예정입니다.');
+        });
+
+        // 폼 제출
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // 유효성 검사
+            const userName = document.getElementById('userName').value.trim();
+            const userPhoneNumber = document.getElementById('userPhoneNumber').value;
+            const userAddress = document.getElementById('userAddress').value.trim();
+            const detailAddress = document.getElementById('detailAddress').value.trim();
+            const tempToken = document.getElementById('tempToken').value;
+            const userEmail = document.getElementById('userEmail').value;
+
+            // 기본 유효성 검사
+            if (!userName) {
+                alert('이름을 입력해주세요.');
+                return;
+            }
+
+            if (!userPhoneNumber.match(/^010-\d{4}-\d{4}$/)) {
+                alert('올바른 전화번호를 입력해주세요.');
+                return;
+            }
+
+            if (!userAddress) {
+                alert('주소를 입력해주세요.');
+                return;
+            }
+
+            // 상세주소와 기본주소 결합
+            const fullAddress = detailAddress ? userAddress + ' ' + detailAddress : userAddress;
+
+            // JWT 토큰에서 소셜 정보 추출 (간단한 방법)
+            let socialId = '';
+            let socialType = '';
+            
+            try {
+                const tokenPayload = JSON.parse(atob(tempToken.split('.')[1]));
+                socialId = tokenPayload.socialId;
+                socialType = tokenPayload.socialType;
+            } catch (error) {
+                console.error('토큰 파싱 오류:', error);
+                alert('인증 정보가 올바르지 않습니다.');
+                return;
+            }
+
+            // API 호출
+            const requestData = {
+                userEmail: userEmail,
+                userName: userName,
+                userPhoneNumber: userPhoneNumber,
+                userAddress: fullAddress,
+                socialId: socialId,
+                socialType: socialType
+            };
+
+            try {
+                const response = await                    fetch('/api/auth/social-signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + tempToken
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert('회원가입이 완료되었습니다!');
+                    // 로그인 완료 후 메인페이지로 이동
+                    window.location.href = "http://localhost:8080/oauth2/authorization/kakao";
+                } else {
+                    alert('회원가입 실패: ' + (result.message || '알 수 없는 오류'));
+                }
+            } catch (error) {
+                console.error('API 호출 오류:', error);
+                alert('네트워크 오류가 발생했습니다.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,12 +1,25 @@
 package com.ohgiraffers.geogieoddae.auth.command.entity.user;
 
-import com.ohgiraffers.geogieoddae.auth.command.entity.entrepreneur.EntrepreneurEntity;
-import com.ohgiraffers.geogieoddae.global.common.entity.BaseTimeEntity;
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.ohgiraffers.geogieoddae.auth.command.entity.entrepreneur.EntrepreneurEntity;
+import com.ohgiraffers.geogieoddae.global.common.entity.BaseTimeEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "member")
@@ -60,6 +73,16 @@ public class UserEntity extends BaseTimeEntity {
         @Column(nullable = true)
         private String customerKey;
 
+        // 회원 탈퇴 관련 필드
+        @Builder.Default
+        @Column(name = "is_withdrawn", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+        private Boolean isWithdrawn = false;                    // 탈퇴 여부 (기본값: false)
+
+        @Column(name = "withdrawn_at")
+        private LocalDateTime withdrawnAt;                      // 탈퇴 일시
+        
+        @Column(name = "withdrawn_reason")
+        private String withdrawReason;                          // 탈퇴 사유 (선택사항)
 
         // ✅ 관계 매핑
         @OneToMany(mappedBy = "member")
@@ -67,6 +90,4 @@ public class UserEntity extends BaseTimeEntity {
 
         @OneToMany(mappedBy = "member")
         private List<EntrepreneurEntity> entrepreneurs;
-
-
 }
