@@ -147,4 +147,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+
+        System.out.println("Request Path = " + path);
+
+        return
+                // ⭐ 너 지금 테스트 중인 API (전체 허용)
+                path.startsWith("/api/restaurants") ||
+                path.startsWith("/api/restaurant") ||
+
+                        // 추가 허용 API들
+                        path.startsWith("/api/sports") ||
+                        path.startsWith("/api/viewings") ||
+                        path.startsWith("/api/keywords") ||
+                        path.startsWith("/uploads/images") ||
+
+                        // 인증 관련
+                        path.startsWith("/api/auth") ||
+                        path.startsWith("/oauth2") ||
+                        path.startsWith("/login") ||
+
+                        // Swagger
+                        path.startsWith("/swagger") ||
+                        path.startsWith("/v3/api-docs") ||
+                        path.startsWith("/swagger-resources") ||
+                        path.startsWith("/webjars") ||
+
+                        // 정적 설정
+                        path.equals("/") ||
+                        path.contains("index.html") ||
+
+                        // 에러 페이지
+                        path.startsWith("/error");
+    }
 }
+

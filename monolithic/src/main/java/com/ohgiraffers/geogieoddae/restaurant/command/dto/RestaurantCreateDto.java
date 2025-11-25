@@ -13,7 +13,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RestaurantDto {
+public class
+RestaurantCreateDto {
     @NotBlank
     private String restaurantName;
     @NotBlank
@@ -28,6 +29,9 @@ public class RestaurantDto {
     private Integer restaurantScore;
     @NotBlank
     private Long entrepreneurCode;
+
+    private double latitude; // 위도 필드 추가
+    private double longitude; // 경도 필드 추가
 
     private List<Long> keywordIds;
 

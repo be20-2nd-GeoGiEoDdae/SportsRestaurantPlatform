@@ -4,6 +4,10 @@ import com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingDto;
 import com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingPictureDto;
 import com.ohgiraffers.geogieoddae.viewing.query.mapper.ViewingMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,23 +22,35 @@ public class ViewingQueryService {
     public List<ViewingDto> searchViewings(String keyword) {
         return viewingMapper.searchViewingsByKeyword(keyword);
     }
+
     //목록 조회 (시간 순 정렬)
-    public List<ViewingDto> findAllViewings() {
-        return viewingMapper.findAllViewings();
+    public Page<ViewingDto> findAllViewings(Double lat, Double lng, int page, int size) {
+
+        int offset = page * size;
+
+        List<ViewingDto> list = viewingMapper.findAllViewings(lat, lng, size, offset);
+        int total = viewingMapper.countAllViewings();
+
+        return new PageImpl<>(list, PageRequest.of(page, size), total);
     }
+
+
     //조건별 조회
     public List<ViewingDto> findViewingsByCondition(Map<String, Object> conditions) {
         return viewingMapper.findViewingsByCondition(conditions);
     }
+
     //상세 조회
     public ViewingPictureDto findViewingDetail(Long viewingCode) {
-        ViewingPictureDto viewing = viewingMapper.findViewingDetail(viewingCode);
-        if (viewing != null) {
-            List<String> pictureUrls = viewingMapper.findRestaurantPictures(
-                    viewing.getViewingCode()
-            );
-            viewing.setPictureUrls(pictureUrls);
-        }
-        return viewing;
+        ViewingPictureDto dto = viewingMapper.findViewingDetail(viewingCode);
+        if (dto == null) return null;
+
+        Long restaurantCode = dto.getRestaurantCode();
+
+        dto.setPictureUrls(
+                String.join(",", viewingMapper.findRestaurantPictures(restaurantCode))
+        );
+
+        return dto;
     }
 }

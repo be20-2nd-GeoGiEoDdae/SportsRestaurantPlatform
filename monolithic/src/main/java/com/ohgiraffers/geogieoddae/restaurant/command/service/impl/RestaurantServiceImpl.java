@@ -1,6 +1,9 @@
 package com.ohgiraffers.geogieoddae.restaurant.command.service.impl;
 
+import com.ohgiraffers.geogieoddae.auth.command.entity.entrepreneur.EntrepreneurEntity;
+import com.ohgiraffers.geogieoddae.auth.command.repository.EntrepreneurRepository;
 import com.ohgiraffers.geogieoddae.global.apikey.GoogleGeocodingService;
+import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantCreateDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDistanceResponse;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.KeywordEntity;
@@ -33,7 +36,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final KeywordRepository keywordRepository;
     private final RestaurantKeywordRepository restaurantKeywordRepository;
     private final RestaurantPictureRepository restaurantPictureRepository;
-    private final GoogleGeocodingService googleGeocodingService;
+    private final EntrepreneurRepository entrepreneurRepository;
 
 
     public List<RestaurantDistanceResponse> getRestaurantsSortedByDistance(double userLat, double userLon) {
@@ -48,14 +51,14 @@ public class RestaurantServiceImpl implements RestaurantService {
             Double lon = (Double) obj[4];
             Double distanceKm = (Double) obj[5];
 
-            // ✅ 거리 단위 변환
+            // 거리 단위 변환
             String formattedDistance = formatDistance(distanceKm);
 
             return new RestaurantDistanceResponse(code, name, location, lat, lon, formattedDistance);
         }).collect(Collectors.toList());
     }
 
-    /** ✅ 1km 미만이면 m단위, 이상이면 km단위로 표시 */
+
     private String formatDistance(double distanceKm) {
         if (distanceKm < 1.0) {
             // 1km 미만 → m 단위로 (소수점 1자리까지)
@@ -69,29 +72,28 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Transactional
     @Override
-    public void registerRestaurant(RestaurantDto restaurantDto, List<MultipartFile> pictures) throws IOException {
+    public void registerRestaurant(RestaurantCreateDto restaurantDto, List<MultipartFile> pictures) throws IOException {
 
-        // ✅ 주소 → 좌표 변환
-        double[] coordinates = googleGeocodingService.getCoordinates(restaurantDto.getRestaurantLocation());
-        double latitude = coordinates[0];
-        double longitude = coordinates[1];
-
-        // ✅ 엔티티 생성
+        EntrepreneurEntity entrepreneur = entrepreneurRepository
+                .findById(restaurantDto.getEntrepreneurCode())
+                .orElseThrow(() -> new IllegalArgumentException("Entrepreneur not found"));
+        // 엔티티 생성
         RestaurantEntity restaurant = RestaurantEntity.builder()
                 .restaurantName(restaurantDto.getRestaurantName())
                 .restaurantLocation(restaurantDto.getRestaurantLocation())
-                .latitude(latitude)
-                .longitude(longitude)
+                .latitude(restaurantDto.getLatitude()) // DTO에서 위도 사용
+                .longitude(restaurantDto.getLongitude()) // DTO에서 경도 사용
                 .restaurantCategory(restaurantDto.getRestaurantCategory())
                 .restaurantPeopleNumber(restaurantDto.getRestaurantPeopleNumber())
                 .restaurantContents(restaurantDto.getRestaurantContents())
                 .restaurantScore(restaurantDto.getRestaurantScore())
+                .entrepreneur(entrepreneur)
                 .restaurantIsDeleted(false)
                 .build();
 
         restaurantRepository.save(restaurant);
 
-        // ✅ 사진 처리 (저장 후 DTO에 바로 반영)
+        // 사진 처리 (저장 후 DTO에 바로 반영)
         if (pictures != null && !pictures.isEmpty()) {
             List<RestaurantPictureEntity> pictureEntities = new ArrayList<>();
 
@@ -112,7 +114,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
             restaurantPictureRepository.saveAll(pictureEntities);
 
-            // ✅ LAZY 초기화 없이 바로 DTO에 URL 세팅
+            // LAZY 초기화 없이 바로 DTO에 URL 세팅
             List<String> pictureUrls = pictureEntities.stream()
                     .map(RestaurantPictureEntity::getRestaurantPictureUrl)
                     .collect(Collectors.toList());
@@ -122,16 +124,19 @@ public class RestaurantServiceImpl implements RestaurantService {
             restaurant.setPictures(pictureEntities);
         }
 
-        // ✅ 키워드 연결
+        // 키워드 연결
         if (restaurantDto.getKeywordIds() != null && !restaurantDto.getKeywordIds().isEmpty()) {
+
             List<KeywordEntity> selectedKeywords = keywordRepository.findAllById(restaurantDto.getKeywordIds());
-            if (restaurant.getKeywords() == null) restaurant.setKeywords(new ArrayList<>());
+
             for (KeywordEntity keyword : selectedKeywords) {
-                restaurant.getKeywords().add(new RestaurantKeywordEntity(restaurant, keyword));
+                RestaurantKeywordEntity restaurantKeyword = new RestaurantKeywordEntity(restaurant, keyword);
+
+                // 이 한 줄이면 끝
+                restaurant.getKeywords().add(restaurantKeyword);
             }
         }
     }
-
 
 
     @Override
@@ -141,7 +146,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Transactional
     @Override
-    public void updateRestaurant(Long restaurantId, RestaurantDto restaurantDto, List<MultipartFile> pictures) throws IOException {
+    public void updateRestaurant(Long restaurantId, RestaurantCreateDto restaurantDto, List<MultipartFile> pictures) throws IOException {
 
 
         RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
@@ -151,17 +156,21 @@ public class RestaurantServiceImpl implements RestaurantService {
         updatedRestaurant(restaurantDto, restaurant);
 
 
-        if (restaurant.getKeywords() != null) {
-            restaurant.getKeywords().clear();
-        } else {
-            restaurant.setKeywords(new ArrayList<>());
+        if (restaurant.getKeywords() != null && !restaurant.getKeywords().isEmpty()) {
+            restaurantKeywordRepository.deleteAll(restaurant.getKeywords()); // DB 삭제
+            restaurant.getKeywords().clear(); // 메모리 삭제
         }
 
+// 새 키워드 연결
         if (restaurantDto.getKeywordIds() != null && !restaurantDto.getKeywordIds().isEmpty()) {
+
             List<KeywordEntity> keywords = keywordRepository.findAllById(restaurantDto.getKeywordIds());
 
             for (KeywordEntity keyword : keywords) {
-                restaurant.getKeywords().add(new RestaurantKeywordEntity(restaurant, keyword));
+                RestaurantKeywordEntity restaurantKeyword = new RestaurantKeywordEntity(restaurant, keyword);
+
+                // 이것만 하면 됨 — Cascade.ALL 이 자동 persist
+                restaurant.getKeywords().add(restaurantKeyword);
             }
         }
 

@@ -3,12 +3,14 @@ package com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant;
 import com.ohgiraffers.geogieoddae.auth.command.entity.entrepreneur.EntrepreneurEntity;
 import com.ohgiraffers.geogieoddae.global.common.entity.BaseTimeEntity;
 import com.ohgiraffers.geogieoddae.report.command.entity.blacklist.RestaurantBlacklistEntity;
+import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantCreateDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.keyword.RestaurantKeywordEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -53,22 +55,25 @@ public class RestaurantEntity extends BaseTimeEntity {
     @Column(name = "restaurant_score")
     private Integer restaurantScore;
 
-    /*@ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "entrepreneur_code", nullable = false)
-    private EntrepreneurEntity entrepreneur;*/
+    private EntrepreneurEntity entrepreneur;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RestaurantPictureEntity> pictures;
 
+    @Builder.Default
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<RestaurantKeywordEntity> keywords;
+    private List<RestaurantKeywordEntity> keywords = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<RestaurantBlacklistEntity> blacklists;
 
-    public static void updatedRestaurant(RestaurantDto dto, RestaurantEntity restaurant) {
+    public static void updatedRestaurant(RestaurantCreateDto dto, RestaurantEntity restaurant) {
         restaurant.setRestaurantName(dto.getRestaurantName());
         restaurant.setRestaurantLocation(dto.getRestaurantLocation());
+        restaurant.setLatitude(dto.getLatitude()); // 위도 업데이트
+        restaurant.setLongitude(dto.getLongitude()); // 경도 업데이트
         restaurant.setRestaurantCategory(dto.getRestaurantCategory());
         restaurant.setRestaurantPeopleNumber(dto.getRestaurantPeopleNumber());
         restaurant.setRestaurantContents(dto.getRestaurantContents());
