@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+<<<<<<< Updated upstream
 import com.ohgiraffers.geogieoddae.auth.command.service.CustomOAuth2UserService;
 import com.ohgiraffers.geogieoddae.global.jwt.JwtAuthenticationFilter;
 import com.ohgiraffers.geogieoddae.global.jwt.OAuth2AuthenticationSuccessHandler;
@@ -23,6 +24,9 @@ import com.ohgiraffers.geogieoddae.global.security.CookieOAuth2AuthorizationRequ
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+=======
+import java.util.List;
+>>>>>>> Stashed changes
 
 @Configuration
 @EnableWebSecurity
@@ -66,9 +70,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 이 줄 추가
                 .csrf(csrf -> csrf.disable())
+
+                // ⭐ CORS 활성화 + 직접 만든 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ⭐ 수정
+
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> {
@@ -78,30 +87,23 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
+<<<<<<< Updated upstream
                         .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**", "/login**").permitAll()
                         .requestMatchers("/api/admin/users-view", "/api/admin/logout").hasAuthority("ROLE_ADMIN")
+=======
+                        // ⭐ OPTIONS 요청 명시적으로 허용
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()  // ⭐ 수정
+
+>>>>>>> Stashed changes
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                            "/swagger-resources/**",
-                                "/webjars/**").permitAll()
-                                /*
-                            "/bookmark/**",
-                            "/notification/**",
-                            "/restaurants/**",
-                            "/reviews/**",
-                            "/viewings/**",
-                            "/reports/**",
-                            "/viewingPay/**",
-                            "/subscribe/**",
-                            "/announcements/**",
-                            "/sports/**",
-                            "/reports/**"
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
 
-                        ).permitAll()*/
                         .requestMatchers("/api/**").permitAll()
-                        .anyRequest().authenticated()
-
+                        .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(endpoint -> endpoint
@@ -117,9 +119,31 @@ public class SecurityConfig {
                             response.sendRedirect("http://localhost:3000/login/failure?error=" + exception.getMessage());
                         })
                 )
+
+<<<<<<< Updated upstream
+=======
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+>>>>>>> Stashed changes
         return http.build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // ⭐ allowedOrigins OR allowedOriginPatterns 둘 중 하나만 사용
+        config.setAllowedOrigins(List.of("http://localhost:5173"));  // ⭐ 수정: patterns 제거
+
+        config.setAllowCredentials(true);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization"));
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
 }

@@ -3,13 +3,17 @@ package com.ohgiraffers.geogieoddae.viewing.command.entity;
 import com.ohgiraffers.geogieoddae.global.common.entity.BaseTimeEntity;
 import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayEntity;
 import com.ohgiraffers.geogieoddae.restaurant.command.entity.restaurant.RestaurantEntity;
+import com.ohgiraffers.geogieoddae.sports.command.entity.CompetitionEntity;
+import com.ohgiraffers.geogieoddae.sports.command.entity.LeagueEntity;
 import com.ohgiraffers.geogieoddae.sports.command.entity.SportsEntity;
 import com.ohgiraffers.geogieoddae.sports.command.entity.TeamEntity;
+import com.ohgiraffers.geogieoddae.viewing.command.entity.ViewingStatus;
+import com.ohgiraffers.geogieoddae.viewing.command.entity.ViewingUserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
-
 
 @Entity
 @Table(name = "viewing")
@@ -24,26 +28,15 @@ public class ViewingEntity extends BaseTimeEntity {
     @Column(name = "viewing_code")
     private Long viewingCode;
 
-    @Column(name = "viewing_title", nullable = false)
     private String viewingTitle;
-
-    @Column(name = "viewing_body", nullable = false)
     private String viewingBody;
-
-    @Column(name = "viewing_at", nullable = false)
     private LocalDateTime viewingAt;
-
-    @Column(name = "viewing_total_deposit", nullable = false)
     private Integer viewingTotalDeposit;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "viewing_status")
     private ViewingStatus viewingStatus;
 
-    @Column(name = "viewing_min_num")
     private Integer viewingMinNum;
-
-    @Column(name = "viewing_max_num", nullable = false)
     private Integer viewingMaxNum;
 
     @ManyToOne
@@ -57,6 +50,16 @@ public class ViewingEntity extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "team_code", nullable = false)
     private TeamEntity team;
+
+    // 선택적: 리그 기반 관람
+    @ManyToOne
+    @JoinColumn(name = "league_id", nullable = true)
+    private LeagueEntity league;
+
+    // 선택적: 국제 대회 기반 관람
+    @ManyToOne
+    @JoinColumn(name = "competition_id", nullable = true)
+    private CompetitionEntity competition;
 
     @OneToMany(mappedBy = "viewing")
     private List<ViewingUserEntity> viewingUsers;

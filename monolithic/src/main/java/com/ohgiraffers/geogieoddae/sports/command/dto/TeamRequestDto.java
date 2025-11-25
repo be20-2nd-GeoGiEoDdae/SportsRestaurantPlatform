@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TeamRequestDto {
-    private String teamName;
-    private String teamDescription;
-    private Long sportCode;
+    private Long leagueId;
+    private String name;
 }

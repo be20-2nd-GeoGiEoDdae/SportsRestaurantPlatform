@@ -12,11 +12,10 @@ import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // /images/** 요청을 실제 파일 시스템 uploads 폴더로 연결
-        registry.addResourceHandler("/images/**")
+
+        registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/");
     }
 

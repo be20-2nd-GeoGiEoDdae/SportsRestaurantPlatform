@@ -5,6 +5,9 @@ import com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingPictureDto;
 import com.ohgiraffers.geogieoddae.viewing.query.service.ViewingQueryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -15,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/viewings")
 @RequiredArgsConstructor
+@Slf4j
 public class ViewingQueryController {
 
     private final ViewingQueryService viewingQueryService;
@@ -25,11 +29,21 @@ public class ViewingQueryController {
         return viewingQueryService.searchViewings(keyword);
     }
 
-    // 목록 조회
+    // ⭐ 거리 포함 목록 조회
     @GetMapping
-    public List<ViewingDto> findAllViewings() {
-        return viewingQueryService.findAllViewings();
+    public ResponseEntity<?> getViewings(
+            @RequestParam(required = false) Double lat,
+            @RequestParam(required = false) Double lng,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+
+
+        Page<ViewingDto> result = viewingQueryService.findAllViewings(lat, lng, page, size);
+
+        return ResponseEntity.ok(result);
     }
+
 
     // 조건별 조회
     @GetMapping("/condition")

@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "관리자 공지사항 API", description ="공지사항 생성 수정 삭제")
+@Tag(name = "관리자 공지사항 API")
 @RestController
 @RequestMapping("/api/admin/announcements")
 @RequiredArgsConstructor

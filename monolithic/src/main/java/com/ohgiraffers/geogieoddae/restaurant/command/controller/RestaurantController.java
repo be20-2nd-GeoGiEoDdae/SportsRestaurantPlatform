@@ -2,6 +2,7 @@ package com.ohgiraffers.geogieoddae.restaurant.command.controller;
 
 import com.ohgiraffers.geogieoddae.global.apikey.GoogleGeocodingService;
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
+import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantCreateDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDistanceResponse;
 import com.ohgiraffers.geogieoddae.restaurant.command.dto.RestaurantDto;
 import com.ohgiraffers.geogieoddae.restaurant.command.service.RestaurantService;
@@ -27,10 +28,10 @@ public class RestaurantController {
     public final RestaurantService restaurantService;
     private final GoogleGeocodingService googleGeocodingService;
 
-    @PreAuthorize("hasAuthority('ROLE_ENTREPRENEUR')")
+//    @PreAuthorize("hasAuthority('ROLE_ENTREPRENEUR')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<RestaurantDto>> registerRestaurant(
-            @RequestPart("restaurant") RestaurantDto restaurantDto,
+    public ResponseEntity<ApiResponse<RestaurantCreateDto>> registerRestaurant(
+            @RequestPart("restaurant") RestaurantCreateDto restaurantDto,
             @RequestPart(value = "pictures", required = false) List<MultipartFile> pictures
     ) throws IOException {
 
@@ -38,7 +39,7 @@ public class RestaurantController {
         return ResponseEntity.ok(ApiResponse.success(restaurantDto));
     }
 
-        @PreAuthorize("hasRole('ENTREPRENEUR')")
+//        @PreAuthorize("hasRole('ENTREPRENEUR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<RestaurantDto>> deleteRestaurant(@PathVariable Long id) {
         restaurantService.deleteRestaurant(id);
@@ -48,7 +49,7 @@ public class RestaurantController {
     @PatchMapping(value = "/{restaurantId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<?>> updateRestaurant(
             @PathVariable Long restaurantId,
-            @RequestPart("restaurant") RestaurantDto restaurantDto,
+            @RequestPart("restaurant") RestaurantCreateDto restaurantDto,
             @RequestPart(value = "pictures", required = false) List<MultipartFile> pictures
     ) throws IOException {
 

@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 public class ViewingPictureDto {
     private Long viewingCode;
+    private Long restaurantCode;
     private String viewingTitle;
     private String viewingBody;
     private LocalDateTime viewingAt;
@@ -23,5 +24,10 @@ public class ViewingPictureDto {
     private String restaurantName;
     private String sportName;
     private String teamName;
-    private List<String> pictureUrls;
+    private String pictureUrls;
+
+    private String keywords;
+    private String restaurantLocation;
+
+    private Integer restaurantMaxNum;
 }
