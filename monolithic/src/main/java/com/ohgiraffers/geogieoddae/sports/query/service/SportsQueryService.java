@@ -1,5 +1,7 @@
 package com.ohgiraffers.geogieoddae.sports.query.service;
 
+import com.ohgiraffers.geogieoddae.sports.command.entity.SportsEntity;
+import com.ohgiraffers.geogieoddae.sports.command.repository.SportsRepository;
 import com.ohgiraffers.geogieoddae.sports.query.dto.SportsQueryDto;
 import com.ohgiraffers.geogieoddae.sports.query.dto.TeamQueryDto;
 import com.ohgiraffers.geogieoddae.sports.query.mapper.SportsMapper;
@@ -15,6 +17,7 @@ import java.util.List;
 public class SportsQueryService {
 
     private final SportsMapper sportsMapper;
+    private final SportsRepository sportsRepository;
 
     // 스포츠 종목 목록 조회
     public List<SportsQueryDto> listSports() {
@@ -29,7 +32,10 @@ public class SportsQueryService {
         }
         return result;
     }
-
+    public SportsEntity findOne(Long id) {
+        return sportsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Sport not found: " + id));
+    }
     // 스포츠 팀 목록 조회 (전체)
     public List<TeamQueryDto> listTeams() {
         return sportsMapper.selectTeamList();
@@ -47,5 +53,14 @@ public class SportsQueryService {
             throw new IllegalArgumentException("스포츠 팀이 존재하지 않습니다.");
         }
         return result;
+    }
+    public SportsQueryDto getSportDto(Long id) {
+        SportsEntity entity = sportsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Sport not found: " + id));
+
+        return new SportsQueryDto(
+                entity.getSportCode(),
+                entity.getSportName()
+        );
     }
 }

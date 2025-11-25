@@ -12,7 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class TeamQueryDto {
+    private Long teamId;
     private String teamName;
-    private String teamDescription;
-    private String sportName;
 }
