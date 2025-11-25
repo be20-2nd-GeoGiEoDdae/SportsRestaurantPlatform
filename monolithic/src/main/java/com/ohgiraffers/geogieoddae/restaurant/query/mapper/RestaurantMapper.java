@@ -19,4 +19,6 @@ public interface RestaurantMapper {
 
     // 상세 조회
     RestaurantDto findRestaurantDetail(@Param("restaurantCode") Long restaurantCode);
+
+    List<String> findRestaurantImages(@Param("restaurantCode") Long restaurantCode);
 }

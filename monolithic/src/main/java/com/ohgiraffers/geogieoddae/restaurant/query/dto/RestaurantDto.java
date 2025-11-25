@@ -11,20 +11,18 @@ import lombok.*;
 @Builder
 @ToString
 public class RestaurantDto {
-    @NotNull
+
     private Long restaurantCode;
-    @NotNull
     private String restaurantName;
-    @NotNull
     private String restaurantLocation;
-    @NotNull
     private String restaurantCategory;
-    @NotNull
     private Integer restaurantPeopleNumber;
-    @NotNull
     private String restaurantContents;
-    @NotNull
     private Double restaurantScore;
-    @NotNull
     private String createdAt;
+
+    // ⭐ 새로 추가해야 하는 필드
+    private String pictureUrls;   // GROUP_CONCAT 결과
+    private String keywords;      // GROUP_CONCAT 결과
+    private Double distance;      // 거리 계산 값
 }
