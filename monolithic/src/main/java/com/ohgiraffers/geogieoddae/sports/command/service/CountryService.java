@@ -18,7 +18,7 @@ public class CountryService {
     private final SportsRepository sportsRepository;
 
     public Long createCountry(CountryCreateRequest request) {
-        SportsEntity sport = sportsRepository.findById(request.getSportId())
+        SportsEntity sport = sportsRepository.findById(request.getSportCode())
                 .orElseThrow(() -> new IllegalArgumentException("종목 없음"));
 
         CountryEntity country = CountryEntity.builder()
