@@ -17,30 +17,30 @@ public class RestaurantQueryService {
 
     private final RestaurantMapper restaurantMapper;
 
-    // ⭐ 목록 조회 (정상 버전)
     public List<RestaurantDto> getRestaurantList(
+            Long userId,
             String category,
+            List<String> keywords,   // ⭐ 배열로 받음
             String sort,
             Double userLat,
             Double userLng,
             int page,
             int size
     ) {
-
         Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
         params.put("category", category);
+        params.put("keywords", keywords); // ⭐ 배열 그대로 넘김
         params.put("sort", sort);
         params.put("userLat", userLat);
         params.put("userLng", userLng);
         params.put("offset", (page - 1) * size);
         params.put("size", size);
 
-        List<RestaurantDto> list = restaurantMapper.getRestaurantList(params);
-
-        log.info("★★ [Mapper Result] getRestaurantList = {}", list);
-
-        return list;
+        return restaurantMapper.getRestaurantList(params);
     }
+
+
 
     // 검색
     public List<RestaurantDto> findRestaurantList(String restaurantName, String keyword, String category) {

@@ -27,7 +27,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         BookmarkKey key = new BookmarkKey(user.getUserCode(), restaurant.getRestaurantCode());
 
 
-        BookmarkEntity boo22 = new BookmarkEntity(key,null,restaurant);
+        BookmarkEntity boo22 = new BookmarkEntity(key, null, restaurant);
 
         BookmarkEntity bookmark = BookmarkEntity.builder()
                 .member(user)
@@ -42,8 +42,8 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public void deleteBookmark(Long id) {
-        bookmarkRepository.deleteById(id);
-
+    public void deleteBookmark(Long userId, Long restaurantId) {
+        BookmarkKey key = new BookmarkKey(userId, restaurantId);
+        bookmarkRepository.deleteById(key);
     }
 }

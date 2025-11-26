@@ -23,13 +23,23 @@ public class ViewingQueryService {
         return viewingMapper.searchViewingsByKeyword(keyword);
     }
 
-    //목록 조회 (시간 순 정렬)
-    public Page<ViewingDto> findAllViewings(Double lat, Double lng, int page, int size) {
+    public Page<ViewingDto> findAllViewings(
+            Double lat,
+            Double lng,
+            int page,
+            int size,
+            String category,
+            List<String> keywords,
+            String sort
+    ) {
 
         int offset = page * size;
 
-        List<ViewingDto> list = viewingMapper.findAllViewings(lat, lng, size, offset);
-        int total = viewingMapper.countAllViewings();
+        List<ViewingDto> list = viewingMapper.findAllViewingsWithFilter(
+                lat, lng, category, keywords, sort, size, offset
+        );
+
+        int total = viewingMapper.countAllViewingsWithFilter(category, keywords);
 
         return new PageImpl<>(list, PageRequest.of(page, size), total);
     }

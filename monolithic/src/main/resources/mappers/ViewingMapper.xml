@@ -4,6 +4,115 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ohgiraffers.geogieoddae.viewing.query.mapper.ViewingMapper">
+    <select id="findAllViewingsWithFilter"
+            resultType="com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingDto">
+
+        SELECT
+        v.viewing_code AS viewingCode,
+        v.viewing_title AS viewingTitle,
+        v.viewing_body AS viewingBody,
+        v.viewing_at,
+        v.viewing_total_deposit,
+        v.viewing_status,
+        v.viewing_min_num,
+        v.viewing_max_num,
+
+        r.restaurant_name AS restaurantName,
+        s.sport_name AS sportName,
+        t.team_name AS teamName,
+
+        (
+        SELECT rp.restaurant_picture_url
+        FROM restaurant_picture rp
+        WHERE rp.restaurant_code = r.restaurant_code
+        ORDER BY rp.restaurant_picture_code
+        LIMIT 1
+        ) AS pictureUrl,
+
+        <choose>
+            <when test="lat != null and lng != null">
+                (6371 * acos(
+                cos(radians(#{lat}))
+                * cos(radians(r.latitude))
+                * cos(radians(r.longitude) - radians(#{lng}))
+                + sin(radians(#{lat})) * sin(radians(r.latitude))
+                )) AS distance
+            </when>
+            <otherwise>
+                null AS distance
+            </otherwise>
+        </choose>
+
+        FROM viewing v
+        JOIN restaurant r ON v.restaurant_code = r.restaurant_code
+        JOIN sport s ON v.sport_code = s.sport_code
+        JOIN team t ON v.team_code = t.team_code
+
+        <!-- ⭐ 키워드 필터 join -->
+        <if test="keywords != null and keywords.size() > 0">
+            JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
+            JOIN keyword k ON rk.keyword_code = k.keyword_code
+        </if>
+
+        WHERE 1=1
+
+        <!-- ⭐ 음식 카테고리 필터 -->
+        <if test="category != null">
+            AND r.restaurant_category = #{category}
+        </if>
+
+        <!-- ⭐ 키워드 필터 (라벨 기준) -->
+        <if test="keywords != null and keywords.size() > 0">
+            AND k.keyword IN
+            <foreach item="kw" collection="keywords" open="(" separator="," close=")">
+                #{kw}
+            </foreach>
+        </if>
+
+        <!-- ⭐ 정렬 -->
+        <choose>
+            <when test="sort == 'distance'">
+                ORDER BY distance ASC
+            </when>
+            <when test="sort == 'name'">
+                ORDER BY r.restaurant_name ASC
+            </when>
+            <when test="sort == 'score'">
+                ORDER BY v.viewing_total_deposit DESC
+            </when>
+            <otherwise>
+                ORDER BY v.viewing_code DESC
+            </otherwise>
+        </choose>
+
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+    <!-- ⭐ count -->
+    <select id="countAllViewingsWithFilter" resultType="int">
+        SELECT COUNT(*)
+        FROM viewing v
+        JOIN restaurant r ON v.restaurant_code = r.restaurant_code
+
+        <if test="keywords != null and keywords.size() > 0">
+            JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
+            JOIN keyword k ON rk.keyword_code = k.keyword_code
+        </if>
+
+        WHERE 1=1
+
+        <if test="category != null">
+            AND r.restaurant_category = #{category}
+        </if>
+
+        <if test="keywords != null and keywords.size() > 0">
+            AND k.keyword IN
+            <foreach item="kw" collection="keywords" open="(" separator="," close=")">
+                #{kw}
+            </foreach>
+        </if>
+    </select>
 
     <!-- 검색 -->
     <select id="searchViewingsByKeyword" parameterType="string"

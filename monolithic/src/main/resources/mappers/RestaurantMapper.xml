@@ -22,6 +22,7 @@
         r.restaurant_score AS restaurantScore,
         r.created_at AS createdAt,
 
+        <!-- ⭐ 거리 계산 -->
         <choose>
             <when test="userLat != null and userLng != null">
                 (6371 * acos(
@@ -30,13 +31,14 @@
                 * cos(radians(r.longitude) - radians(#{userLng}))
                 + sin(radians(#{userLat}))
                 * sin(radians(r.latitude))
-                )) AS distance
+                )) AS distance,
             </when>
             <otherwise>
-                null AS distance
+                null AS distance,
             </otherwise>
-        </choose>,
+        </choose>
 
+        <!-- ⭐ 대표 이미지 -->
         (
         SELECT CONCAT('/uploads', p.restaurant_picture_url)
         FROM restaurant_picture p
@@ -44,45 +46,87 @@
         LIMIT 1
         ) AS pictureUrls,
 
+        <!-- ⭐ 키워드 GROUP -->
         (
         SELECT GROUP_CONCAT(k.keyword)
         FROM restaurant_keyword rk
-        LEFT JOIN keyword k ON rk.keyword_code = k.keyword_code
+        JOIN keyword k ON rk.keyword_code = k.keyword_code
         WHERE rk.restaurant_code = r.restaurant_code
-        ) AS keywords
+        ) AS keywords,
+
+        <!-- ⭐ 즐겨찾기 여부 -->
+        (
+        SELECT COUNT(*)
+        FROM bookmark b
+        WHERE b.user_code = #{userId}
+        AND b.restaurant_code = r.restaurant_code
+        ) > 0 AS bookmarked,
+
+        <!-- ⭐ 리뷰 평균 평점(1자리 반올림) -->
+        (
+        SELECT ROUND(AVG(rv.review_score), 1)
+        FROM review rv
+        WHERE rv.restaurant_code = r.restaurant_code
+        ) AS reviewAvg
 
         FROM restaurant r
 
+        LEFT JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
+        LEFT JOIN keyword k ON rk.keyword_code = k.keyword_code
+
         <where>
+            <!-- 카테고리 필터 -->
             <if test="category != null and category != ''">
                 r.restaurant_category = #{category}
             </if>
+
+            <!-- ⭐ 다중 키워드 필터 -->
+            <if test="keywords != null and keywords.size() > 0">
+                AND EXISTS (
+                SELECT 1
+                FROM restaurant_keyword rk2
+                JOIN keyword k2 ON rk2.keyword_code = k2.keyword_code
+                WHERE rk2.restaurant_code = r.restaurant_code
+                AND (
+                <foreach collection="keywords" item="kw" separator=" OR ">
+                    k2.keyword LIKE CONCAT('%', #{kw}, '%')
+                </foreach>
+                )
+                )
+            </if>
         </where>
 
+        GROUP BY r.restaurant_code
+
         ORDER BY
+        <!-- ⭐ 즐겨찾기 우선 -->
+        (
+        SELECT COUNT(*)
+        FROM bookmark b
+        WHERE b.user_code = #{userId}
+        AND b.restaurant_code = r.restaurant_code
+        ) DESC,
+
+        <!-- ⭐ 정렬 옵션 -->
         <choose>
             <when test="sort == 'distance'">
-                (6371 * acos(
-                cos(radians(#{userLat}))
-                * cos(radians(r.latitude))
-                * cos(radians(r.longitude) - radians(#{userLng}))
-                + sin(radians(#{userLat}))
-                * sin(radians(r.latitude))
-                )) ASC
+                distance ASC,
             </when>
             <when test="sort == 'name'">
-                r.restaurant_name ASC
+                r.restaurant_name ASC,
             </when>
             <when test="sort == 'score'">
-                r.restaurant_score DESC
+                reviewAvg DESC,
             </when>
             <otherwise>
-                r.created_at DESC
+                distance ASC,
             </otherwise>
         </choose>
 
-        LIMIT #{size} OFFSET #{offset}
+        r.created_at DESC
+
     </select>
+
 
 
     <!-- ============================
