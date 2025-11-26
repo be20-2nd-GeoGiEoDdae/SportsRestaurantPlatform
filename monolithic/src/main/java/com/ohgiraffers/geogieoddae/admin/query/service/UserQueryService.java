@@ -43,6 +43,22 @@ public class UserQueryService {
         return new PageResponseDto<>(users, pageInfo);
     }
 
+    public PageResponseDto<UserDto> selectUsersByRole(int page, int size, String userRole) {
+        int offset = (page - 1) * size;
+        List<UserDto> users = userQueryMapper.selectUsersByRole(offset, size, userRole);
+        int totalCount = userQueryMapper.selectUserCountByRole(userRole);
+        PageInfoDto pageInfo = new PageInfoDto(page, size, totalCount);
+        return new PageResponseDto<>(users, pageInfo);
+    }
+
+    public PageResponseDto<UserDto> searchUsers(int page, int size, String userEmail, String userName, String userPhoneNumber) {
+        int offset = (page - 1) * size;
+        List<UserDto> users = userQueryMapper.searchUsers(offset, size, userEmail, userName, userPhoneNumber);
+        int totalCount = userQueryMapper.countUsers(userEmail, userName, userPhoneNumber);
+        PageInfoDto pageInfo = new PageInfoDto(page, size, totalCount);
+        return new PageResponseDto<>(users, pageInfo);
+    }
+
     public UserDetailDto selectUserDetail(Long userCode) {
         System.out.println(">>>> [UserQueryService] selectUserDetail 메서드 실행됨. UserCode: " + userCode);
 
@@ -55,4 +71,5 @@ public class UserQueryService {
         System.out.println(">>>> [UserQueryService] 사용자 조회 완료: " + userDetail.getUserName());
         return userDetail;
     }
+
 }

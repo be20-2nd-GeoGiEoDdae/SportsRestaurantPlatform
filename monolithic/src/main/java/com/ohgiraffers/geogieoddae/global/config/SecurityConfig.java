@@ -79,7 +79,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**", "/login**").permitAll()
-                        .requestMatchers("/api/admin/users-view", "/api/admin/logout").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/admin/users-view", "/api/admin/users-search", "api/admin/users-view-by-role/**", "/api/admin/logout", "/api/admin/users/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
@@ -98,9 +98,9 @@ public class SecurityConfig {
                             "/sports/**",
                             "/reports/**"
 
-                        ).permitAll()*/
+                        ).permitAll()
                         .requestMatchers("/api/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated()*/
 
                 )
                 .oauth2Login(oauth2 -> oauth2
