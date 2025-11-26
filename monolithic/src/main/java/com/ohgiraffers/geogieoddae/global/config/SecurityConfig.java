@@ -15,7 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import com.ohgiraffers.geogieoddae.auth.command.service.CustomOAuth2UserService;
 import com.ohgiraffers.geogieoddae.global.jwt.JwtAuthenticationFilter;
 import com.ohgiraffers.geogieoddae.global.jwt.OAuth2AuthenticationSuccessHandler;
@@ -39,6 +38,30 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        // 허용할 오리진 설정
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "http://127.0.0.1:3000"));
+        
+        // 허용할 HTTP 메서드
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST","PATCH" ,"PUT", "DELETE", "OPTIONS"));
+        
+        // 허용할 헤더
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        // 자격 증명 허용 (쿠키, Authorization 헤더 등)
+        configuration.setAllowCredentials(true);
+        
+        // preflight 요청 캐시 시간
+        configuration.setMaxAge(3600L);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
@@ -92,31 +115,10 @@ public class SecurityConfig {
                             response.sendRedirect("http://localhost:3000/login/failure?error=" + exception.getMessage());
                         })
                 )
-
-
-
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-
-        // ⭐ allowedOrigins OR allowedOriginPatterns 둘 중 하나만 사용
-        config.setAllowedOrigins(List.of("http://localhost:5173"));  //
-
-        config.setAllowCredentials(true);
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("Authorization"));
-        config.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-
-        return source;
-    }
 }

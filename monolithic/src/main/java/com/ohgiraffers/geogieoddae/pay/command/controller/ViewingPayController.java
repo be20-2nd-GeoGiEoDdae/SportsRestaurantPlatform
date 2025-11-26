@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,26 +24,25 @@ public class ViewingPayController {
 
   private final ViewingPayService viewingPayService;
 
-  @GetMapping("/success")
-  public ResponseEntity<ApiResponse<String>> confirmPayment(
-      @RequestParam String paymentKey,
-      @RequestParam String orderId,
-      @RequestParam Long amount) {
-    return viewingPayService.viewingPayConfirm(paymentKey, orderId, amount);
-  }
 
   @PostMapping("/info")//결제할 관람 정보  저장
   public String direct(      @RequestBody ViewingPayRequest request){
-    String viewingPayOrderId=viewingPayService.viewingSave(request);
-    return "redirect:/viewingPay/index/"+viewingPayOrderId;
+    return  viewingPayService.viewingSave(request);//viewingPayServiceOrderId
   }
 
-  @PreAuthorize("hasRole('ADMIN')")
-  @PostMapping("/cancel/{viewingPayId}")//관람 금액 환불
-  public ResponseEntity<String> cancel(
+  //@PreAuthorize("hasRole('ADMIN')")
+  @DeleteMapping("/cancel/{viewingPayId}")//관람 금액 환불
+  public ResponseEntity<ApiResponse<String>> cancel(
       @PathVariable Long viewingPayId
   ){
-    return viewingPayService.viewingPayCancel(viewingPayId);
+    return ResponseEntity.ok(ApiResponse.success(viewingPayService.viewingPayCancel(viewingPayId)));
+  }
+  @DeleteMapping("/cancel/{viewingCode}/{userCode}")//관람 금액 환불
+  public ResponseEntity<ApiResponse<String>> cancel(
+      @PathVariable Long viewingCode,
+      @PathVariable Long userCode
+  ){
+    return ResponseEntity.ok(ApiResponse.success(viewingPayService.viewingPayCancelUser(viewingCode,userCode)));
   }
 
 

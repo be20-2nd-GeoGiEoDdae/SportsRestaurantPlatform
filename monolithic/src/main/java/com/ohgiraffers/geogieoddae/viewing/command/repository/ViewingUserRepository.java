@@ -11,4 +11,6 @@ import java.util.List;
 public interface ViewingUserRepository extends JpaRepository<ViewingUserEntity,Long> {
   List<ViewingUserEntity> findByViewing_ViewingCode(Long viewingCode);
     boolean existsByViewing_ViewingCode(Long viewingCode);
+
+  ViewingUserEntity findByViewing_ViewingCodeAndMember_UserCode(Long viewingCode, Long userCode);
 }

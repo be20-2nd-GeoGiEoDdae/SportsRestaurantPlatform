@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ohgiraffers.geogieoddae.pay.query.mapper.BillingQueryMapper">
+
+  <select id="subscribeFindAll"
+    resultType="com.ohgiraffers.geogieoddae.pay.query.dto.BillingQueryDto">
+    SELECT
+        u.user_name AS userName,
+    es.updated_at AS entrepreneurSubscribeUpdatedAt,
+      es.entrepreneur_subscribe_end_at AS entrepreneurSubscribeEndAt,
+      es.entrepreneur_subscribe_orderid AS orderId,
+      es.entrepreneur_subscribe_payment AS entrepreneurSubscribePayment
+    FROM entrepreneur_subscribe_payment es
+        JOIN entrepreneur e ON e.entrepreneur_code=es.entrepreneur_code
+        JOIN Member u ON u.user_code=e.user_code;
+  </select>
+  <select id="subscribeFindByUserCode"
+    resultType="com.ohgiraffers.geogieoddae.pay.query.dto.BillingQueryFindUserResponse">
+    SELECT
+      es.entrepreneur_subscribe_payment AS entrepreneurSubscribePayment,
+      es.updated_at AS entrepreneurSubscribeUpdatedAt,
+      /*es.created_at AS createdAt*/
+      es.entrepreneur_subscribe_end_at AS entrepreneurSubscribeEndAt,
+      es.entrepreneur_subscribe_orderid AS entrepreneurSubscribeOrderId
+    FROM entrepreneur_subscribe_payment es
+           JOIN entrepreneur e ON e.entrepreneur_code=es.entrepreneur_code
+           JOIN Member u ON u.user_code=e.user_code
+    WHERE u.user_code=#{userCode}
+    LIMIT #{pageSize} OFFSET #{offset};
+
+  </select>
+  <select id="countByUserCode"
+    resultType="long">
+    SELECT
+        COUNT(*)
+    FROM entrepreneur_subscribe_payment es
+           JOIN entrepreneur e ON e.entrepreneur_code = es.entrepreneur_code
+           JOIN Member u ON u.user_code = e.user_code
+    WHERE u.user_code=#{userCode}
+
+  </select>
+</mapper>

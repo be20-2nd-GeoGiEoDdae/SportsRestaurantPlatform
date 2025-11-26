@@ -6,6 +6,10 @@ import lombok.RequiredArgsConstructor;
 
 
 import com.ohgiraffers.geogieoddae.pay.query.mapper.PayMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +36,15 @@ public class PayService {
         =payMapper.selectPayAll();
     return paySearchResponse;
   }
-  public List<PaySearchResponse> selectPayByUserCode(Long userCode){
+  public Page<PaySearchResponse> selectPayByUserCode(Long userCode, Pageable pageable){
+    int  pageNumber= pageable.getPageNumber();
+    int  pageSize= 5;
+    int offset = pageNumber*pageSize;
     List<PaySearchResponse> paySearchResponse
-        =payMapper.selectPayByUserCode(userCode);
-    return  paySearchResponse;
+        =payMapper.selectPayByUserCode(userCode,offset,pageSize);
+    long total= payMapper.countPayByUserCode(userCode);
+    return  new PageImpl<>(
+        paySearchResponse, PageRequest.of(pageNumber, pageSize),total);
   }
 
 }

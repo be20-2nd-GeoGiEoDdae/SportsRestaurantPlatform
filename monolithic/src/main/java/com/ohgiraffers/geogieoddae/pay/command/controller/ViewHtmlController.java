@@ -1,10 +1,13 @@
 package com.ohgiraffers.geogieoddae.pay.command.controller;
 
+import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
 import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayEntity;
 import com.ohgiraffers.geogieoddae.pay.command.repository.ViewingPayRepository;
+import com.ohgiraffers.geogieoddae.pay.command.service.ViewingPayService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 @RequestMapping("/api/viewingPay")
 public class ViewHtmlController {
+
   private final ViewingPayRepository viewingPayRepository;
+  private final ViewingPayService viewingPayService;
 
   @Value("${toss.widget.example.client.key}")
   private String widgetExampleKey;
@@ -37,14 +42,24 @@ public class ViewHtmlController {
     model.addAttribute("amount", amount);
     return "pay/success.html";
   }
+
   @GetMapping("/index/{orderId}")
   public String subscribePage(@PathVariable String orderId, Model model) {
-    ViewingPayEntity viewingPay =viewingPayRepository.findByViewingPayOrderId(orderId);
+    ViewingPayEntity viewingPay = viewingPayRepository.findByViewingPayOrderId(orderId);
     //model.addAttribute("customerKey", viewingPay.getViewingPayCustomerKey());
     model.addAttribute("customerKey", viewingPay.getMember().getCustomerKey());
-    model.addAttribute("orderId",viewingPay.getViewingPayOrderId());
-    model.addAttribute("amount",viewingPay.getViewingPayPrice());
-    model.addAttribute("clientKey",widgetExampleKey);
+    model.addAttribute("orderId", viewingPay.getViewingPayOrderId());
+    model.addAttribute("amount", viewingPay.getViewingPayPrice());
+    model.addAttribute("clientKey", widgetExampleKey);
     return "check";
+  }
+
+  @GetMapping("/success")
+  public String confirmPayment(
+      @RequestParam String paymentKey,
+      @RequestParam String orderId,
+      @RequestParam Long amount) {
+    viewingPayService.viewingPayConfirm(paymentKey, orderId, amount);
+    return "redirect:http://localhost:5173/viewing/pay/success";
   }
 }

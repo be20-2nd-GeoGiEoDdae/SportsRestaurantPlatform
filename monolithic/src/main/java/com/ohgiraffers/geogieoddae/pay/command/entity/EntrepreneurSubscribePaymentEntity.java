@@ -43,18 +43,18 @@ public class EntrepreneurSubscribePaymentEntity extends BaseTimeEntity {
 
   public void updateEntrepreneurSubscribePayment(
       //Long entrepreneurCode,
-     // LocalDateTime entrepreneurSubscribeEndAt
-       Integer entrepreneurSubscribePayment
+       LocalDateTime entrepreneurSubscribeEndAt
+       ,Integer entrepreneurSubscribePayment
       , String entrepreneurSubscribeBillingkey
    //   , String entrepreneurSubscribeCustomerKey
-    //  , String entrepreneurSubscribeOrderId
+      , String entrepreneurSubscribeOrderId
       ) {
  //   this.entrepreneurCode=entrepreneurCode;
-  //  this.entrepreneurSubscribeEndAt=entrepreneurSubscribeEndAt;
+    this.entrepreneurSubscribeEndAt=entrepreneurSubscribeEndAt;
     this.entrepreneurSubscribePayment=entrepreneurSubscribePayment;
     this.entrepreneurSubscribeBillingkey=entrepreneurSubscribeBillingkey;
   //  this.entrepreneurSubscribeCustomerKey=entrepreneurSubscribeCustomerKey;
-   // this.entrepreneurSubscribeOrderId=entrepreneurSubscribeOrderId;
+    this.entrepreneurSubscribeOrderId=entrepreneurSubscribeOrderId;
 
   }
 }
