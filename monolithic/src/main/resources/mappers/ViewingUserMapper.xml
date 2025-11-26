@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ohgiraffers.geogieoddae.viewing.query.mapper.ViewingUserQueryMapper">
+
+  <!-- 검색 -->
+  <select id="viewingUserList"
+    resultType="com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingUserResponseDto">
+    SELECT
+        vu.viewing_user_isattend AS viewingUserIsAttend,
+        v.viewing_at AS viewingAt,
+        v.viewing_title AS viewingTitle,
+        vu.viewing_user_deposit AS viewingUserDeposit,
+        r.restaurant_location AS restaurantLocation,
+    v.viewing_code AS viewingCode,
+    r.restaurant_code AS restaurantCode
+    FROM viewing_user vu
+           JOIN viewing v ON v.viewing_code = vu.viewing_code
+           JOIN restaurant r ON r.restaurant_code=v.restaurant_code
+    WHERE vu.user_code = #{userCode}
+    ORDER BY v.created_at DESC
+    LIMIT #{pageSize} OFFSET #{offset};
+  </select>
+  <select id="countPayByUserCode"
+    resultType="long">
+    SELECT
+        COUNT(*)
+    FROM viewing_user vu
+           JOIN viewing v ON v.viewing_code = vu.viewing_code
+           JOIN restaurant r ON r.restaurant_code=v.restaurant_code
+    WHERE vu.user_code = #{userCode}
+  </select>
+</mapper>

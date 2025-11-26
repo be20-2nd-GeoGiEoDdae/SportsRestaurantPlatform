@@ -71,23 +71,29 @@ public class EntrepreneurSubscribePaymentService {
           (userRepository.findByCustomerKey(customerKey).orElseThrow().getUserCode());
 
       System.out.println("빌링키 : " + responseBody.get("billingKey"));
+      String billingKey=responseBody.get("billingKey").toString();
       EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment=
           EntrepreneurSubscribePaymentEntity.builder()
               .entrepreneurCode(entrepreneurEntity.getEntrepreneurCode())
               .entrepreneurSubscribePayment(SUBSCRIBE_PAY)
-              .entrepreneurSubscribeBillingkey((String) responseBody.get("billingKey"))
+              .entrepreneurSubscribeBillingkey(billingKey)
               .build();
       System.out.println("저장시 문제"+entrepreneurSubscribePayment);
       System.out.println("저장시 문제"+entrepreneurEntity);
-      entrepreneurSubscribePaymentRepository.save(entrepreneurSubscribePayment);
 
+      String orderId=chargeBilling(billingKey,customerKey,SUBSCRIBE_PAY);
+      System.out.println("orderId="+orderId);
+
+
+      entrepreneurSubscribePayment.updateEntrepreneurSubscribePayment(
+          LocalDateTime.now().plusDays(30),
+          SUBSCRIBE_PAY,
+          billingKey,
+          orderId
+      );
+      entrepreneurSubscribePaymentRepository.save(entrepreneurSubscribePayment);
       System.out.println("저장 오류");
 
-
-      /*entrepreneurSubscribePayment.updateEntrepreneurSubscribePayment(
-          SUBSCRIBE_PAY,
-          (String) responseBody.get("billingKey")
-      );*/
      // System.out.println(response.getBody());
 
       return "빌링키 발급 완료";
@@ -113,7 +119,7 @@ public class EntrepreneurSubscribePaymentService {
 
 
   @Transactional
-  public Map<String, Object> subscribePaymentCharge(
+  public String subscribePaymentCharge(
       String billingKey) {//유저아이디가 아닌 사업자 구별번호일듯
     EntrepreneurSubscribePaymentEntity entrepreneurSubscribePayment =
         entrepreneurSubscribePaymentRepository.findByEntrepreneurSubscribeBillingkey(billingKey);
@@ -140,7 +146,7 @@ public class EntrepreneurSubscribePaymentService {
     entrepreneurSubscribePayment.setEntrepreneurSubscribeEndAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusDays(30));
 //    entrepreneurSubscribePayment.setEntrepreneurSubscribeEndAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusSeconds(30));
     entrepreneurSubscribePayment.setEntrepreneurSubscribeOrderId(orderId);
-    return toss;
+    return "빌링키 발급 성공";
 
   }
 
@@ -154,15 +160,13 @@ public class EntrepreneurSubscribePaymentService {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBasicAuth(SECRET_KEY, "");
-
     HttpEntity<Void> httpEntity = new HttpEntity<>(headers);
     try {
       rest.exchange(url, HttpMethod.DELETE, httpEntity, Void.class);//성공시 db삭제
-      entrepreneurSubscribePaymentRepository.deleteById(entrepreneurCode);
       return "삭제 성공";
     } catch (Exception e) {
+      return "삭제 실패";
     }
-    return null;
   }
 
   public ResponseEntity<String> subscribePaymentSelectByOrderId(Long entrepreneurCode) {
@@ -285,6 +289,7 @@ public class EntrepreneurSubscribePaymentService {
           request,
           String.class
       );
+
       return orderId;
     }catch (Exception e) {
       return e.getMessage();

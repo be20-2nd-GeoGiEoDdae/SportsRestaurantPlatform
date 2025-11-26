@@ -1,5 +1,8 @@
 package com.ohgiraffers.geogieoddae.auth.command.service;
 
+import com.ohgiraffers.geogieoddae.notification.command.event.NotificationCreatedEvent;
+import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayStatus;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import com.ohgiraffers.geogieoddae.auth.command.dto.EntrepreneurRegisterRequestDto;
@@ -19,9 +22,14 @@ public class EntrepreneurService {
         
     private final EntrepreneurRepository entrepreneurRepository;
     private final UserRepository userRepository;   // 회원정보 조회용
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     public void register(EntrepreneurRegisterRequestDto request) {
+
+      Long userId  = request.getUserCode();
+      Long notificationTypeCode = (long)1;
+      publisher.publishEvent(new NotificationCreatedEvent(userId,notificationTypeCode) );//삭제 필요
 
         System.out.println("==== 사업자 등록 서비스 시작 ====");
         UserEntity user = userRepository.findById(request.getUserCode())
@@ -44,6 +52,7 @@ public class EntrepreneurService {
         System.out.println("member: " + entrepreneur.getMember());
 
         System.out.println("Saved : " + request.toString());
+
         
     }
 
