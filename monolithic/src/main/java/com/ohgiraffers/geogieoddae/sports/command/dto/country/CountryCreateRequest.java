@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CountryCreateRequest {
-    private Long sportId;
+    private Long sportCode;
     private String name;
 }
