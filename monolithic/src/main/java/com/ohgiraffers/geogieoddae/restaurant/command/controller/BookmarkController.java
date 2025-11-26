@@ -20,10 +20,10 @@ public class BookmarkController {
         bookmarkService.registerBookmark(userId,restaurantId);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse<?>> deleteBookmark(@PathVariable Long userId){
-        bookmarkService.deleteBookmark(userId);
-
+    @DeleteMapping("/{userId}/{restaurantId}")
+    public ResponseEntity<ApiResponse<?>> deleteBookmark(@PathVariable Long userId,
+                                                         @PathVariable Long restaurantId) {
+        bookmarkService.deleteBookmark(userId, restaurantId);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 

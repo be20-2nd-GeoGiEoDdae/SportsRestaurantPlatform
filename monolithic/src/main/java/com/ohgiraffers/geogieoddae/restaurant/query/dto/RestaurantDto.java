@@ -25,4 +25,6 @@ public class RestaurantDto {
     private String pictureUrls;   // GROUP_CONCAT 결과
     private String keywords;      // GROUP_CONCAT 결과
     private Double distance;      // 거리 계산 값
+    private Boolean bookmarked;
+    private Double reviewAvg;
 }

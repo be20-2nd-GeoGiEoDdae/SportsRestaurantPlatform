@@ -14,13 +14,20 @@ public interface ViewingMapper {
 
     List<ViewingDto> searchViewingsByKeyword(@Param("keyword") String keyword);
 
-    List<ViewingDto> findAllViewings(
+    List<ViewingDto> findAllViewingsWithFilter(
             @Param("lat") Double lat,
             @Param("lng") Double lng,
+            @Param("category") String category,
+            @Param("keywords") List<String> keywords,
+            @Param("sort") String sort,
             @Param("limit") int limit,
             @Param("offset") int offset
     );
 
+    int countAllViewingsWithFilter(
+            @Param("category") String category,
+            @Param("keywords") List<String> keywords
+    );
     int countAllViewings();
 
 

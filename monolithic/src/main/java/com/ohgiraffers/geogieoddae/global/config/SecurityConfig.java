@@ -16,7 +16,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-<<<<<<< Updated upstream
 import com.ohgiraffers.geogieoddae.auth.command.service.CustomOAuth2UserService;
 import com.ohgiraffers.geogieoddae.global.jwt.JwtAuthenticationFilter;
 import com.ohgiraffers.geogieoddae.global.jwt.OAuth2AuthenticationSuccessHandler;
@@ -24,9 +23,7 @@ import com.ohgiraffers.geogieoddae.global.security.CookieOAuth2AuthorizationRequ
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-=======
 import java.util.List;
->>>>>>> Stashed changes
 
 @Configuration
 @EnableWebSecurity
@@ -42,30 +39,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        
-        // 허용할 오리진 설정
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "http://127.0.0.1:3000"));
-        
-        // 허용할 HTTP 메서드
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        
-        // 허용할 헤더
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        
-        // 자격 증명 허용 (쿠키, Authorization 헤더 등)
-        configuration.setAllowCredentials(true);
-        
-        // preflight 요청 캐시 시간
-        configuration.setMaxAge(3600L);
-        
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 
     @Bean
@@ -87,14 +60,14 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
-<<<<<<< Updated upstream
+
                         .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**", "/login**").permitAll()
                         .requestMatchers("/api/admin/users-view", "/api/admin/logout").hasAuthority("ROLE_ADMIN")
-=======
+
                         // ⭐ OPTIONS 요청 명시적으로 허용
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()  // ⭐ 수정
 
->>>>>>> Stashed changes
+
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
@@ -120,11 +93,11 @@ public class SecurityConfig {
                         })
                 )
 
-<<<<<<< Updated upstream
-=======
+
+
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
->>>>>>> Stashed changes
+
         return http.build();
     }
 
@@ -133,7 +106,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // ⭐ allowedOrigins OR allowedOriginPatterns 둘 중 하나만 사용
-        config.setAllowedOrigins(List.of("http://localhost:5173"));  // ⭐ 수정: patterns 제거
+        config.setAllowedOrigins(List.of("http://localhost:5173"));  //
 
         config.setAllowCredentials(true);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

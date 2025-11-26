@@ -20,27 +20,27 @@ import java.util.List;
 public class RestaurantQueryController {
 
     private final RestaurantQueryService restaurantQueryService;
-
     @GetMapping("/list")
     public ResponseEntity<List<RestaurantDto>> getRestaurantList(
+            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) String category,
+
+            // ⭐ 변경: 단일 keyword → 키워드 배열로!
+            @RequestParam(required = false) List<String> keywords,
+
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) Double userLat,
             @RequestParam(required = false) Double userLng,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "5") int size
     ) {
-
-        log.info("📌 [Controller] 호출됨: category={}, sort={}, userLat={}, userLng={}, page={}, size={}",
-                category, sort, userLat, userLng, page, size);
-
         List<RestaurantDto> result =
-                restaurantQueryService.getRestaurantList(category, sort, userLat, userLng, page, size);
-
-        log.info("📌 [Controller Result] 총 {}개, 데이터={}", result.size(), result);
+                restaurantQueryService.getRestaurantList(userId, category, keywords, sort, userLat, userLng, page, size);
 
         return ResponseEntity.ok(result);
     }
+
+
 
     @GetMapping("/filter")
     public ResponseEntity<List<RestaurantDto>> filterRestaurants(
