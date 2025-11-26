@@ -85,15 +85,14 @@ public class ReportCommandService {
         }
 
 
-////        상태 값만 따로 넣을 필요가 있음
-//        return ReportResponseDto.builder()
-//                .reportCode(reportEntity.getReportCode())
-//                .reportStatus(reportEntity.getReportStatus())
-//                .restaurantCode(reportEntity.getRestaurant().getRestaurantCode())
-//                .reportTypeCode(reportEntity.getReportType().getReportTypeCode())
-//                .userCode(reportEntity.getMember().getUserCode())
-//                .build();
-        return null;
+//        상태 값만 따로 넣을 필요가 있음
+        return ReportResponseDto.builder()
+                .reportCode(reportEntity.getReportCode())
+                .reportStatus(reportEntity.getReportStatus())
+                .restaurantCode(reportEntity.getRestaurant().getRestaurantCode())
+                .reportTypeCode(reportEntity.getReportType().getReportTypeCode())
+                .userCode(reportEntity.getMember().getUserCode())
+                .build();
     }
 
     // 관리자: 신고 삭제

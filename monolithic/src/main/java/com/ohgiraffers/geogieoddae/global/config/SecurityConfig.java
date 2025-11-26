@@ -15,7 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import com.ohgiraffers.geogieoddae.auth.command.service.CustomOAuth2UserService;
 import com.ohgiraffers.geogieoddae.global.jwt.JwtAuthenticationFilter;
 import com.ohgiraffers.geogieoddae.global.jwt.OAuth2AuthenticationSuccessHandler;
@@ -23,6 +22,7 @@ import com.ohgiraffers.geogieoddae.global.security.CookieOAuth2AuthorizationRequ
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -48,7 +48,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "http://127.0.0.1:3000"));
         
         // 허용할 HTTP 메서드
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST","PATCH" ,"PUT", "DELETE", "OPTIONS"));
         
         // 허용할 헤더
         configuration.setAllowedHeaders(Arrays.asList("*"));
@@ -66,9 +66,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 이 줄 추가
                 .csrf(csrf -> csrf.disable())
+
+                // ⭐ CORS 활성화 + 직접 만든 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ⭐ 수정
+
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> {
@@ -78,6 +83,7 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**", "/login**").permitAll()
                         .requestMatchers("/api/admin/users-view", "/api/admin/users-search", "api/admin/users-view-by-role/**", "/api/admin/logout", "/api/admin/users/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(
@@ -101,7 +107,21 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()*/
+                        .requestMatchers("/api/admin/users-view", "/api/admin/logout").hasAuthority("ROLE_ADMIN")
 
+                        // ⭐ OPTIONS 요청 명시적으로 허용
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()  // ⭐ 수정
+
+
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+
+                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(endpoint -> endpoint
@@ -118,6 +138,7 @@ public class SecurityConfig {
                         })
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

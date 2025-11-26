@@ -9,7 +9,10 @@ import com.ohgiraffers.geogieoddae.pay.command.dto.ViewingPayRequest;
 import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayEntity;
 import com.ohgiraffers.geogieoddae.pay.command.entity.ViewingPayStatus;
 import com.ohgiraffers.geogieoddae.pay.command.repository.ViewingPayRepository;
+import com.ohgiraffers.geogieoddae.viewing.command.entity.ViewingEntity;
+import com.ohgiraffers.geogieoddae.viewing.command.entity.ViewingUserEntity;
 import com.ohgiraffers.geogieoddae.viewing.command.repository.ViewingRepository;
+import com.ohgiraffers.geogieoddae.viewing.command.repository.ViewingUserRepository;
 import jakarta.transaction.Transactional;
 import java.lang.reflect.Member;
 import java.time.LocalDateTime;
@@ -32,6 +35,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class ViewingPayService {
+
+  private final ViewingUserRepository viewingUserRepository;
   @Value("${toss.widget.example.secret.key}")
   private String SECRET_KEY;
   private final ViewingPayRepository viewingPayRepository;
@@ -95,6 +100,21 @@ public class ViewingPayService {
       );
 
       if (response.getStatusCode() == HttpStatus.OK) {
+
+        ViewingUserEntity viewingUser = ViewingUserEntity.builder()
+            .viewingUserDeposit(amount.intValue())
+            .viewingUserIsAttend(false)
+            .viewing(viewingPay.getViewing())
+            .member(viewingPay.getMember())
+            .build();
+
+        viewingUserRepository.save(viewingUser);
+
+
+
+
+
+
         Long userId  = viewingPay.getMember().getUserCode();
         Long notificationTypeCode = (long)1;
         publisher.publishEvent(new NotificationCreatedEvent(userId,notificationTypeCode) );
@@ -113,11 +133,18 @@ public class ViewingPayService {
   //특정 시각에 환불ㄹ
   //사업자가 상태변경 시 환불
   @Transactional
-  public ResponseEntity<String> viewingPayCancel(Long viewingPayCode){
+  public String viewingPayCancel(Long viewingPayCode){
+    try{
     ViewingPayEntity viewingPay=viewingPayRepository.findById(viewingPayCode).orElseThrow();
+    ViewingEntity viewing=viewingRepository.findById(viewingPay.getViewing().getViewingCode()).orElseThrow();
     String paymentKey=viewingPay.getViewingPayPaymentKey();
+    Long payAmount=viewingPay.getViewingPayPrice();
+    if(LocalDateTime.now().minusDays(7).isBefore(viewing.getViewingAt())){
+      payAmount=payAmount* 60L / 100L  ;
+    }
+    //Long payAmount=viewingPay.getViewingPayPrice();
     String url = "https://api.tosspayments.com/v1/payments/"+paymentKey+"/cancel";
-    String cancelReason= "관람 참석으로 인환 환불";
+    String cancelReason= "유저 변심으로 인환 환불";
     String encodedAuth = Base64.getEncoder()
         .encodeToString((SECRET_KEY + ":").getBytes());
     HttpHeaders headers = new HttpHeaders();
@@ -125,6 +152,7 @@ public class ViewingPayService {
 
     Map<String, Object> payloadMap = new HashMap<>();
     payloadMap.put("cancelReason", cancelReason);
+    payloadMap.put("cancelAmount", payAmount);
 
     HttpEntity<Map<String, Object>> request =
         new HttpEntity<>(payloadMap, headers);
@@ -139,7 +167,57 @@ public class ViewingPayService {
         request,
         String.class
     );
-  return response;
+      System.out.println("관람 취소 금"+paymentKey);
+  return "관람 결제 취소 성공";
+    }catch(Exception e){
+      return "관람 결제 취소 실패";
+    }
+  }
+
+  @Transactional
+  public String viewingPayCancelUser(Long viewingCode,Long userCode){
+    try{
+      ViewingPayEntity viewingPay= viewingPayRepository
+          .findByViewing_ViewingCodeAndMember_UserCode(viewingCode, userCode)
+          .orElseThrow(() -> new RuntimeException("데이터 없음"));
+      ViewingEntity viewing=viewingRepository.findById(viewingCode).orElseThrow();
+      ViewingUserEntity viewingUser=viewingUserRepository.findByViewing_ViewingCodeAndMember_UserCode(viewingCode, userCode);
+      viewingUser.setViewingUserIsAttend(true);//임시
+      String paymentKey=viewingPay.getViewingPayPaymentKey();
+      Long payAmount=viewingPay.getViewingPayPrice();
+      if(LocalDateTime.now().minusDays(7).isBefore(viewing.getViewingAt())){
+        payAmount=payAmount* 60L / 100L  ;
+      }
+      //Long payAmount=viewingPay.getViewingPayPrice();
+      String url = "https://api.tosspayments.com/v1/payments/"+paymentKey+"/cancel";
+      String cancelReason= "유저 변심으로 인환 환불";
+      String encodedAuth = Base64.getEncoder()
+          .encodeToString((SECRET_KEY + ":").getBytes());
+      HttpHeaders headers = new HttpHeaders();
+      headers.set("Authorization", "Basic " + encodedAuth);
+
+      Map<String, Object> payloadMap = new HashMap<>();
+      payloadMap.put("cancelReason", cancelReason);
+      payloadMap.put("cancelAmount", payAmount);
+
+      HttpEntity<Map<String, Object>> request =
+          new HttpEntity<>(payloadMap, headers);
+      RestTemplate restTemplate = new RestTemplate();
+
+      viewingPay.setViewingPayStatus(ViewingPayStatus.cancel);
+      viewingPay.setViewingPayRefundDate(LocalDateTime.now());
+
+      ResponseEntity<String> response = restTemplate.exchange(
+          url,
+          HttpMethod.POST,
+          request,
+          String.class
+      );
+      System.out.println("관람 취소 금"+paymentKey);
+      return "관람 결제 취소 성공";
+    }catch(Exception e){
+      return "관람 결제 취소 실패";
+    }
   }
 
 }

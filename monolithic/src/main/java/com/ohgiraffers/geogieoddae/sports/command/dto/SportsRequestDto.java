@@ -11,5 +11,4 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SportsRequestDto {
     private String sportName;
-    private String sportDescription;
 }

@@ -23,4 +23,7 @@ public class ViewingDto {
     private String sportName;
     private String teamName;
 
+    private Double distance;
+    private String pictureUrl;
+
 }

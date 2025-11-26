@@ -1,6 +1,7 @@
 package com.ohgiraffers.geogieoddae.report.query.controller;
 
 import com.ohgiraffers.geogieoddae.global.common.dto.ApiResponse;
+import com.ohgiraffers.geogieoddae.report.query.dto.BlacklistQueryDto;
 import com.ohgiraffers.geogieoddae.report.query.dto.ReportQueryDto;
 import com.ohgiraffers.geogieoddae.report.query.service.ReportQueryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,6 +33,13 @@ public class ReportQueryController {
     @GetMapping("/{reportCode}")
     public ResponseEntity<ApiResponse<ReportQueryDto>> getReport(@PathVariable Long reportCode) {
         ReportQueryDto result = reportService.getReport(reportCode);
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    // 관리자용 블랙리스트 조회
+    @GetMapping("/blackList")
+    public ResponseEntity<ApiResponse<List<BlacklistQueryDto>>> list() {
+        List<BlacklistQueryDto> result = reportService.list();
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 }

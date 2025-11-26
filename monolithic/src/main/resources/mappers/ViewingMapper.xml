@@ -4,6 +4,115 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ohgiraffers.geogieoddae.viewing.query.mapper.ViewingMapper">
+    <select id="findAllViewingsWithFilter"
+            resultType="com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingDto">
+
+        SELECT
+        v.viewing_code AS viewingCode,
+        v.viewing_title AS viewingTitle,
+        v.viewing_body AS viewingBody,
+        v.viewing_at,
+        v.viewing_total_deposit,
+        v.viewing_status,
+        v.viewing_min_num,
+        v.viewing_max_num,
+
+        r.restaurant_name AS restaurantName,
+        s.sport_name AS sportName,
+        t.team_name AS teamName,
+
+        (
+        SELECT rp.restaurant_picture_url
+        FROM restaurant_picture rp
+        WHERE rp.restaurant_code = r.restaurant_code
+        ORDER BY rp.restaurant_picture_code
+        LIMIT 1
+        ) AS pictureUrl,
+
+        <choose>
+            <when test="lat != null and lng != null">
+                (6371 * acos(
+                cos(radians(#{lat}))
+                * cos(radians(r.latitude))
+                * cos(radians(r.longitude) - radians(#{lng}))
+                + sin(radians(#{lat})) * sin(radians(r.latitude))
+                )) AS distance
+            </when>
+            <otherwise>
+                null AS distance
+            </otherwise>
+        </choose>
+
+        FROM viewing v
+        JOIN restaurant r ON v.restaurant_code = r.restaurant_code
+        JOIN sport s ON v.sport_code = s.sport_code
+        JOIN team t ON v.team_code = t.team_code
+
+        <!-- ⭐ 키워드 필터 join -->
+        <if test="keywords != null and keywords.size() > 0">
+            JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
+            JOIN keyword k ON rk.keyword_code = k.keyword_code
+        </if>
+
+        WHERE 1=1
+
+        <!-- ⭐ 음식 카테고리 필터 -->
+        <if test="category != null">
+            AND r.restaurant_category = #{category}
+        </if>
+
+        <!-- ⭐ 키워드 필터 (라벨 기준) -->
+        <if test="keywords != null and keywords.size() > 0">
+            AND k.keyword IN
+            <foreach item="kw" collection="keywords" open="(" separator="," close=")">
+                #{kw}
+            </foreach>
+        </if>
+
+        <!-- ⭐ 정렬 -->
+        <choose>
+            <when test="sort == 'distance'">
+                ORDER BY distance ASC
+            </when>
+            <when test="sort == 'name'">
+                ORDER BY r.restaurant_name ASC
+            </when>
+            <when test="sort == 'score'">
+                ORDER BY v.viewing_total_deposit DESC
+            </when>
+            <otherwise>
+                ORDER BY v.viewing_code DESC
+            </otherwise>
+        </choose>
+
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+    <!-- ⭐ count -->
+    <select id="countAllViewingsWithFilter" resultType="int">
+        SELECT COUNT(*)
+        FROM viewing v
+        JOIN restaurant r ON v.restaurant_code = r.restaurant_code
+
+        <if test="keywords != null and keywords.size() > 0">
+            JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
+            JOIN keyword k ON rk.keyword_code = k.keyword_code
+        </if>
+
+        WHERE 1=1
+
+        <if test="category != null">
+            AND r.restaurant_category = #{category}
+        </if>
+
+        <if test="keywords != null and keywords.size() > 0">
+            AND k.keyword IN
+            <foreach item="kw" collection="keywords" open="(" separator="," close=")">
+                #{kw}
+            </foreach>
+        </if>
+    </select>
 
     <!-- 검색 -->
     <select id="searchViewingsByKeyword" parameterType="string"
@@ -28,25 +137,53 @@
         ORDER BY v.created_at DESC
     </select>
 
-    <!-- 목록별 조회 -->
     <select id="findAllViewings" resultType="com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingDto">
-        SELECT v.viewing_code,
-               v.viewing_title,
-               v.viewing_body,
-               v.viewing_at,
-               v.viewing_total_deposit,
-               v.viewing_status,
-               v.viewing_min_num,
-               v.viewing_max_num,
-               r.restaurant_name AS restaurantName,
-               s.sport_name AS sportName,
-               t.team_name AS teamName
+        SELECT
+        v.viewing_code AS viewingCode,
+        v.viewing_title AS viewingTitle,
+        v.viewing_body AS viewingBody,
+        v.viewing_at,
+        v.viewing_total_deposit,
+        v.viewing_status,
+        v.viewing_min_num,
+        v.viewing_max_num,
+
+        r.restaurant_name AS restaurantName,
+        s.sport_name AS sportName,
+        t.team_name AS teamName,
+
+        (
+        SELECT rp.restaurant_picture_url
+        FROM restaurant_picture rp
+        WHERE rp.restaurant_code = r.restaurant_code
+        ORDER BY rp.restaurant_picture_code
+        LIMIT 1
+        ) AS pictureUrl,
+
+        <!-- ⭐ 여기 콤마 필수! 이거 없어서 전체가 안 나왔던 거임 -->
+        <choose>
+            <when test="lat != null and lng != null">
+                (6371 * acos(
+                cos(radians(#{lat}))
+                * cos(radians(r.latitude))
+                * cos(radians(r.longitude) - radians(#{lng}))
+                + sin(radians(#{lat})) * sin(radians(r.latitude))
+                )) AS distance
+            </when>
+            <otherwise>
+                null AS distance
+            </otherwise>
+        </choose>
+
         FROM viewing v
-                 JOIN restaurant r ON v.restaurant_code = r.restaurant_code
-                 JOIN sport s ON v.sport_code = s.sport_code
-                 JOIN team t ON v.team_code = t.team_code
-        ORDER BY v.created_at DESC
+        JOIN restaurant r ON v.restaurant_code = r.restaurant_code
+        JOIN sport s ON v.sport_code = s.sport_code
+        JOIN team t ON v.team_code = t.team_code
+
+        ORDER BY v.viewing_code DESC
+        LIMIT #{limit} OFFSET #{offset}
     </select>
+
 
     <!-- 조건별 조회 -->
     <select id="findViewingsByCondition"
@@ -73,33 +210,76 @@
         ORDER BY v.created_at DESC
     </select>
 
-    <!-- 상세 조회 -->
+
+        <!-- 상세 조회 -->
+    <resultMap id="viewingPictureDtoMap" type="com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingPictureDto">
+        <id property="viewingCode" column="viewingCode"/>
+        <result property="viewingTitle" column="viewingTitle"/>
+        <result property="viewingBody" column="viewingBody"/>
+        <result property="viewingAt" column="viewingAt"/>
+        <result property="viewingTotalDeposit" column="viewingTotalDeposit"/>
+        <result property="viewingStatus" column="viewingStatus"/>
+        <result property="viewingMinNum" column="viewingMinNum"/>
+        <result property="viewingMaxNum" column="viewingMaxNum"/>
+        <result property="restaurantCode" column="restaurantCode"/>
+        <result property="restaurantName" column="restaurantName"/>
+        <result property="restaurantLocation" column="restaurantLocation"/>
+        <result property="restaurantMaxNum" column="restaurantMaxNum"/>
+        <result property="sportName" column="sportName"/>
+        <result property="teamName" column="teamName"/>
+        <result property="keywords" column="keywords"/>
+    </resultMap>
+
     <select id="findViewingDetail"
             parameterType="long"
-            resultType="com.ohgiraffers.geogieoddae.viewing.query.dto.ViewingPictureDto">
-        SELECT v.viewing_code,
-               v.viewing_title,
-               v.viewing_body,
-               v.viewing_at,
-               v.viewing_total_deposit,
-               v.viewing_status,
-               v.viewing_min_num,
-               v.viewing_max_num,
-               r.restaurant_code,
-               r.restaurant_name AS restaurantName,
-               s.sport_name AS sportName,
-               t.team_name AS teamName
+            resultMap="viewingPictureDtoMap">
+
+        SELECT
+            v.viewing_code AS viewingCode,
+            v.viewing_title AS viewingTitle,
+            v.viewing_body AS viewingBody,
+            v.viewing_at AS viewingAt,
+            v.viewing_total_deposit AS viewingTotalDeposit,
+            v.viewing_status AS viewingStatus,
+
+            v.viewing_min_num AS viewingMinNum,
+            v.viewing_max_num AS viewingMaxNum,
+
+            r.restaurant_code AS restaurantCode,
+            r.restaurant_name AS restaurantName,
+            r.restaurant_location AS restaurantLocation,
+            r.restaurant_people_number AS restaurantMaxNum,
+
+            s.sport_name AS sportName,
+            t.team_name AS teamName,
+
+            GROUP_CONCAT(k.keyword) AS keywords
+
         FROM viewing v
-                 JOIN restaurant r ON v.restaurant_code = r.restaurant_code
-                 JOIN sport s ON v.sport_code = s.sport_code
-                 JOIN team t ON v.team_code = t.team_code
+        JOIN restaurant r ON v.restaurant_code = r.restaurant_code
+        JOIN sport s ON v.sport_code = s.sport_code
+        JOIN team t ON v.team_code = t.team_code
+        LEFT JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
+        LEFT JOIN keyword k ON rk.keyword_code = k.keyword_code
         WHERE v.viewing_code = #{viewingCode}
+        GROUP BY v.viewing_code, r.restaurant_code, s.sport_code, t.team_code
     </select>
 
 
-    <select id="findRestaurantPictures" parameterType="long" resultType="string">
-        SELECT rp.restaurant_picture_url
-        FROM restaurant_picture rp
-        WHERE rp.restaurant_code = #{restaurantCode}
+    <!-- 키워드 로직은 findViewingDetail 쿼리에 통합됨 -->
+
+
+        <!-- 레스토랑 사진 조회 -->
+        <select id="findRestaurantPictures" parameterType="long" resultType="string">
+            SELECT rp.restaurant_picture_url
+            FROM restaurant_picture rp
+            WHERE rp.restaurant_code = #{restaurantCode}
+            ORDER BY rp.restaurant_picture_code
+        </select>
+
+
+    <select id="countAllViewings" resultType="int">
+        SELECT COUNT(*)
+        FROM viewing
     </select>
 </mapper>

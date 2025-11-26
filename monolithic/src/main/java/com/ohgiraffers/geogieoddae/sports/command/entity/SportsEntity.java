@@ -13,16 +13,15 @@ import java.util.List;
 @Builder
 public class SportsEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sport_code")
     private Long sportCode;
 
-    @Column(name = "sport_name", nullable = false)
+    @Column(nullable = false)
     private String sportName;
 
-    @Column(name = "sport_decription")
-    private String sportDescription;
-
-    @OneToMany(mappedBy = "sport")
-    private List<TeamEntity> teams;
+    public void update(String name) {
+        this.sportName = name;
+    }
 }

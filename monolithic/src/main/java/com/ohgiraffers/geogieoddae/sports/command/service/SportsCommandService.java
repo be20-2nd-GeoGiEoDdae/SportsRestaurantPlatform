@@ -4,8 +4,10 @@ import com.ohgiraffers.geogieoddae.sports.command.dto.SportsRequestDto;
 import com.ohgiraffers.geogieoddae.sports.command.dto.SportsResponseDto;
 import com.ohgiraffers.geogieoddae.sports.command.dto.TeamRequestDto;
 import com.ohgiraffers.geogieoddae.sports.command.dto.TeamResponseDto;
+import com.ohgiraffers.geogieoddae.sports.command.entity.LeagueEntity;
 import com.ohgiraffers.geogieoddae.sports.command.entity.SportsEntity;
 import com.ohgiraffers.geogieoddae.sports.command.entity.TeamEntity;
+import com.ohgiraffers.geogieoddae.sports.command.repository.LeagueRepository;
 import com.ohgiraffers.geogieoddae.sports.command.repository.SportsRepository;
 import com.ohgiraffers.geogieoddae.sports.command.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +21,11 @@ public class SportsCommandService {
 
     private final SportsRepository sportsRepository;
     private final TeamRepository teamRepository;
-
+    private final LeagueRepository leagueRepository;
     // 스포츠 종목 등록
     public void createSport(SportsRequestDto request) {
         SportsEntity sportsEntity = SportsEntity.builder()
                 .sportName(request.getSportName())
-                .sportDescription(request.getSportDescription())
                 .build();
 
         sportsRepository.save(sportsEntity);
@@ -36,12 +37,10 @@ public class SportsCommandService {
                 .orElseThrow(() -> new IllegalArgumentException("스포츠 종목이 존재하지 않습니다.: " + sportCode));
 
         entity.setSportName(request.getSportName());
-        entity.setSportDescription(request.getSportDescription());
 
         return SportsResponseDto.builder()
                 .sportCode(entity.getSportCode())
                 .sportName(entity.getSportName())
-                .sportDescription(entity.getSportDescription())
                 .build();
     }
 
@@ -54,33 +53,30 @@ public class SportsCommandService {
     }
 
     // 스포츠 팀 등록
-    public void createTeam(TeamRequestDto request) {
-        SportsEntity sportsEntity = sportsRepository.findById(request.getSportCode())
-                .orElseThrow(() -> new IllegalArgumentException("스포츠 종목이 존재하지 않습니다.: " + request.getSportCode()));
+    public Long createTeam(TeamRequestDto request) {
+        LeagueEntity league = leagueRepository.findById(request.getLeagueId())
+                .orElseThrow(() -> new IllegalArgumentException("리그 없음"));
 
-        TeamEntity teamEntity = TeamEntity.builder()
-                .teamName(request.getTeamName())
-                .teamDescription(request.getTeamDescription())
-                .sport(sportsEntity)
+        TeamEntity team = TeamEntity.builder()
+                .teamName(request.getName())
+                .league(league)
                 .build();
 
-        teamRepository.save(teamEntity);
+        teamRepository.save(team);
+        return team.getTeamCode();
     }
 
     // 스포츠 팀 수정
-    public TeamResponseDto updateTeam(TeamRequestDto request, Long teamCode) {
-        TeamEntity entity = teamRepository.findById(teamCode)
-                .orElseThrow(() -> new IllegalArgumentException("스포츠 팀이 존재하지 않습니다.: " + teamCode));
+    public TeamResponseDto updateTeam(Long id, TeamRequestDto request) {
+        TeamEntity team = teamRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("팀 없음"));
 
-        String name = request.getTeamName();
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("팀 이름은 비어 있을 수 없습니다.");
-        }
-        entity.setTeamName(name);
+        team.update(request.getName());
 
         return TeamResponseDto.builder()
-                .teamCode(entity.getTeamCode())
-                .sportCode(entity.getSport().getSportCode())
+                .id(team.getTeamCode())
+                .name(team.getTeamName())
+                .leagueId(team.getLeague().getId())
                 .build();
     }
 

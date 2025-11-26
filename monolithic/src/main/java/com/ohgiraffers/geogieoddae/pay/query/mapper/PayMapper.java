@@ -12,5 +12,7 @@ public interface PayMapper {
 
   List<PaySearchResponse> selectPayAll();
 
-  List<PaySearchResponse> selectPayByUserCode(Long userCode);
+  List<PaySearchResponse> selectPayByUserCode(Long userCode,int offset,int pageSize);
+
+  long countPayByUserCode(Long userCode);
 }

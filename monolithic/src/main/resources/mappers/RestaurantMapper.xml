@@ -5,52 +5,148 @@
 
 <mapper namespace="com.ohgiraffers.geogieoddae.restaurant.query.mapper.RestaurantMapper">
 
+    <!-- ============================
+         1. 목록 조회 + 거리 정렬 지원
+         ============================ -->
     <select id="getRestaurantList"
             parameterType="map"
             resultType="com.ohgiraffers.geogieoddae.restaurant.query.dto.RestaurantDto">
+
         SELECT
-        r.restaurant_code,
-        r.restaurant_name,
-        r.restaurant_location,
-        r.restaurant_category,
-        r.restaurant_people_number,
-        r.restaurant_contents,
-        r.restaurant_score,
-        r.created_at
+        r.restaurant_code AS restaurantCode,
+        r.restaurant_name AS restaurantName,
+        r.restaurant_location AS restaurantLocation,
+        r.restaurant_category AS restaurantCategory,
+        r.restaurant_people_number AS restaurantPeopleNumber,
+        r.restaurant_contents AS restaurantContents,
+        r.restaurant_score AS restaurantScore,
+        r.created_at AS createdAt,
+
+        <!-- ⭐ 거리 계산 -->
+        <choose>
+            <when test="userLat != null and userLng != null">
+                (6371 * acos(
+                cos(radians(#{userLat}))
+                * cos(radians(r.latitude))
+                * cos(radians(r.longitude) - radians(#{userLng}))
+                + sin(radians(#{userLat}))
+                * sin(radians(r.latitude))
+                )) AS distance,
+            </when>
+            <otherwise>
+                null AS distance,
+            </otherwise>
+        </choose>
+
+        <!-- ⭐ 대표 이미지 -->
+        (
+        SELECT CONCAT('/uploads', p.restaurant_picture_url)
+        FROM restaurant_picture p
+        WHERE p.restaurant_code = r.restaurant_code
+        LIMIT 1
+        ) AS pictureUrls,
+
+        <!-- ⭐ 키워드 GROUP -->
+        (
+        SELECT GROUP_CONCAT(k.keyword)
+        FROM restaurant_keyword rk
+        JOIN keyword k ON rk.keyword_code = k.keyword_code
+        WHERE rk.restaurant_code = r.restaurant_code
+        ) AS keywords,
+
+        <!-- ⭐ 즐겨찾기 여부 -->
+        (
+        SELECT COUNT(*)
+        FROM bookmark b
+        WHERE b.user_code = #{userId}
+        AND b.restaurant_code = r.restaurant_code
+        ) > 0 AS bookmarked,
+
+        <!-- ⭐ 리뷰 평균 평점(1자리 반올림) -->
+        (
+        SELECT ROUND(AVG(rv.review_score), 1)
+        FROM review rv
+        WHERE rv.restaurant_code = r.restaurant_code
+        ) AS reviewAvg
+
         FROM restaurant r
+
+        LEFT JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
+        LEFT JOIN keyword k ON rk.keyword_code = k.keyword_code
+
         <where>
-            <!-- 🍴 카테고리 필터 -->
+            <!-- 카테고리 필터 -->
             <if test="category != null and category != ''">
                 r.restaurant_category = #{category}
             </if>
+
+            <!-- ⭐ 다중 키워드 필터 -->
+            <if test="keywords != null and keywords.size() > 0">
+                AND EXISTS (
+                SELECT 1
+                FROM restaurant_keyword rk2
+                JOIN keyword k2 ON rk2.keyword_code = k2.keyword_code
+                WHERE rk2.restaurant_code = r.restaurant_code
+                AND (
+                <foreach collection="keywords" item="kw" separator=" OR ">
+                    k2.keyword LIKE CONCAT('%', #{kw}, '%')
+                </foreach>
+                )
+                )
+            </if>
         </where>
+
+        GROUP BY r.restaurant_code
+
+        ORDER BY
+        <!-- ⭐ 즐겨찾기 우선 -->
+        (
+        SELECT COUNT(*)
+        FROM bookmark b
+        WHERE b.user_code = #{userId}
+        AND b.restaurant_code = r.restaurant_code
+        ) DESC,
+
+        <!-- ⭐ 정렬 옵션 -->
         <choose>
+            <when test="sort == 'distance'">
+                distance ASC,
+            </when>
             <when test="sort == 'name'">
-                ORDER BY r.restaurant_name ASC
+                r.restaurant_name ASC,
             </when>
             <when test="sort == 'score'">
-                ORDER BY r.restaurant_score DESC
+                reviewAvg DESC,
             </when>
             <otherwise>
-                ORDER BY r.created_at DESC
+                distance ASC,
             </otherwise>
         </choose>
+
+        r.created_at DESC
+
     </select>
 
+
+
+    <!-- ============================
+         2. 검색 + 카테고리 + 키워드
+         ============================ -->
     <select id="findRestaurantList"
             parameterType="map"
             resultType="com.ohgiraffers.geogieoddae.restaurant.query.dto.RestaurantDto">
 
         SELECT
-        r.restaurant_code,
-        r.restaurant_name,
-        r.restaurant_location,
-        r.restaurant_category,
-        r.restaurant_people_number,
-        r.restaurant_contents,
-        r.restaurant_score,
-        k.keyword,
-        r.created_at
+        r.restaurant_code AS restaurantCode,
+        r.restaurant_name AS restaurantName,
+        r.restaurant_location AS restaurantLocation,
+        r.restaurant_category AS restaurantCategory,
+        r.restaurant_people_number AS restaurantPeopleNumber,
+        r.restaurant_contents AS restaurantContents,
+        r.restaurant_score AS restaurantScore,
+        GROUP_CONCAT(k.keyword) AS keywords,
+        r.created_at AS createdAt
+
         FROM restaurant r
         LEFT JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
         LEFT JOIN keyword k ON rk.keyword_code = k.keyword_code
@@ -61,37 +157,26 @@
             </if>
 
             <if test="keyword != null and keyword != ''">
-                <if test="restaurant_name != null and restaurant_name != ''">
-                    AND
-                </if>
-                k.keyword LIKE CONCAT('%', #{keyword}, '%')
+                AND k.keyword LIKE CONCAT('%', #{keyword}, '%')
             </if>
 
             <if test="category != null and category != ''">
-                <if test="(restaurant_name != null and restaurant_name != '') or (keyword != null and keyword != '')">
-                    AND
-                </if>
-                r.restaurant_category = #{category}
+                AND r.restaurant_category = #{category}
             </if>
         </where>
 
-        GROUP BY
-        r.restaurant_code,
-        r.restaurant_name,
-        r.restaurant_location,
-        r.restaurant_category,
-        r.restaurant_people_number,
-        r.restaurant_contents,
-        r.restaurant_score,
-        k.keyword,
-        r.created_at
+        GROUP BY r.restaurant_code
         ORDER BY r.restaurant_name ASC
     </select>
 
 
+    <!-- ============================
+         3. 상세 조회
+         ============================ -->
     <select id="findRestaurantDetail"
             parameterType="long"
             resultType="com.ohgiraffers.geogieoddae.restaurant.query.dto.RestaurantDto">
+
         SELECT
             r.restaurant_code AS restaurantCode,
             r.restaurant_name AS restaurantName,
@@ -103,15 +188,27 @@
             GROUP_CONCAT(DISTINCT p.restaurant_picture_url) AS pictureUrls,
             GROUP_CONCAT(DISTINCT k.keyword) AS keywords,
             r.created_at AS createdAt
+
         FROM restaurant r
                  LEFT JOIN restaurant_picture p ON r.restaurant_code = p.restaurant_code
                  LEFT JOIN restaurant_keyword rk ON r.restaurant_code = rk.restaurant_code
                  LEFT JOIN keyword k ON rk.keyword_code = k.keyword_code
+
         WHERE r.restaurant_code = #{restaurantCode}
-        GROUP BY
-            r.restaurant_code, r.restaurant_name, r.restaurant_location,
-            r.restaurant_category, r.restaurant_people_number,
-            r.restaurant_contents, r.restaurant_score, r.created_at
+
+        GROUP BY r.restaurant_code
+    </select>
+    <!-- ============================
+         4. 가게 사진 목록 조회용 쿼리
+         ============================ -->
+    <select id="findRestaurantImages"
+            parameterType="long"
+            resultType="string">
+
+        SELECT CONCAT('/uploads', p.restaurant_picture_url)
+        FROM restaurant_picture p
+        WHERE p.restaurant_code = #{restaurantCode}
+
     </select>
 
 </mapper>

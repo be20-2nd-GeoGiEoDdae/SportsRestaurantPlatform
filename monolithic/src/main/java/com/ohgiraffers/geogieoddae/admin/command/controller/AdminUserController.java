@@ -19,7 +19,7 @@ public class AdminUserController {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+   // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PatchMapping("/{userId}/role")
     public ResponseEntity<Map<String, String>> changeUserRole(
             @PathVariable Long userId,

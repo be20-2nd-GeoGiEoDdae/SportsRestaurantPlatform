@@ -1,6 +1,8 @@
 package com.ohgiraffers.geogieoddae.report.query.service;
 
+import com.ohgiraffers.geogieoddae.report.query.dto.BlacklistQueryDto;
 import com.ohgiraffers.geogieoddae.report.query.dto.ReportQueryDto;
+import com.ohgiraffers.geogieoddae.report.query.mapper.BlacklistMapper;
 import com.ohgiraffers.geogieoddae.report.query.mapper.ReportMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import java.util.List;
 public class ReportQueryService {
 
     private final ReportMapper reportMapper;
+    private final BlacklistMapper blacklistMapper;
 
     // 관리자용 신고 목록 조회 (게시글처럼 조회)
     public List<ReportQueryDto> listReports() {
@@ -27,5 +30,10 @@ public class ReportQueryService {
             throw new IllegalArgumentException("신고가 존재하지 않습니다.: " + reportCode);
         }
         return result;
+    }
+
+    // 관리자용 블랙리스트 조회(게시글처럼)
+    public List<BlacklistQueryDto> list() {
+        return blacklistMapper.selectBlacklist();
     }
 }

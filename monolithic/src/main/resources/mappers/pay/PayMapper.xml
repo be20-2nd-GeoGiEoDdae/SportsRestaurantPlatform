@@ -42,7 +42,7 @@
   <select id="selectPayAll"
     resultType="com.ohgiraffers.geogieoddae.pay.query.dto.PaySearchResponse">
     SELECT
-      vp.viewing_pay_code            AS viewingPayCode,
+/*      vp.viewing_pay_code            AS viewingPayCode,*/
       vp.viewing_pay_price           AS viewingPayPrice,
       vp.created_at                  AS createdAt,
       vp.viewing_pay_refund_date     AS viewingPayRefundDate,
@@ -60,20 +60,26 @@
   <select id="selectPayByUserCode"
     resultType="com.ohgiraffers.geogieoddae.pay.query.dto.PaySearchResponse">
     SELECT
-      vp.viewing_pay_code            AS viewingPayCode,
       vp.viewing_pay_price           AS viewingPayPrice,
       vp.created_at                  AS createdAt,
-      vp.viewing_pay_refund_date     AS viewingPayRefundDate,
-      u.user_name                    AS userName,
-      u.user_email                   AS userEmail,
-      vp.viewing_pay_customer_key   AS customerKey,
       vp.viewing_pay_order_id       AS orderId,
-      vp.viewing_pay_payment_key    AS paymentKey,
-      vp.viewing_pay_status         AS  viewingPayStatus
+      vp.viewing_pay_status         AS  viewingPayStatus,
+    v.viewing_title as viewingTitle
     FROM viewing_pay vp
            JOIN member u ON u.user_code = vp.user_code
+            JOIN viewing v ON v.viewing_code=vp.viewing_code
     WHERE u.user_code=#{userCode}
-    ORDER BY createdAt DESC
+    ORDER BY vp.created_at DESC
+    LIMIT #{pageSize} OFFSET #{offset};
+  </select>
+  <select id="countPayByUserCode"
+    resultType="long">
+    SELECT
+        COUNT(*)
+    FROM viewing_pay vp
+           JOIN member u ON u.user_code = vp.user_code
+           JOIN viewing v ON v.viewing_code=vp.viewing_code
+    WHERE u.user_code=#{userCode}
   </select>
 </mapper>
 

@@ -20,7 +20,7 @@ public class ViewingController {
 
     /* ====================== 사업자 기능 ====================== */
 
-    @PreAuthorize("hasRole('ENTREPRENEUR')")
+//    @PreAuthorize("hasRole('ENTREPRENEUR')")
     @PostMapping
     public ResponseEntity<ApiResponse<?>> createViewing(@RequestBody ViewingDto dto) {
         viewingService.createViewing(dto);
