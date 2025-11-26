@@ -85,6 +85,28 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers("/api/admin/login", "/api/admin/refresh", "/api/auth/**", "/", "/oauth2/**", "/login/oauth2/code/**", "/login**").permitAll()
+                        .requestMatchers("/api/admin/users-view", "/api/admin/users-search", "api/admin/users-view-by-role/**", "/api/admin/logout", "/api/admin/users/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                            "/swagger-resources/**",
+                                "/webjars/**").permitAll()
+                                /*
+                            "/bookmark/**",
+                            "/notification/**",
+                            "/restaurants/**",
+                            "/reviews/**",
+                            "/viewings/**",
+                            "/reports/**",
+                            "/viewingPay/**",
+                            "/subscribe/**",
+                            "/announcements/**",
+                            "/sports/**",
+                            "/reports/**"
+
+                        ).permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().authenticated()*/
                         .requestMatchers("/api/admin/users-view", "/api/admin/logout").hasAuthority("ROLE_ADMIN")
 
                         // ⭐ OPTIONS 요청 명시적으로 허용

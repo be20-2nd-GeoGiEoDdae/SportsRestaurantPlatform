@@ -7,7 +7,7 @@
         SELECT
             user_code,
             user_name,
---          user_email,
+            user_email,
             user_phone_number,
             user_address,
             user_role,
@@ -16,7 +16,7 @@
             member
         ORDER BY
             user_code DESC
-        LIMIT #{limit} OFFSET #{offset}
+        LIMIT #{offset}, #{size}
     </select>
 
     <select id="selectAllUserCount" resultType="int">
@@ -26,7 +26,7 @@
             member
     </select>
 
-    <select id="selectUserDetail" resultType="com.ohgiraffers.geogieoddae.admin.query.dto.UserDetailDto">
+    <select id="searchUsers" resultType="com.ohgiraffers.geogieoddae.admin.query.dto.UserDto">
         SELECT
             user_code,
             user_name,
@@ -38,6 +38,79 @@
         FROM
             member
         WHERE
-            user_code = #{userCode}
+            (user_email LIKE CONCAT('%', #{userEmail}, '%') OR #{userEmail} IS NULL) AND (user_name LIKE CONCAT('%', #{userName}, '%') OR #{userName} IS NULL) AND (user_phone_number LIKE CONCAT('%', #{userPhoneNumber}, '%') OR #{userPhoneNumber} IS NULL)
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countUsers" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            member
+        WHERE
+            (user_email LIKE CONCAT('%', #{userEmail}, '%') OR #{userEmail} IS NULL)
+            AND (user_name LIKE CONCAT('%', #{userName}, '%') OR #{userName} IS NULL)
+            AND (user_phone_number LIKE CONCAT('%', #{userPhoneNumber}, '%') OR #{userPhoneNumber} IS NULL);
+    </select>
+
+    <select id="selectUsersByRole" resultType="com.ohgiraffers.geogieoddae.admin.query.dto.UserDto">
+        SELECT
+            u.user_code            AS userCode,
+            u.user_name            AS userName,
+            u.user_email           AS userEmail,
+            u.user_phone_number    AS userPhoneNumber,
+            u.user_address         AS userAddress,
+            u.user_role            AS userRole,
+            u.created_at           AS createdAt
+            <!-- 사용자 역할이 ENTREPRENEUR 일 때만 사업자 컬럼 추가 -->
+            <if test="userRole == 'ENTREPRENEUR'">
+            , e.entrepreneur_code   AS entrepreneurCode
+            , e.entrepreneur_id     AS entrepreneurId
+            , e.entrepreneur_status AS entrepreneurStatus
+            </if>
+        FROM
+            member u
+        <if test="userRole == 'ENTREPRENEUR'">
+            LEFT JOIN entrepreneur e ON e.user_code = u.user_code
+        </if>
+        WHERE
+            u.user_role = #{userRole}
+        ORDER BY
+            u.user_code DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectUserCountByRole" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            member
+        WHERE
+            user_role = #{userRole};
+    </select>
+
+    <!-- USER_ROLE 에 따라 일반 유저정보만 쿼리하거나 사업자 정보를 포함한 쿼리를 하거나 동적 조정-->
+    <select id="selectUserDetail" resultType="com.ohgiraffers.geogieoddae.admin.query.dto.UserDetailDto">
+        SELECT
+            u.user_code               AS userCode,
+            u.user_name               AS userName,
+            u.user_email              AS userEmail,
+            u.user_phone_number       AS userPhoneNumber,
+            u.user_address            AS userAddress,
+            u.user_role               AS userRole,
+            u.created_at              AS createdAt,
+            <!-- entrepreneur fields (JOIN은 user_role 이 ENTREPRENEUR 일 때만 매칭) -->
+            entrepreneur_code       AS entrepreneurCode,
+            e.entrepreneur_id             AS entrepreneurId,
+            e.entrepreneur_certificate_url AS entrepreneurCertificateUrl,
+            e.entrepreneur_bank_account   AS entrepreneurBankAccount,
+            e.entrepreneur_status         AS entrepreneurStatus
+        FROM
+            member u
+        LEFT JOIN entrepreneur e
+            ON e.user_code = u.user_code
+            AND u.user_role = 'ENTREPRENEUR'
+        WHERE
+            u.user_code = #{userCode}
     </select>
 </mapper>

@@ -1,26 +1,38 @@
-/* 회원 정보 DTO - 조회된 정보를 담아 클라이언트에 전달할 UserDTO 클래스 : 불필요한 정보 숨길수 있음
- * @Author : 김성현
- * @Date : 2025-10-31
- * @Version : 1.0
- * @*/
-
 package com.ohgiraffers.geogieoddae.admin.query.dto;
 
-import java.time.LocalDateTime;
+import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserEntity;
 
-import com.ohgiraffers.geogieoddae.auth.command.entity.user.UserRole;
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class UserDto {
-    private Long userCode;
-    private String userName;
-    private String userEmail;
-    private String userPhoneNumber;
-    private String userAddress;
-    private UserRole user;
-    private LocalDateTime createdAt;
+  private Long userCode;
+  private String userName;
+  private String userEmail;
+  private String userPhoneNumber;
+  private String userAddress;
+  private String userRole;
+
+  // 사업자 필드 추가
+  private Long entrepreneurCode;
+  private Integer entrepreneurId;
+  private String entrepreneurStatus;
+
+  public static UserDto fromEntity(UserEntity u) {
+    return new UserDto(
+      u.getUserCode(),
+      u.getUserName(),
+      u.getUserEmail(),
+      u.getUserPhoneNumber(),
+      u.getUserAddress(),
+      u.getUserRole() == null ? null : u.getUserRole().name(),
+      null,
+      null,
+      null
+    );
+  }
 }
